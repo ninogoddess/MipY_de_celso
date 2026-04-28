@@ -1,314 +1,331 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Starter Story LATAM | Dashboard</title>
-    <meta name="description" content="Extrae videos de Starter Story, clasifica contra pain points LATAM y genera soluciones con tu perfil RPM.">
+    <meta name="description"
+        content="Extrae videos de Starter Story, clasifica contra pain points LATAM y genera soluciones con tu perfil RPM.">
     <link rel="stylesheet" href="/styles.css">
 </head>
+
 <body>
 
-<!-- ==================== SIDEBAR ==================== -->
-<nav class="sidebar">
-    <div class="sidebar-logo">
-        <img src="/assets/logo.png" alt="Logo" class="logo-icon" style="object-fit: cover;">
-        <span>MiPy de Celso <em>LATAM</em></span>
-    </div>
-
-    <div class="sidebar-section">
-        <div class="sidebar-section-title">Inicio</div>
-    </div>
-    <div class="sidebar-item active" data-page="dashboard">
-        <span class="icon">📊</span><span>Dashboard</span>
-    </div>
-
-    <div class="sidebar-section">
-        <div class="sidebar-section-title">Fase 1 — Scraping</div>
-    </div>
-    <div class="sidebar-item" data-page="scraper">
-        <span class="icon">⚡</span><span>Scraper &amp; Logs</span>
-    </div>
-    <div class="sidebar-item" data-page="videos">
-        <span class="icon">🎬</span><span>Videos</span>
-    </div>
-
-    <div class="sidebar-section">
-        <div class="sidebar-section-title">Fase 2 — Clasificación</div>
-    </div>
-    <div class="sidebar-item locked" data-page="painpoints">
-        <span class="icon">📍</span><span>Pain Points LATAM</span>
-    </div>
-    <div class="sidebar-item locked" data-page="wizard">
-        <span class="icon">🧭</span><span>Wizard RPM</span>
-    </div>
-
-    <div class="sidebar-section">
-        <div class="sidebar-section-title">Fase 3 — Soluciones</div>
-    </div>
-    <div class="sidebar-item locked" data-page="solutions">
-        <span class="icon">💡</span><span>Motor de Soluciones</span>
-    </div>
-
-    <div class="sidebar-section">
-        <div class="sidebar-section-title">Fase 4 — Validación</div>
-    </div>
-    <div class="sidebar-item locked" data-page="mvt">
-        <span class="icon">🧪</span><span>MVT</span>
-    </div>
-
-    <div class="sidebar-section">
-        <div class="sidebar-section-title">Sistema</div>
-    </div>
-    <div class="sidebar-item locked" data-page="settings">
-        <span class="icon">⚙️</span><span>Ajustes</span>
-    </div>
-
-    <div class="sidebar-section" style="margin-top:auto;">
-        <div class="sidebar-section-title">Conexiones</div>
-    </div>
-    <a href="https://github.com/ninogoddess/MipY_de_celso" target="_blank" class="sidebar-item" style="text-decoration: none;">
-        <span class="icon">🐙</span><span>GitHub</span>
-    </a>
-    <a href="https://vercel.com/maxiipaxy-7307s-projects/mip-y-de-celso" target="_blank" class="sidebar-item" style="text-decoration: none;">
-        <span class="icon">▲</span><span>Vercel</span>
-    </a>
-    <a href="https://supabase.com/dashboard/project/bwqqbpuckinrizoelpcc/sql/2cb00856-46e6-450d-a365-ff3a0bc80a35" target="_blank" class="sidebar-item" style="text-decoration: none;">
-        <span class="icon">⚡</span><span>Supabase</span>
-    </a>
-</nav>
-
-<!-- ==================== MAIN ==================== -->
-<main class="main">
-
-    <!-- ========== DASHBOARD ========== -->
-    <div id="page-dashboard" class="page active">
-        <div class="hero-banner">
-            <div class="version-badge">v0.4 · Fase 1 activa</div>
-            <h1>Encuentra tu próxima idea de negocio en LATAM</h1>
-            <p>Esta app extrae los videos de Starter Story, los clasifica contra pain points reales del mercado latinoamericano y los cruza con tu perfil RPM para proponer soluciones viables.</p>
+    <!-- ==================== SIDEBAR ==================== -->
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <img src="/assets/logo_principal.png.png" alt="Logo" class="logo-icon" style="object-fit: cover;">
+            <span>MiPy de Celso <em>LATAM</em></span>
         </div>
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">🎬 Videos</div>
-                <div class="stat-value" id="stat-videos">—</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">🤖 Analizados (IA)</div>
-                <div class="stat-value" id="stat-analyzed">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">📍 Pain Points</div>
-                <div class="stat-value" id="stat-painpoints">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">🧭 RPM Completado</div>
-                <div class="stat-value" id="stat-rpm">—</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">💡 Soluciones</div>
-                <div class="stat-value" id="stat-solutions">0</div>
-            </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Inicio</div>
+        </div>
+        <div class="sidebar-item active" data-page="dashboard">
+            <span class="icon">📊</span><span>Dashboard</span>
         </div>
 
-        <div class="info-grid">
-            <div class="info-card">
-                <h3>🕐 Última ejecución</h3>
-                <div id="last-run-info">
-                    <div class="log-entry"><span class="badge badge-pending">pendiente</span> Sin ejecuciones registradas</div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Fase 1 — Scraping</div>
+        </div>
+        <div class="sidebar-item" data-page="scraper">
+            <span class="icon">⚡</span><span>Scraper &amp; Logs</span>
+        </div>
+        <div class="sidebar-item" data-page="videos">
+            <span class="icon">🎬</span><span>Videos</span>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Fase 2 — Clasificación</div>
+        </div>
+        <div class="sidebar-item locked" data-page="painpoints">
+            <span class="icon">📍</span><span>Pain Points LATAM</span>
+        </div>
+        <div class="sidebar-item locked" data-page="wizard">
+            <span class="icon">🧭</span><span>Wizard RPM</span>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Fase 3 — Soluciones</div>
+        </div>
+        <div class="sidebar-item locked" data-page="solutions">
+            <span class="icon">💡</span><span>Motor de Soluciones</span>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Fase 4 — Validación</div>
+        </div>
+        <div class="sidebar-item locked" data-page="mvt">
+            <span class="icon">🧪</span><span>MVT</span>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Sistema</div>
+        </div>
+        <div class="sidebar-item locked" data-page="settings">
+            <span class="icon">⚙️</span><span>Ajustes</span>
+        </div>
+
+        <div class="sidebar-section" style="margin-top:auto;">
+            <div class="sidebar-section-title">Conexiones</div>
+        </div>
+        <a href="https://github.com/ninogoddess/MipY_de_celso" target="_blank" class="sidebar-item"
+            style="text-decoration: none;">
+            <span class="icon">🐙</span><span>GitHub</span>
+        </a>
+        <a href="https://vercel.com/maxiipaxy-7307s-projects/mip-y-de-celso" target="_blank" class="sidebar-item"
+            style="text-decoration: none;">
+            <span class="icon">▲</span><span>Vercel</span>
+        </a>
+        <a href="https://supabase.com/dashboard/project/bwqqbpuckinrizoelpcc/sql/2cb00856-46e6-450d-a365-ff3a0bc80a35"
+            target="_blank" class="sidebar-item" style="text-decoration: none;">
+            <span class="icon">⚡</span><span>Supabase</span>
+        </a>
+    </nav>
+
+    <!-- ==================== MAIN ==================== -->
+    <main class="main">
+
+        <!-- ========== DASHBOARD ========== -->
+        <div id="page-dashboard" class="page active">
+            <div class="hero-banner">
+                <div class="version-badge">v0.4 · Fase 1 activa</div>
+                <h1>Encuentra tu próxima idea de negocio en LATAM</h1>
+                <p>Esta app extrae los videos de Starter Story, los clasifica contra pain points reales del mercado
+                    latinoamericano y los cruza con tu perfil RPM para proponer soluciones viables.</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">🎬 Videos</div>
+                    <div class="stat-value" id="stat-videos">—</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">🤖 Analizados (IA)</div>
+                    <div class="stat-value" id="stat-analyzed">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">📍 Pain Points</div>
+                    <div class="stat-value" id="stat-painpoints">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">🧭 RPM Completado</div>
+                    <div class="stat-value" id="stat-rpm">—</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">💡 Soluciones</div>
+                    <div class="stat-value" id="stat-solutions">0</div>
                 </div>
             </div>
-            <div class="info-card">
-                <h3>✅ Próximos pasos</h3>
-                <div class="log-entry" style="color:var(--primary);">➜ Scrapea tus primeros videos en "Scraper & Logs"</div>
-                <div class="log-entry" style="opacity:0.4;">➜ Configura tu perfil RPM en el Wizard</div>
-                <div class="log-entry" style="opacity:0.4;">➜ Genera soluciones personalizadas</div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>🕐 Última ejecución</h3>
+                    <div id="last-run-info">
+                        <div class="log-entry"><span class="badge badge-pending">pendiente</span> Sin ejecuciones
+                            registradas</div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <h3>✅ Próximos pasos</h3>
+                    <div class="log-entry" style="color:var(--primary);">➜ Scrapea tus primeros videos en "Scraper &
+                        Logs"</div>
+                    <div class="log-entry" style="opacity:0.4;">➜ Configura tu perfil RPM en el Wizard</div>
+                    <div class="log-entry" style="opacity:0.4;">➜ Genera soluciones personalizadas</div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- ========== SCRAPER ========== -->
-    <div id="page-scraper" class="page">
-        <div class="page-header">
-            <h2>Scraper &amp; Logs</h2>
-            <p>Ingresa URLs de YouTube para extraer transcripciones y guardarlas en Supabase.</p>
+        <!-- ========== SCRAPER ========== -->
+        <div id="page-scraper" class="page">
+            <div class="page-header">
+                <h2>Scraper &amp; Logs</h2>
+                <p>Ingresa URLs de YouTube para extraer transcripciones y guardarlas en Supabase.</p>
+            </div>
+            <div class="scraper-panel">
+                <label
+                    style="display:block;margin-bottom:0.5rem;color:var(--text-muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:1px;">URLs
+                    de YouTube (una por línea)</label>
+                <textarea id="urlsInput"
+                    placeholder="https://www.youtube.com/watch?v=VIDEO_ID_1&#10;https://www.youtube.com/watch?v=VIDEO_ID_2&#10;https://www.youtube.com/watch?v=VIDEO_ID_3"></textarea>
+                <button class="btn-primary" id="scrapeBtn" onclick="startScraping()">
+                    <span id="btnText">Iniciar Scraping</span>
+                    <div id="loader" class="loader"></div>
+                </button>
+            </div>
+            <div id="results" class="results-list"></div>
         </div>
-        <div class="scraper-panel">
-            <label style="display:block;margin-bottom:0.5rem;color:var(--text-muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:1px;">URLs de YouTube (una por línea)</label>
-            <textarea id="urlsInput" placeholder="https://www.youtube.com/watch?v=VIDEO_ID_1&#10;https://www.youtube.com/watch?v=VIDEO_ID_2&#10;https://www.youtube.com/watch?v=VIDEO_ID_3"></textarea>
-            <button class="btn-primary" id="scrapeBtn" onclick="startScraping()">
-                <span id="btnText">Iniciar Scraping</span>
-                <div id="loader" class="loader"></div>
-            </button>
-        </div>
-        <div id="results" class="results-list"></div>
-    </div>
 
-    <!-- ========== VIDEOS ========== -->
-    <div id="page-videos" class="page">
-        <div class="page-header">
-            <h2>Videos Scrapeados</h2>
-            <p>Todos los videos extraídos del canal Starter Story.</p>
+        <!-- ========== VIDEOS ========== -->
+        <div id="page-videos" class="page">
+            <div class="page-header">
+                <h2>Videos Scrapeados</h2>
+                <p>Todos los videos extraídos del canal Starter Story.</p>
+            </div>
+            <div class="placeholder-card">
+                <div class="placeholder-icon">🎬</div>
+                <h3>Módulo en construcción</h3>
+                <p>Aquí podrás explorar, filtrar y buscar todos los videos persistidos en la base de datos.</p>
+            </div>
         </div>
-        <div class="placeholder-card">
-            <div class="placeholder-icon">🎬</div>
-            <h3>Módulo en construcción</h3>
-            <p>Aquí podrás explorar, filtrar y buscar todos los videos persistidos en la base de datos.</p>
+
+        <!-- ========== PAIN POINTS ========== -->
+        <div id="page-painpoints" class="page">
+            <div class="page-header">
+                <h2>Pain Points LATAM</h2>
+                <p>Problemáticas reales del mercado latinoamericano documentadas con fuentes.</p>
+            </div>
+            <div class="placeholder-card">
+                <div class="placeholder-icon">📍</div>
+                <h3>Requiere clasificación IA</h3>
+                <p>Una vez conectado el LLM, este módulo extraerá y catalogará pain points reales desde las
+                    transcripciones de los videos.</p>
+            </div>
         </div>
-    </div>
 
-    <!-- ========== PAIN POINTS ========== -->
-    <div id="page-painpoints" class="page">
-        <div class="page-header">
-            <h2>Pain Points LATAM</h2>
-            <p>Problemáticas reales del mercado latinoamericano documentadas con fuentes.</p>
+        <!-- ========== WIZARD RPM ========== -->
+        <div id="page-wizard" class="page">
+            <div class="page-header">
+                <h2>Wizard RPM</h2>
+                <p>Define tu perfil de Resources, Process y Market paso a paso.</p>
+            </div>
+            <div class="placeholder-card">
+                <div class="placeholder-icon">🧭</div>
+                <h3>Flujo interactivo pendiente</h3>
+                <p>El Wizard te guiará por un flujo R → P → M para construir tu perfil personalizado. La IA lo
+                    interpretará y lo usará para generar soluciones a tu medida.</p>
+            </div>
         </div>
-        <div class="placeholder-card">
-            <div class="placeholder-icon">📍</div>
-            <h3>Requiere clasificación IA</h3>
-            <p>Una vez conectado el LLM, este módulo extraerá y catalogará pain points reales desde las transcripciones de los videos.</p>
+
+        <!-- ========== SOLUTIONS ========== -->
+        <div id="page-solutions" class="page">
+            <div class="page-header">
+                <h2>Motor de Soluciones</h2>
+                <p>Propuestas de negocio generadas desde videos reales y tu perfil RPM.</p>
+            </div>
+            <div class="placeholder-card">
+                <div class="placeholder-icon">💡</div>
+                <h3>Esperando perfil RPM y clasificación</h3>
+                <p>Este módulo generará al menos 4 propuestas con score de fit, dificultad, justificación y referencias
+                    a videos fuente.</p>
+            </div>
         </div>
-    </div>
 
-    <!-- ========== WIZARD RPM ========== -->
-    <div id="page-wizard" class="page">
-        <div class="page-header">
-            <h2>Wizard RPM</h2>
-            <p>Define tu perfil de Resources, Process y Market paso a paso.</p>
+        <!-- ========== MVT ========== -->
+        <div id="page-mvt" class="page">
+            <div class="page-header">
+                <h2>Validación MVT</h2>
+                <p>Minimum Viable Test — Valida tus soluciones con evidencia real.</p>
+            </div>
+            <div class="placeholder-card">
+                <div class="placeholder-icon">🧪</div>
+                <h3>Módulo de validación real</h3>
+                <p>Registra conversaciones reales, tests ejecutados y métricas para tomar la decisión final: Pivot,
+                    Proceed o Kill.</p>
+            </div>
         </div>
-        <div class="placeholder-card">
-            <div class="placeholder-icon">🧭</div>
-            <h3>Flujo interactivo pendiente</h3>
-            <p>El Wizard te guiará por un flujo R → P → M para construir tu perfil personalizado. La IA lo interpretará y lo usará para generar soluciones a tu medida.</p>
+
+        <!-- ========== SETTINGS ========== -->
+        <div id="page-settings" class="page">
+            <div class="page-header">
+                <h2>Ajustes</h2>
+                <p>Configuración de claves API y preferencias del sistema.</p>
+            </div>
+            <div class="placeholder-card">
+                <div class="placeholder-icon">⚙️</div>
+                <h3>Próximamente</h3>
+                <p>Configura tus claves de Apify, LLM, frecuencia de scraping y otros parámetros.</p>
+            </div>
         </div>
-    </div>
 
-    <!-- ========== SOLUTIONS ========== -->
-    <div id="page-solutions" class="page">
-        <div class="page-header">
-            <h2>Motor de Soluciones</h2>
-            <p>Propuestas de negocio generadas desde videos reales y tu perfil RPM.</p>
-        </div>
-        <div class="placeholder-card">
-            <div class="placeholder-icon">💡</div>
-            <h3>Esperando perfil RPM y clasificación</h3>
-            <p>Este módulo generará al menos 4 propuestas con score de fit, dificultad, justificación y referencias a videos fuente.</p>
-        </div>
-    </div>
+    </main>
 
-    <!-- ========== MVT ========== -->
-    <div id="page-mvt" class="page">
-        <div class="page-header">
-            <h2>Validación MVT</h2>
-            <p>Minimum Viable Test — Valida tus soluciones con evidencia real.</p>
-        </div>
-        <div class="placeholder-card">
-            <div class="placeholder-icon">🧪</div>
-            <h3>Módulo de validación real</h3>
-            <p>Registra conversaciones reales, tests ejecutados y métricas para tomar la decisión final: Pivot, Proceed o Kill.</p>
-        </div>
-    </div>
-
-    <!-- ========== SETTINGS ========== -->
-    <div id="page-settings" class="page">
-        <div class="page-header">
-            <h2>Ajustes</h2>
-            <p>Configuración de claves API y preferencias del sistema.</p>
-        </div>
-        <div class="placeholder-card">
-            <div class="placeholder-icon">⚙️</div>
-            <h3>Próximamente</h3>
-            <p>Configura tus claves de Apify, LLM, frecuencia de scraping y otros parámetros.</p>
-        </div>
-    </div>
-
-</main>
-
-<script>
-// ==================== NAVIGATION ====================
-document.querySelectorAll('.sidebar-item').forEach(item => {
-    item.addEventListener('click', () => {
-        const page = item.dataset.page;
-        if (!page || item.classList.contains('locked')) return;
-        // Update sidebar active
-        document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-        item.classList.add('active');
-        // Update page visibility
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById('page-' + page).classList.add('active');
-    });
-});
-
-// ==================== DASHBOARD STATS ====================
-async function loadDashboardStats() {
-    try {
-        const res = await fetch('/api/stats');
-        if (res.ok) {
-            const data = await res.json();
-            document.getElementById('stat-videos').textContent = data.videos ?? '—';
-            document.getElementById('stat-analyzed').textContent = data.analyzed ?? 0;
-            document.getElementById('stat-painpoints').textContent = data.pain_points ?? 0;
-            document.getElementById('stat-rpm').textContent = data.rpm_completed ? 'Sí' : '—';
-            document.getElementById('stat-solutions').textContent = data.solutions ?? 0;
-            if (data.last_run) {
-                const badge = data.last_run.status === 'completed' ? 'badge-success' : 'badge-error';
-                document.getElementById('last-run-info').innerHTML =
-                    `<div class="log-entry"><span class="badge ${badge}">${data.last_run.status}</span> ${data.last_run.completed_at || ''}</div>
-                     <div class="log-entry" style="margin-top:4px;">Encontrados: ${data.last_run.videos_found} &nbsp; Nuevos: ${data.last_run.videos_new} &nbsp; Actualizados: ${data.last_run.videos_updated}</div>`;
-            }
-        }
-    } catch(e) { /* Stats API not ready yet */ }
-}
-loadDashboardStats();
-
-// ==================== SCRAPER LOGIC ====================
-async function startScraping() {
-    const input = document.getElementById('urlsInput').value;
-    const urls = input.split('\n').map(u => u.trim()).filter(u => u);
-    if (urls.length === 0) return alert("Ingresa al menos una URL.");
-
-    const btn = document.getElementById('scrapeBtn');
-    const loader = document.getElementById('loader');
-    const btnText = document.getElementById('btnText');
-    const resultsDiv = document.getElementById('results');
-
-    btn.disabled = true;
-    loader.style.display = 'block';
-    btnText.innerText = 'Procesando...';
-    resultsDiv.innerHTML = '';
-
-    try {
-        const response = await fetch('/api/scrape', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ urls })
+    <script>
+        // ==================== NAVIGATION ====================
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const page = item.dataset.page;
+                if (!page || item.classList.contains('locked')) return;
+                // Update sidebar active
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                // Update page visibility
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById('page-' + page).classList.add('active');
+            });
         });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Error del servidor");
 
-        data.results.forEach(res => {
-            const div = document.createElement('div');
-            div.className = `result-item status-${res.status}`;
-            const color = res.status === 'success' ? 'var(--primary)' : (res.status === 'error' ? 'var(--danger)' : 'var(--info)');
-            div.innerHTML = `
+        // ==================== DASHBOARD STATS ====================
+        async function loadDashboardStats() {
+            try {
+                const res = await fetch('/api/stats');
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('stat-videos').textContent = data.videos ?? '—';
+                    document.getElementById('stat-analyzed').textContent = data.analyzed ?? 0;
+                    document.getElementById('stat-painpoints').textContent = data.pain_points ?? 0;
+                    document.getElementById('stat-rpm').textContent = data.rpm_completed ? 'Sí' : '—';
+                    document.getElementById('stat-solutions').textContent = data.solutions ?? 0;
+                    if (data.last_run) {
+                        const badge = data.last_run.status === 'completed' ? 'badge-success' : 'badge-error';
+                        document.getElementById('last-run-info').innerHTML =
+                            `<div class="log-entry"><span class="badge ${badge}">${data.last_run.status}</span> ${data.last_run.completed_at || ''}</div>
+                     <div class="log-entry" style="margin-top:4px;">Encontrados: ${data.last_run.videos_found} &nbsp; Nuevos: ${data.last_run.videos_new} &nbsp; Actualizados: ${data.last_run.videos_updated}</div>`;
+                    }
+                }
+            } catch (e) { /* Stats API not ready yet */ }
+        }
+        loadDashboardStats();
+
+        // ==================== SCRAPER LOGIC ====================
+        async function startScraping() {
+            const input = document.getElementById('urlsInput').value;
+            const urls = input.split('\n').map(u => u.trim()).filter(u => u);
+            if (urls.length === 0) return alert("Ingresa al menos una URL.");
+
+            const btn = document.getElementById('scrapeBtn');
+            const loader = document.getElementById('loader');
+            const btnText = document.getElementById('btnText');
+            const resultsDiv = document.getElementById('results');
+
+            btn.disabled = true;
+            loader.style.display = 'block';
+            btnText.innerText = 'Procesando...';
+            resultsDiv.innerHTML = '';
+
+            try {
+                const response = await fetch('/api/scrape', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ urls })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || "Error del servidor");
+
+                data.results.forEach(res => {
+                    const div = document.createElement('div');
+                    div.className = `result-item status-${res.status}`;
+                    const color = res.status === 'success' ? 'var(--primary)' : (res.status === 'error' ? 'var(--danger)' : 'var(--info)');
+                    div.innerHTML = `
                 <div style="max-width:80%;">
                     <strong>${res.title || res.url}</strong><br>
                     <small style="color:var(--text-muted);word-break:break-all;">${res.message || ''}</small>
                 </div>
                 <span style="font-weight:700;text-transform:uppercase;font-size:12px;color:${color};">${res.status}</span>`;
-            resultsDiv.appendChild(div);
-        });
-        loadDashboardStats();
-    } catch (error) {
-        resultsDiv.innerHTML = `<div class="result-item status-error">
+                    resultsDiv.appendChild(div);
+                });
+                loadDashboardStats();
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="result-item status-error">
             <div><strong>Error:</strong><br><small>${error.message}</small></div></div>`;
-    } finally {
-        btn.disabled = false;
-        loader.style.display = 'none';
-        btnText.innerText = 'Iniciar Scraping';
-    }
-}
-</script>
+            } finally {
+                btn.disabled = false;
+                loader.style.display = 'none';
+                btnText.innerText = 'Iniciar Scraping';
+            }
+        }
+    </script>
 </body>
+
 </html>
