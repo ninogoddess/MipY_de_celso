@@ -24,9 +24,10 @@
 - [ ] Scripts mínimos de handshake en `tools/`
 
 ## Phase 3: A — Architect (3-Layer Build)
-- [ ] Layer 1: SOPs en `architecture/`
-- [ ] Layer 2: Navegación y routing de decisiones
-- [ ] Layer 3: Scripts determinísticos en `tools/`
+- [x] Layer 3: Creación de API Serverless para Vercel (`api/scrape.py`)
+- [x] UI: Dashboard interactivo para disparo de extracción
+- [ ] Layer 1: SOPs en `architecture/` (Reglas de cómo el LLM clasificará los videos y aislará Pain Points)
+- [ ] Layer 2: Navegación/Routing (Automatización por CRON en lugar de botón manual)
 
 ## Phase 4: S — Stylize (Refinement & UI)
 - [ ] Formatear payloads de salida
@@ -38,4 +39,4 @@
 - [ ] Configurar triggers de automatización (Vercel cron jobs)
 - [ ] Documentación final en `gemini.md`
 
-> 🚧 **STATUS:** Phase 2 en progreso. Recopilando `.env` keys.
+> 🚧 **STATUS:** Phase 3 en progreso. Despliegue de Interfaz Vercel y pausa técnica en módulo LLM.
