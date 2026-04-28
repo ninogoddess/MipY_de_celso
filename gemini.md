@@ -96,7 +96,8 @@
 |-------|--------|-------|
 | 2026-04-21 | Inicialización del documento | System Pilot |
 | 2026-04-21 | Adición de Input y Output Schemas | System Pilot |
+| 2026-04-27 | Diseño DB: 14 tablas, 3 capas, SQL migration 001 | System Pilot |
 
 ---
 
-> Última actualización: 2026-04-21
+> Última actualización: 2026-04-27
