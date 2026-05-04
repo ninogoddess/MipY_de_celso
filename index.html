@@ -163,10 +163,8 @@
                 <h2>Videos Scrapeados</h2>
                 <p>Todos los videos extraídos del canal Starter Story.</p>
             </div>
-            <div class="placeholder-card">
-                <div class="placeholder-icon">🎬</div>
-                <h3>Módulo en construcción</h3>
-                <p>Aquí podrás explorar, filtrar y buscar todos los videos persistidos en la base de datos.</p>
+            <div id="videos-container" class="videos-grid">
+                <div class="loader" id="videos-loader" style="display:block; margin: 2rem auto;"></div>
             </div>
         </div>
 
@@ -243,6 +241,7 @@
 
     <script>
         // ==================== NAVIGATION ====================
+        let videosLoaded = false;
         document.querySelectorAll('.sidebar-item').forEach(item => {
             item.addEventListener('click', () => {
                 const page = item.dataset.page;
@@ -253,6 +252,12 @@
                 // Update page visibility
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
                 document.getElementById('page-' + page).classList.add('active');
+                
+                // Cargar videos solo cuando se entra a la vista y si no se han cargado antes
+                if (page === 'videos' && !videosLoaded) {
+                    loadVideos();
+                    videosLoaded = true;
+                }
             });
         });
 
@@ -323,6 +328,42 @@
                 btn.disabled = false;
                 loader.style.display = 'none';
                 btnText.innerText = 'Iniciar Scraping';
+            }
+        }
+
+        // ==================== VIDEOS LOGIC ====================
+        async function loadVideos() {
+            const container = document.getElementById('videos-container');
+            const loader = document.getElementById('videos-loader');
+            
+            try {
+                const res = await fetch('/api/videos');
+                const data = await res.json();
+                
+                if (!res.ok) throw new Error(data.error);
+                
+                container.innerHTML = ''; // Limpiar loader
+                
+                if (data.videos.length === 0) {
+                    container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem;">Aún no hay videos scrapeados. Usa la pestaña "Scraper" para agregar algunos.</div>`;
+                    return;
+                }
+
+                data.videos.forEach(video => {
+                    const card = document.createElement('div');
+                    card.className = 'video-card';
+                    card.innerHTML = `
+                        <img src="${video.thumbnail_url || 'https://via.placeholder.com/320x180?text=Sin+miniatura'}" alt="Thumbnail" loading="lazy">
+                        <div class="video-card-content">
+                            <h4>${video.title || 'Sin Título'}</h4>
+                            <a href="${video.url}" target="_blank">Ver en YouTube ↗</a>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+                
+            } catch(err) {
+                container.innerHTML = `<div style="grid-column: 1/-1; color: var(--danger); text-align: center;">Error cargando videos: ${err.message}</div>`;
             }
         }
     </script>
