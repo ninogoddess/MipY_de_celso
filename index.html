@@ -169,18 +169,22 @@
         </div>
 
         <!-- ========== PAIN POINTS ========== -->
-        <div id="page-painpoints" class="page">
-            <div class="page-header">
-                <h2>Pain Points LATAM</h2>
-                <p>Problemáticas reales del mercado latinoamericano documentadas con fuentes.</p>
-            </div>
-            <div class="placeholder-card">
-                <div class="placeholder-icon">📍</div>
-                <h3>Requiere clasificación IA</h3>
-                <p>Una vez conectado el LLM, este módulo extraerá y catalogará pain points reales desde las
-                    transcripciones de los videos.</p>
-            </div>
+    <div id="page-painpoints" class="page">
+        <div class="page-header">
+            <h2>Pain Points & Modelos de Negocio</h2>
+            <p>Extracción semántica de transcripciones usando DeepSeek (OpenRouter).</p>
         </div>
+        
+        <div class="scraper-panel" style="margin-bottom: 2rem;">
+            <p style="margin-bottom: 1rem; color: var(--text-muted);">El sistema buscará una transcripción pendiente en la base de datos y la clasificará usando IA.</p>
+            <button class="btn-primary" id="classifyBtn" onclick="startClassification()" style="background-color: var(--secondary); color: #fff;">
+                <span id="classifyBtnText">Clasificar Siguiente Video</span>
+                <div id="classifyLoader" class="loader"></div>
+            </button>
+        </div>
+
+        <div id="classification-results" class="results-list"></div>
+    </div>
 
         <!-- ========== WIZARD RPM ========== -->
         <div id="page-wizard" class="page">
@@ -241,25 +245,27 @@
 
     <script>
         // ==================== NAVIGATION ====================
-        let videosLoaded = false;
-        document.querySelectorAll('.sidebar-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const page = item.dataset.page;
-                if (!page || item.classList.contains('locked')) return;
-                // Update sidebar active
-                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                // Update page visibility
-                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-                document.getElementById('page-' + page).classList.add('active');
-                
-                // Cargar videos solo cuando se entra a la vista y si no se han cargado antes
-                if (page === 'videos' && !videosLoaded) {
-                    loadVideos();
-                    videosLoaded = true;
-                }
-            });
-        });
+let videosLoaded = false;
+document.querySelectorAll('.sidebar-item').forEach(item => {
+    item.addEventListener('click', () => {
+        const page = item.dataset.page;
+        // Quitar la restricción "locked" temporalmente para la pestaña de painpoints
+        if (!page || (item.classList.contains('locked') && page !== 'painpoints')) return;
+        
+        // Update sidebar active
+        document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        // Update page visibility
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById('page-' + page).classList.add('active');
+        
+        // Cargar videos solo cuando se entra a la vista y si no se han cargado antes
+        if (page === 'videos' && !videosLoaded) {
+            loadVideos();
+            videosLoaded = true;
+        }
+    });
+});
 
         // ==================== DASHBOARD STATS ====================
         async function loadDashboardStats() {
@@ -352,10 +358,28 @@
                 data.videos.forEach(video => {
                     const card = document.createElement('div');
                     card.className = 'video-card';
+                    
+                    // Extraer ID real para la miniatura
+                    let yt_id = video.video_id;
+                    if (video.url.includes('v=')) {
+                        yt_id = video.url.split('v=')[1].split('&')[0];
+                    } else if (video.url.includes('youtu.be/')) {
+                        yt_id = video.url.split('youtu.be/')[1].split('?')[0];
+                    }
+                    
+                    // YouTube siempre guarda miniaturas en esta ruta pública
+                    const thumbUrl = `https://img.youtube.com/vi/${yt_id}/hqdefault.jpg`;
+                    
+                    // Limpiar el título si la BD no lo trajo correctamente
+                    let displayTitle = video.title || 'Sin Título';
+                    if (displayTitle.startsWith('Video ') && displayTitle.length < 20) {
+                        displayTitle = 'Episodio de Starter Story (' + yt_id + ')';
+                    }
+
                     card.innerHTML = `
-                        <img src="${video.thumbnail_url || 'https://via.placeholder.com/320x180?text=Sin+miniatura'}" alt="Thumbnail" loading="lazy">
+                        <img src="${thumbUrl}" alt="Thumbnail" loading="lazy">
                         <div class="video-card-content">
-                            <h4>${video.title || 'Sin Título'}</h4>
+                            <h4 title="${displayTitle}">${displayTitle}</h4>
                             <a href="${video.url}" target="_blank">Ver en YouTube ↗</a>
                         </div>
                     `;
@@ -364,6 +388,51 @@
                 
             } catch(err) {
                 container.innerHTML = `<div style="grid-column: 1/-1; color: var(--danger); text-align: center;">Error cargando videos: ${err.message}</div>`;
+            }
+        }
+
+        // ==================== CLASSIFICATION LOGIC ====================
+        async function startClassification() {
+            const btn = document.getElementById('classifyBtn');
+            const loader = document.getElementById('classifyLoader');
+            const btnText = document.getElementById('classifyBtnText');
+            const resultsDiv = document.getElementById('classification-results');
+
+            btn.disabled = true;
+            loader.style.display = 'block';
+            btnText.innerText = 'Analizando con DeepSeek...';
+
+            try {
+                const response = await fetch('/api/classify', { method: 'POST' });
+                const data = await response.json();
+                
+                if (!response.ok) throw new Error(data.error);
+                
+                const div = document.createElement('div');
+                
+                if (data.status === 'completed') {
+                    div.className = `result-item status-skipped`;
+                    div.innerHTML = `<strong>${data.message}</strong>`;
+                } else {
+                    div.className = `result-item status-success`;
+                    div.innerHTML = `
+                        <div style="width: 100%;">
+                            <strong style="color: var(--primary);">Video ID Clasificado: ${data.video_id}</strong><br>
+                            <pre style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; margin-top: 10px; color: var(--text); overflow-x: auto; font-family: monospace; font-size: 13px; border: 1px solid var(--border);">${JSON.stringify(data.extracted, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+                resultsDiv.prepend(div);
+                loadDashboardStats(); // Actualizar el contador de 'Analizados' en el dashboard
+            } catch (error) {
+                const div = document.createElement('div');
+                div.className = `result-item status-error`;
+                div.innerHTML = `<div><strong>Error:</strong><br><small>${error.message}</small></div>`;
+                resultsDiv.prepend(div);
+            } finally {
+                btn.disabled = false;
+                loader.style.display = 'none';
+                btnText.innerText = 'Clasificar Siguiente Video';
             }
         }
     </script>
