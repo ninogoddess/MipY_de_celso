@@ -393,9 +393,18 @@ body {
 @media (max-width: 768px) {
     .sidebar { width: 60px; padding: 1rem 0; }
     .sidebar-logo span, .sidebar-section-title, .sidebar-item span:not(.icon) { display: none; }
-    .main { margin-left: 60px; padding: 1.5rem; }
+    .main { margin-left: 60px; padding: 1.5rem; width: calc(100% - 60px); }
     .stats-grid { grid-template-columns: repeat(2, 1fr); }
     .info-grid { grid-template-columns: 1fr; }
+    .scraper-panel { padding: 1.25rem; }
+    .page-header h2 { font-size: 20px; }
+}
+
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    word-break: break-all;
+    max-width: 100%;
 }
 
 /* =============================================
