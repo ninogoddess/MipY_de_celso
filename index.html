@@ -169,26 +169,30 @@
         </div>
 
         <!-- ========== PAIN POINTS ========== -->
-    <div id="page-painpoints" class="page">
-        <div class="page-header">
-            <h2>Pain Points & Modelos de Negocio</h2>
-            <p>Extracción semántica de transcripciones usando DeepSeek (OpenRouter).</p>
-        </div>
-        
-        <div class="scraper-panel" style="margin-bottom: 2rem;">
-            <p style="margin-bottom: 1rem; color: var(--text-muted);">El sistema buscará una transcripción pendiente en la base de datos y la clasificará usando IA.</p>
-            <button class="btn-primary" id="classifyBtn" onclick="startClassification()" style="background-color: var(--secondary); color: #fff;">
-                <span id="classifyBtnText">Clasificar Siguiente Video</span>
-                <div id="classifyLoader" class="loader"></div>
-            </button>
-            <div id="classification-results" class="results-list"></div>
-        </div>
+        <div id="page-painpoints" class="page">
+            <div class="page-header">
+                <h2>Pain Points & Modelos de Negocio</h2>
+                <p>Extracción semántica de transcripciones usando DeepSeek (OpenRouter).</p>
+            </div>
 
-        <h3 style="margin-bottom: 1rem; font-size: 18px; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Galería de Modelos y Pain Points</h3>
-        <div id="classifications-container" class="videos-grid">
-            <div class="loader" id="classifications-loader" style="display:block; margin: 2rem auto;"></div>
+            <div class="scraper-panel" style="margin-bottom: 2rem;">
+                <p style="margin-bottom: 1rem; color: var(--text-muted);">El sistema buscará una transcripción pendiente
+                    en la base de datos y la clasificará usando IA.</p>
+                <button class="btn-primary" id="classifyBtn" onclick="startClassification()"
+                    style="background-color: var(--secondary); color: #fff;">
+                    <span id="classifyBtnText">Clasificar Siguiente Video</span>
+                    <div id="classifyLoader" class="loader"></div>
+                </button>
+                <div id="classification-results" class="results-list"></div>
+            </div>
+
+            <h3
+                style="margin-bottom: 1rem; font-size: 18px; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+                Galería de Modelos y Pain Points</h3>
+            <div id="classifications-container" class="videos-grid">
+                <div class="loader" id="classifications-loader" style="display:block; margin: 2rem auto;"></div>
+            </div>
         </div>
-    </div>
 
         <!-- ========== WIZARD RPM ========== -->
         <div id="page-wizard" class="page">
@@ -254,7 +258,7 @@
             canvas.width = 64;
             canvas.height = 64;
             const ctx = canvas.getContext('2d');
-            
+
             const img = new Image();
             img.src = imgSrc;
             img.onload = () => {
@@ -263,13 +267,13 @@
                 ctx.arc(32, 32, 32, 0, Math.PI * 2);
                 ctx.closePath();
                 ctx.clip();
-                
+
                 // Dibujar la imagen dentro del círculo (asegurando object-fit cover manual)
                 const size = Math.min(img.width, img.height);
                 const x = (img.width - size) / 2;
                 const y = (img.height - size) / 2;
                 ctx.drawImage(img, x, y, size, size, 0, 0, 64, 64);
-                
+
                 // Aplicar como favicon
                 let link = document.querySelector("link[rel~='icon']");
                 if (!link) {
@@ -280,37 +284,37 @@
                 link.href = canvas.toDataURL('image/png');
             };
         }
-        
+
         // Ejecutar al cargar
-        setCircleFavicon('/assets/logo.png');
+        setCircleFavicon('/assets/logo_principal.png');
 
         // ==================== NAVIGATION ====================
-let videosLoaded = false;
-let classificationsLoaded = false;
-document.querySelectorAll('.sidebar-item').forEach(item => {
-    item.addEventListener('click', () => {
-        const page = item.dataset.page;
-        // Quitar la restricción "locked" temporalmente para la pestaña de painpoints
-        if (!page || (item.classList.contains('locked') && page !== 'painpoints')) return;
-        
-        // Update sidebar active
-        document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-        item.classList.add('active');
-        // Update page visibility
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById('page-' + page).classList.add('active');
-        
-        // Cargar datos correspondientes al cambiar de vista
-        if (page === 'videos' && !videosLoaded) {
-            loadVideos();
-            videosLoaded = true;
-        }
-        if (page === 'painpoints' && !classificationsLoaded) {
-            loadClassifications();
-            classificationsLoaded = true;
-        }
-    });
-});
+        let videosLoaded = false;
+        let classificationsLoaded = false;
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const page = item.dataset.page;
+                // Quitar la restricción "locked" temporalmente para la pestaña de painpoints
+                if (!page || (item.classList.contains('locked') && page !== 'painpoints')) return;
+
+                // Update sidebar active
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                // Update page visibility
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById('page-' + page).classList.add('active');
+
+                // Cargar datos correspondientes al cambiar de vista
+                if (page === 'videos' && !videosLoaded) {
+                    loadVideos();
+                    videosLoaded = true;
+                }
+                if (page === 'painpoints' && !classificationsLoaded) {
+                    loadClassifications();
+                    classificationsLoaded = true;
+                }
+            });
+        });
 
         // ==================== DASHBOARD STATS ====================
         async function loadDashboardStats() {
@@ -386,15 +390,15 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
         async function loadVideos() {
             const container = document.getElementById('videos-container');
             const loader = document.getElementById('videos-loader');
-            
+
             try {
                 const res = await fetch('/api/videos');
                 const data = await res.json();
-                
+
                 if (!res.ok) throw new Error(data.error);
-                
+
                 container.innerHTML = ''; // Limpiar loader
-                
+
                 if (data.videos.length === 0) {
                     container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem;">Aún no hay videos scrapeados. Usa la pestaña "Scraper" para agregar algunos.</div>`;
                     return;
@@ -403,7 +407,7 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
                 data.videos.forEach(video => {
                     const card = document.createElement('div');
                     card.className = 'video-card';
-                    
+
                     // Extraer ID real para la miniatura
                     let yt_id = video.video_id;
                     if (video.url.includes('v=')) {
@@ -411,10 +415,10 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
                     } else if (video.url.includes('youtu.be/')) {
                         yt_id = video.url.split('youtu.be/')[1].split('?')[0];
                     }
-                    
+
                     // YouTube siempre guarda miniaturas en esta ruta pública
                     const thumbUrl = `https://img.youtube.com/vi/${yt_id}/hqdefault.jpg`;
-                    
+
                     // Limpiar el título si la BD no lo trajo correctamente
                     let displayTitle = video.title || 'Sin Título';
                     if (displayTitle.startsWith('Video ') && displayTitle.length < 20) {
@@ -430,8 +434,8 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
                     `;
                     container.appendChild(card);
                 });
-                
-            } catch(err) {
+
+            } catch (err) {
                 container.innerHTML = `<div style="grid-column: 1/-1; color: var(--danger); text-align: center;">Error cargando videos: ${err.message}</div>`;
             }
         }
@@ -450,11 +454,11 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
             try {
                 const response = await fetch('/api/classify', { method: 'POST' });
                 const data = await response.json();
-                
+
                 if (!response.ok) throw new Error(data.error);
-                
+
                 const div = document.createElement('div');
-                
+
                 if (data.status === 'completed') {
                     div.className = `result-item status-skipped`;
                     div.innerHTML = `<strong>${data.message}</strong>`;
@@ -486,15 +490,15 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
         async function loadClassifications() {
             const container = document.getElementById('classifications-container');
             const loader = document.getElementById('classifications-loader');
-            
+
             try {
                 const res = await fetch('/api/classifications');
                 const data = await res.json();
-                
+
                 if (!res.ok) throw new Error(data.error);
-                
+
                 container.innerHTML = '';
-                
+
                 if (data.classifications.length === 0) {
                     container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem;">Aún no hay videos clasificados.</div>`;
                     return;
@@ -505,7 +509,7 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
                     card.className = 'video-card';
                     card.style.display = 'flex';
                     card.style.flexDirection = 'column';
-                    
+
                     const video = item.videos || {};
                     let yt_id = video.video_id || '';
                     const thumbUrl = yt_id ? `https://img.youtube.com/vi/${yt_id}/hqdefault.jpg` : 'https://via.placeholder.com/320x180?text=No+Video';
@@ -538,8 +542,8 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
                     `;
                     container.appendChild(card);
                 });
-                
-            } catch(err) {
+
+            } catch (err) {
                 container.innerHTML = `<div style="grid-column: 1/-1; color: var(--danger); text-align: center;">Error cargando galería: ${err.message}</div>`;
             }
         }

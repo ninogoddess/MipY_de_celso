@@ -28,8 +28,8 @@ class handler(BaseHTTPRequestHandler):
             cls_resp = sb.table("video_classifications").select("video_id").execute()
             classified_ids = [c["video_id"] for c in cls_resp.data] if cls_resp.data else []
 
-            # Paso 2: Obtener transcripciones (max 10 para probar)
-            query = sb.table("transcriptions").select("video_id, full_text").limit(10).execute()
+            # Paso 2: Obtener transcripciones (sin límite tan restrictivo)
+            query = sb.table("transcriptions").select("video_id, full_text").limit(500).execute()
             unclassified = None
             for t in query.data:
                 if t["video_id"] not in classified_ids:
@@ -128,7 +128,6 @@ Si la transcripción es irrelevante o incompleta, devuelve:
                 b_model_type = extracted.get("business_model")
 
             # Guardamos en base de datos.
-            # Mapeamos "confidence_score" a "latam_relevance_score" temporalmente y todo el JSON a key_insights
             sb.table("video_classifications").insert({
                 "video_id": video_id,
                 "business_model": b_model_type,
@@ -136,6 +135,18 @@ Si la transcripción es irrelevante o incompleta, devuelve:
                 "model_used": payload["model"],
                 "prompt_version": "v1_hu_06"
             }).execute()
+
+            # Insertamos explícitamente los Pain Points en su propia tabla para el Dashboard
+            pain_points_array = extracted.get("latam_pain_points", [])
+            if isinstance(pain_points_array, list):
+                for pp in pain_points_array:
+                    if isinstance(pp, dict) and pp.get("pain_point"):
+                        sb.table("latam_pain_points").insert({
+                            "description": pp.get("pain_point"),
+                            "impact_level": "Medium",
+                            "evidence": pp.get("latam_context_adaptation"),
+                            "source_video_id": video_id
+                        }).execute()
 
             self._send(200, {
                 "message": "Clasificacion exitosa",
