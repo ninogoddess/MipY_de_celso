@@ -181,9 +181,13 @@
                 <span id="classifyBtnText">Clasificar Siguiente Video</span>
                 <div id="classifyLoader" class="loader"></div>
             </button>
+            <div id="classification-results" class="results-list"></div>
         </div>
 
-        <div id="classification-results" class="results-list"></div>
+        <h3 style="margin-bottom: 1rem; font-size: 18px; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Galería de Modelos y Pain Points</h3>
+        <div id="classifications-container" class="videos-grid">
+            <div class="loader" id="classifications-loader" style="display:block; margin: 2rem auto;"></div>
+        </div>
     </div>
 
         <!-- ========== WIZARD RPM ========== -->
@@ -246,6 +250,7 @@
     <script>
         // ==================== NAVIGATION ====================
 let videosLoaded = false;
+let classificationsLoaded = false;
 document.querySelectorAll('.sidebar-item').forEach(item => {
     item.addEventListener('click', () => {
         const page = item.dataset.page;
@@ -259,10 +264,14 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById('page-' + page).classList.add('active');
         
-        // Cargar videos solo cuando se entra a la vista y si no se han cargado antes
+        // Cargar datos correspondientes al cambiar de vista
         if (page === 'videos' && !videosLoaded) {
             loadVideos();
             videosLoaded = true;
+        }
+        if (page === 'painpoints' && !classificationsLoaded) {
+            loadClassifications();
+            classificationsLoaded = true;
         }
     });
 });
@@ -424,6 +433,7 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
                 }
                 resultsDiv.prepend(div);
                 loadDashboardStats(); // Actualizar el contador de 'Analizados' en el dashboard
+                loadClassifications(); // Refrescar la galería automáticamente
             } catch (error) {
                 const div = document.createElement('div');
                 div.className = `result-item status-error`;
@@ -433,6 +443,68 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
                 btn.disabled = false;
                 loader.style.display = 'none';
                 btnText.innerText = 'Clasificar Siguiente Video';
+            }
+        }
+
+        // ==================== CLASSIFICATIONS GALLERY LOGIC ====================
+        async function loadClassifications() {
+            const container = document.getElementById('classifications-container');
+            const loader = document.getElementById('classifications-loader');
+            
+            try {
+                const res = await fetch('/api/classifications');
+                const data = await res.json();
+                
+                if (!res.ok) throw new Error(data.error);
+                
+                container.innerHTML = '';
+                
+                if (data.classifications.length === 0) {
+                    container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem;">Aún no hay videos clasificados.</div>`;
+                    return;
+                }
+
+                data.classifications.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'video-card';
+                    card.style.display = 'flex';
+                    card.style.flexDirection = 'column';
+                    
+                    const video = item.videos || {};
+                    let yt_id = video.video_id || '';
+                    const thumbUrl = yt_id ? `https://img.youtube.com/vi/${yt_id}/hqdefault.jpg` : 'https://via.placeholder.com/320x180?text=No+Video';
+                    const displayTitle = video.title || 'Sin Título';
+                    const key_insights = item.key_insights || {};
+
+                    let painPointsHtml = '';
+                    if (key_insights.latam_pain_points && Array.isArray(key_insights.latam_pain_points)) {
+                        key_insights.latam_pain_points.forEach(pp => {
+                            painPointsHtml += `<div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; margin-top: 8px; font-size: 11px;">
+                                <strong style="color: var(--primary);">${pp.pain_point}</strong><br>
+                                <span style="color: var(--text-muted);">${pp.latam_context_adaptation}</span>
+                            </div>`;
+                        });
+                    }
+
+                    card.innerHTML = `
+                        <img src="${thumbUrl}" alt="Thumbnail" loading="lazy" style="height: 140px;">
+                        <div class="video-card-content" style="flex: 1; display: flex; flex-direction: column;">
+                            <h4 title="${displayTitle}" style="border-bottom: 1px solid var(--border); padding-bottom: 8px;">${displayTitle}</h4>
+                            <div style="font-size: 12px; margin-top: 8px;">
+                                <strong>Modelo de Negocio:</strong><br>
+                                <span style="color: var(--text-muted);">${item.business_model || key_insights.business_model?.type || 'N/A'}</span>
+                            </div>
+                            <div style="margin-top: 12px; flex: 1;">
+                                <strong>Pain Points (LATAM):</strong>
+                                ${painPointsHtml || '<div style="color: var(--text-muted); font-size: 11px;">No se extrajeron pain points.</div>'}
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+                
+            } catch(err) {
+                container.innerHTML = `<div style="grid-column: 1/-1; color: var(--danger); text-align: center;">Error cargando galería: ${err.message}</div>`;
             }
         }
     </script>

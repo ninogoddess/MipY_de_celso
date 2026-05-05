@@ -97,7 +97,7 @@ Si la transcripción es irrelevante o incompleta, devuelve:
             }
             
             payload = {
-                "model": "deepseek/deepseek-chat:free",
+                "model": "deepseek/deepseek-r1:free",
                 "messages": [
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
