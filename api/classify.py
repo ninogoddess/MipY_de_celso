@@ -106,9 +106,20 @@ Si la transcripción es irrelevante o incompleta, devuelve:
             }
 
             response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
+            
+            # Lógica de Fallback a OpenAI si falla OpenRouter o hay límite 429
             if response.status_code != 200:
-                self._send(500, {"error": f"Error de OpenRouter: {response.text}"})
-                return
+                OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+                if response.status_code == 429 and OPENAI_API_KEY:
+                    headers_oai = {"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"}
+                    payload["model"] = "gpt-4o-mini"
+                    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers_oai, json=payload)
+                    if response.status_code != 200:
+                        self._send(500, {"error": f"Fallo OpenRouter y OpenAI Fallback: {response.text}"})
+                        return
+                else:
+                    self._send(500, {"error": f"Error de OpenRouter: {response.text}"})
+                    return
                 
             result_data = response.json()
             content = result_data["choices"][0]["message"]["content"]

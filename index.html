@@ -172,18 +172,25 @@
         <div id="page-painpoints" class="page">
             <div class="page-header">
                 <h2>Pain Points & Modelos de Negocio</h2>
-                <p>Extracción semántica de transcripciones usando DeepSeek (OpenRouter).</p>
+                <p>Extracción semántica de transcripciones usando LLM.</p>
             </div>
 
             <div class="scraper-panel" style="margin-bottom: 2rem;">
                 <p style="margin-bottom: 1rem; color: var(--text-muted);">El sistema buscará una transcripción pendiente
                     en la base de datos y la clasificará usando IA.</p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <button class="btn-primary" id="classifyBtn" onclick="startClassification()"
-                    style="background-color: var(--secondary); color: #fff;">
+                    style="background-color: var(--secondary); color: #fff; flex: 1;">
                     <span id="classifyBtnText">Clasificar Siguiente Video</span>
                     <div id="classifyLoader" class="loader"></div>
                 </button>
-                <div id="classification-results" class="results-list"></div>
+                <button class="btn-primary" id="summarizeBtn" onclick="summarizePainPoints()"
+                    style="background-color: var(--info); color: #fff; flex: 1;">
+                    <span id="summarizeBtnText">Resumir Pain Points (LLM)</span>
+                    <div id="summarizeLoader" class="loader"></div>
+                </button>
+            </div>
+            <div id="classification-results" class="results-list"></div>
             </div>
 
             <h3
@@ -198,13 +205,22 @@
         <div id="page-wizard" class="page">
             <div class="page-header">
                 <h2>Wizard RPM</h2>
-                <p>Define tu perfil de Resources, Process y Market paso a paso.</p>
+                <p>Conversación estratégica para definir tu perfil y cruzarlo con oportunidades LATAM.</p>
             </div>
-            <div class="placeholder-card">
-                <div class="placeholder-icon">🧭</div>
-                <h3>Flujo interactivo pendiente</h3>
-                <p>El Wizard te guiará por un flujo R → P → M para construir tu perfil personalizado. La IA lo
-                    interpretará y lo usará para generar soluciones a tu medida.</p>
+            
+            <div class="scraper-panel" style="display: flex; flex-direction: column; gap: 1rem; height: 60vh; max-height: 600px;">
+                <div id="chat-history" style="flex: 1; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: var(--radius); padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; border: 1px solid var(--border);">
+                    <div style="color: var(--primary); text-align: center; margin-top: auto; margin-bottom: auto;">
+                        <strong>Inicia la conversación para construir tu Perfil RPM y Plan de Acción.</strong><br>
+                        <small style="color: var(--text-muted);">Escribe "Hola" para comenzar el proceso.</small>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="chat-input" placeholder="Escribe tu respuesta aquí..." 
+                        style="flex: 1; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: var(--text); padding: 1rem; border-radius: var(--radius); outline: none;">
+                    <button class="btn-primary" id="sendChatBtn" onclick="sendChatMessage()" style="width: auto;">Enviar</button>
+                </div>
             </div>
         </div>
 
@@ -294,8 +310,8 @@
         document.querySelectorAll('.sidebar-item').forEach(item => {
             item.addEventListener('click', () => {
                 const page = item.dataset.page;
-                // Quitar la restricción "locked" temporalmente para la pestaña de painpoints
-                if (!page || (item.classList.contains('locked') && page !== 'painpoints')) return;
+                // Quitar la restricción locked temporalmente también para wizard
+                if (!page || (item.classList.contains('locked') && page !== 'painpoints' && page !== 'wizard')) return;
 
                 // Update sidebar active
                 document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
@@ -449,7 +465,7 @@
 
             btn.disabled = true;
             loader.style.display = 'block';
-            btnText.innerText = 'Analizando con DeepSeek...';
+            btnText.innerText = 'Analizando con LLM...';
 
             try {
                 const response = await fetch('/api/classify', { method: 'POST' });
@@ -545,6 +561,138 @@
 
             } catch (err) {
                 container.innerHTML = `<div style="grid-column: 1/-1; color: var(--danger); text-align: center;">Error cargando galería: ${err.message}</div>`;
+            }
+        }
+
+        // ==================== SUMMARIZE LOGIC ====================
+        async function summarizePainPoints() {
+            const btn = document.getElementById('summarizeBtn');
+            const loader = document.getElementById('summarizeLoader');
+            const btnText = document.getElementById('summarizeBtnText');
+            const resultsDiv = document.getElementById('classification-results');
+
+            btn.disabled = true;
+            loader.style.display = 'block';
+            btnText.innerText = 'Generando resumen...';
+
+            try {
+                const response = await fetch('/api/summarize_painpoints', { method: 'POST' });
+                const data = await response.json();
+                
+                if (!response.ok) throw new Error(data.error);
+                
+                const div = document.createElement('div');
+                div.className = `result-item status-success`;
+                div.innerHTML = `
+                    <div style="width: 100%;">
+                        <strong style="color: var(--info);">Resumen del Mercado Generado</strong><br>
+                        <pre style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; margin-top: 10px; color: var(--text); overflow-x: auto; font-family: monospace; font-size: 13px; border: 1px solid var(--border); white-space: pre-wrap;">${data.summary}</pre>
+                    </div>
+                `;
+                resultsDiv.prepend(div);
+            } catch (error) {
+                const div = document.createElement('div');
+                div.className = `result-item status-error`;
+                div.innerHTML = `<div><strong>Error:</strong><br><small>${error.message}</small></div>`;
+                resultsDiv.prepend(div);
+            } finally {
+                btn.disabled = false;
+                loader.style.display = 'none';
+                btnText.innerText = 'Resumir Pain Points (LLM)';
+            }
+        }
+
+        // ==================== WIZARD CHAT LOGIC ====================
+        const chatInput = document.getElementById('chat-input');
+        chatInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') sendChatMessage();
+        });
+
+        async function sendChatMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            const chatHistory = document.getElementById('chat-history');
+            
+            // Si es el primer mensaje, limpiamos el historial inicial
+            if(chatHistory.innerHTML.includes('Inicia la conversación para construir tu Perfil RPM')) {
+                chatHistory.innerHTML = '';
+            }
+
+            // Añadir mensaje del usuario
+            chatHistory.innerHTML += `
+                <div style="align-self: flex-end; background: var(--primary); color: #000; padding: 10px 15px; border-radius: 15px 15px 0px 15px; max-width: 80%; margin-bottom: 10px;">
+                    ${text}
+                </div>
+            `;
+            chatInput.value = '';
+            
+            // Scroll to bottom
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            // Mostrar estado de "escribiendo"
+            const typingId = 'typing-' + Date.now();
+            chatHistory.innerHTML += `
+                <div id="${typingId}" style="align-self: flex-start; background: rgba(255,255,255,0.1); color: var(--text); padding: 10px 15px; border-radius: 15px 15px 15px 0px; max-width: 80%; margin-bottom: 10px;">
+                    <div class="loader" style="display:inline-block; width:12px; height:12px; border-color:var(--text-muted); border-top-color:var(--text);"></div> Procesando...
+                </div>
+            `;
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            // Recopilar historial actual para enviarlo al backend
+            // (Para un demo funcional, solo enviamos el último mensaje de manera simple y 
+            // dejamos que el backend retenga el contexto o lo enviamos todo)
+            // Aquí extraemos todos los textos del chat
+            const messages = [];
+            const divs = chatHistory.querySelectorAll('div[style*="align-self"]');
+            divs.forEach(div => {
+                if(div.id === typingId) return;
+                const isUser = div.style.alignSelf === 'flex-end';
+                messages.push({
+                    role: isUser ? "user" : "assistant",
+                    content: div.innerText.trim()
+                });
+            });
+
+            try {
+                const response = await fetch('/api/wizard_chat', { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: messages })
+                });
+                const data = await response.json();
+                
+                document.getElementById(typingId).remove();
+
+                if (!response.ok) throw new Error(data.error);
+
+                // Check si respondió con el JSON final (perfil completado)
+                if(data.is_final) {
+                    chatHistory.innerHTML += `
+                        <div style="align-self: flex-start; background: rgba(30, 215, 96, 0.1); color: var(--text); padding: 10px 15px; border-radius: 15px 15px 15px 0px; width: 100%; border: 1px solid var(--primary); margin-bottom: 10px;">
+                            <strong>¡Perfil RPM Creado y Guardado! 🎉</strong><br><br>
+                            <pre style="background: rgba(0,0,0,0.5); padding: 10px; font-size: 11px; color: var(--primary);">${JSON.stringify(data.profile, null, 2)}</pre>
+                        </div>
+                    `;
+                    loadDashboardStats();
+                } else {
+                    // Respuesta normal del asistente
+                    chatHistory.innerHTML += `
+                        <div style="align-self: flex-start; background: rgba(255,255,255,0.1); color: var(--text); padding: 10px 15px; border-radius: 15px 15px 15px 0px; max-width: 80%; margin-bottom: 10px; white-space: pre-wrap;">
+                            ${data.reply}
+                        </div>
+                    `;
+                }
+                
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+                
+            } catch (error) {
+                document.getElementById(typingId).remove();
+                chatHistory.innerHTML += `
+                    <div style="align-self: flex-start; background: rgba(233,20,41,0.2); color: var(--danger); padding: 10px 15px; border-radius: 15px 15px 15px 0px; max-width: 80%; margin-bottom: 10px;">
+                        <strong>Error de IA:</strong> ${error.message}
+                    </div>
+                `;
             }
         }
     </script>
