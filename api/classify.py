@@ -16,10 +16,10 @@ class handler(BaseHTTPRequestHandler):
         try:
             SUPABASE_URL = os.environ.get("SUPABASE_URL")
             SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
-            OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
+            OPENROUTER_API_KEY = os.environ.get("DEEPSEEK_KEY")
 
             if not SUPABASE_URL or not SUPABASE_KEY or not OPENROUTER_API_KEY:
-                self._send(500, {"error": "Faltan credenciales (Supabase u OpenRouter) en Vercel"})
+                self._send(500, {"error": "Faltan credenciales (Supabase o DEEPSEEK_KEY) en Vercel"})
                 return
 
             sb = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -58,6 +58,7 @@ INSTRUCCIONES:
 1. Identifica el modelo de negocio principal
 2. Identifica la fuente de ingresos (cómo gana dinero)
 3. Identifica el cliente objetivo
+4. EXTRAPOLACIÓN LATAM: Identifica los problemas (pain points) principales que resuelve este modelo y extrapólalos a la realidad y contexto del mercado latinoamericano. Explica cómo o por qué esta necesidad existe o se adapta en LATAM.
 
 REGLAS IMPORTANTES:
 - No inventes información. Si no está claro, usa null
@@ -70,6 +71,12 @@ FORMATO DE RESPUESTA:
   "business_model": {{ "type": "string o null", "description": "string o null" }},
   "revenue_stream": {{ "type": "string o null", "description": "string o null" }},
   "target_customer": {{ "type": "string o null", "description": "string o null" }},
+  "latam_pain_points": [
+    {{
+      "pain_point": "Breve descripción del problema original",
+      "latam_context_adaptation": "Justificación concreta de cómo y por qué este dolor aplica o se acentúa en el contexto de Latinoamérica"
+    }}
+  ],
   "confidence_score": 90
 }}
 
@@ -80,6 +87,7 @@ Si la transcripción es irrelevante o incompleta, devuelve:
   "business_model": null,
   "revenue_stream": null,
   "target_customer": null,
+  "latam_pain_points": [],
   "confidence_score": 0
 }}"""
 

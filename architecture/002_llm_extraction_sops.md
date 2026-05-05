@@ -31,6 +31,7 @@ INSTRUCCIONES:
 1. Identifica el modelo de negocio principal
 2. Identifica la fuente de ingresos (cómo gana dinero)
 3. Identifica el cliente objetivo
+4. EXTRAPOLACIÓN LATAM: Identifica los problemas (pain points) principales que resuelve este modelo y extrapólalos a la realidad y contexto del mercado latinoamericano. Explica cómo o por qué esta necesidad existe o se adapta en LATAM.
 
 REGLAS IMPORTANTES:
 - No inventes información
@@ -53,6 +54,12 @@ FORMATO DE RESPUESTA:
     "type": string | null,
     "description": string | null
   },
+  "latam_pain_points": [
+    {
+      "pain_point": "Breve descripción del problema original",
+      "latam_context_adaptation": "Justificación concreta de cómo y por qué este dolor aplica o se acentúa en el contexto de Latinoamérica"
+    }
+  ],
   "confidence_score": number (0-100)
 }
 
@@ -67,6 +74,7 @@ Si la transcripción es irrelevante o incompleta, devuelve:
   "business_model": null,
   "revenue_stream": null,
   "target_customer": null,
+  "latam_pain_points": [],
   "confidence_score": 0
 }
 ```
