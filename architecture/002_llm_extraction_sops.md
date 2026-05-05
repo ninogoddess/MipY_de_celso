@@ -39,6 +39,7 @@ REGLAS IMPORTANTES:
 - Sé específico (no generalices)
 - Máximo 2-3 frases por campo
 - No uses lenguaje ambiguo
+- IMPORTANTE: Toda la respuesta (valores del JSON, descripciones y pain points) DEBE estar redactada estrictamente en ESPAÑOL.
 
 FORMATO DE RESPUESTA:
 {
