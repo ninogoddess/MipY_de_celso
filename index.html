@@ -276,6 +276,11 @@
                     <span id="summarizeBtnText">Resumir Pain Points (LLM)</span>
                     <div id="summarizeLoader" class="loader"></div>
                 </button>
+                <button class="btn-primary" id="reclassifyBtn" onclick="startReclassification()"
+                    style="background-color: var(--warning); color: #000; flex: 1;">
+                    <span id="reclassifyBtnText">Re-Clasificar Todos (Dinámico)</span>
+                    <div id="reclassifyLoader" class="loader"></div>
+                </button>
             </div>
             <div id="classification-results" class="results-list"></div>
             </div>
@@ -292,21 +297,122 @@
         <div id="page-wizard" class="page">
             <div class="page-header">
                 <h2>Wizard RPM</h2>
-                <p>Conversación estratégica para definir tu perfil y cruzarlo con oportunidades LATAM.</p>
+                <p>Define tu perfil estratégico paso a paso (R → P → M) y genera tu Plan de Acción Masiva.</p>
             </div>
-            
-            <div class="scraper-panel" style="display: flex; flex-direction: column; gap: 1rem; height: 60vh; max-height: 600px;">
-                <div id="chat-history" style="flex: 1; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: var(--radius); padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; border: 1px solid var(--border);">
-                    <div style="color: var(--primary); text-align: center; margin-top: auto; margin-bottom: auto;">
-                        <strong>Inicia la conversación para construir tu Perfil RPM y Plan de Acción.</strong><br>
-                        <small style="color: var(--text-muted);">Escribe "Hola" para comenzar el proceso.</small>
+
+            <!-- Step Indicator -->
+            <div style="display: flex; gap: 4px; margin-bottom: 1.5rem;">
+                <div class="wizard-step-indicator active" id="stepInd1">1 — Resultados (R)</div>
+                <div class="wizard-step-indicator" id="stepInd2">2 — Propósito (P)</div>
+                <div class="wizard-step-indicator" id="stepInd3">3 — Mercado (M)</div>
+                <div class="wizard-step-indicator" id="stepInd4">4 — Procesar</div>
+            </div>
+
+            <!-- STEP 1: RESULTS -->
+            <div class="wizard-step active" id="wizStep1">
+                <div class="scraper-panel">
+                    <h3 style="margin-bottom: 0.5rem; color: var(--primary);">Paso 1 — ¿Qué quieres lograr? (Results)</h3>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 1.5rem;">Define metas concretas y medibles. Sé específico: nada de "quiero ganar dinero". ¿Cuánto? ¿En cuánto tiempo? ¿Qué tipo de negocio?</p>
+
+                    <label class="wizard-label">¿Cuáles son tus metas principales?</label>
+                    <textarea id="wiz_results_goals" class="wizard-textarea" placeholder="Ej: Quiero lanzar un SaaS de gestión para pymes en Colombia que genere $3,000 USD/mes en 12 meses..."></textarea>
+
+                    <label class="wizard-label">¿Cuánto ingreso necesitas generar y en cuánto tiempo?</label>
+                    <textarea id="wiz_results_income" class="wizard-textarea" rows="2" placeholder="Ej: $2,000-$5,000 USD mensuales en los próximos 6-12 meses..."></textarea>
+
+                    <label class="wizard-label">Línea temporal: ¿cuándo quieres tener resultados tangibles?</label>
+                    <textarea id="wiz_results_timeline" class="wizard-textarea" rows="2" placeholder="Ej: Primeros clientes en 3 meses, rentabilidad en 8 meses..."></textarea>
+
+                    <label class="wizard-label">¿Qué tipo de negocio te interesa? (digital, físico, servicios, producto...)</label>
+                    <textarea id="wiz_results_business_type" class="wizard-textarea" rows="2" placeholder="Ej: Negocio digital, SaaS, e-commerce de nicho, consultoría..."></textarea>
+
+                    <button class="btn-primary" onclick="wizardNext(2)" style="margin-top: 1rem;">Siguiente → Propósito (P)</button>
+                </div>
+            </div>
+
+            <!-- STEP 2: PURPOSE -->
+            <div class="wizard-step" id="wizStep2">
+                <div class="scraper-panel">
+                    <h3 style="margin-bottom: 0.5rem; color: var(--primary);">Paso 2 — ¿Por qué es importante? (Purpose)</h3>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 1.5rem;">Identificar tu motivación real es clave. Los negocios que sobreviven tienen un "por qué" fuerte detrás.</p>
+
+                    <label class="wizard-label">¿Cuál es tu motivación principal para emprender?</label>
+                    <textarea id="wiz_purpose_motivation" class="wizard-textarea" placeholder="Ej: Libertad financiera, dejar mi trabajo corporativo, crear impacto en mi comunidad..."></textarea>
+
+                    <label class="wizard-label">¿Qué pasa si NO lo logras? ¿Qué te asusta de no actuar?</label>
+                    <textarea id="wiz_purpose_fear" class="wizard-textarea" rows="2" placeholder="Ej: Seguir en un empleo que no me satisface, no poder darle mejor calidad de vida a mi familia..."></textarea>
+
+                    <label class="wizard-label">¿A quién más impacta tu éxito además de ti?</label>
+                    <textarea id="wiz_purpose_beneficiaries" class="wizard-textarea" rows="2" placeholder="Ej: Mi esposa e hijos, mis padres, mi comunidad local..."></textarea>
+
+                    <div style="display: flex; gap: 10px; margin-top: 1rem;">
+                        <button class="btn-primary" onclick="wizardNext(1)" style="background: var(--secondary); color: #fff; flex: 1;">← Resultados</button>
+                        <button class="btn-primary" onclick="wizardNext(3)" style="flex: 1;">Siguiente → Mercado (M)</button>
                     </div>
                 </div>
-                
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" id="chat-input" placeholder="Escribe tu respuesta aquí..." 
-                        style="flex: 1; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: var(--text); padding: 1rem; border-radius: var(--radius); outline: none;">
-                    <button class="btn-primary" id="sendChatBtn" onclick="sendChatMessage()" style="width: auto;">Enviar</button>
+            </div>
+
+            <!-- STEP 3: MARKET & RESOURCES -->
+            <div class="wizard-step" id="wizStep3">
+                <div class="scraper-panel">
+                    <h3 style="margin-bottom: 0.5rem; color: var(--primary);">Paso 3 — ¿Con qué cuentas? (Market & Resources)</h3>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 1.5rem;">La IA cruzará tus recursos con los pain points LATAM detectados para encontrar las mejores oportunidades para tu perfil.</p>
+
+                    <label class="wizard-label">¿Qué habilidades tienes? (técnicas, creativas, de negocio...)</label>
+                    <textarea id="wiz_market_skills" class="wizard-textarea" placeholder="Ej: Programación Python, marketing digital, diseño gráfico, ventas B2B..."></textarea>
+
+                    <label class="wizard-label">¿Cuántas horas por semana puedes dedicar?</label>
+                    <textarea id="wiz_market_time" class="wizard-textarea" rows="2" placeholder="Ej: 20 horas semanales (noches y fines de semana)..."></textarea>
+
+                    <label class="wizard-label">¿Con qué recursos cuentas? (dinero, herramientas, red de contactos...)</label>
+                    <textarea id="wiz_market_resources" class="wizard-textarea" rows="2" placeholder="Ej: $500 USD para inversión inicial, laptop, acceso a internet, red de LinkedIn..."></textarea>
+
+                    <label class="wizard-label">¿Cuál es tu experiencia previa en emprendimiento?</label>
+                    <textarea id="wiz_market_experience" class="wizard-textarea" rows="2" placeholder="Ej: Ninguna formal, pero he vendido en redes sociales / He tenido un negocio antes..."></textarea>
+
+                    <label class="wizard-label">¿Cuál es tu tolerancia al riesgo?</label>
+                    <textarea id="wiz_market_risk" class="wizard-textarea" rows="2" placeholder="Ej: Moderada — puedo invertir algo pero no puedo dejar mi empleo actual todavía..."></textarea>
+
+                    <div style="display: flex; gap: 10px; margin-top: 1rem;">
+                        <button class="btn-primary" onclick="wizardNext(2)" style="background: var(--secondary); color: #fff; flex: 1;">← Propósito</button>
+                        <button class="btn-primary" onclick="wizardNext(4)" style="flex: 1;">Siguiente → Procesar con IA</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4: PROCESS -->
+            <div class="wizard-step" id="wizStep4">
+                <div class="scraper-panel">
+                    <h3 style="margin-bottom: 0.5rem; color: var(--primary);">Paso 4 — Procesamiento con IA</h3>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 1.5rem;">La IA analizará tus respuestas, las cruzará con los pain points LATAM identificados y generará tu Perfil RPM + Plan de Acción Masiva personalizado.</p>
+
+                    <div id="wizard-summary-preview" style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 1.25rem; margin-bottom: 1.5rem; font-size: 13px; color: var(--text-muted);">
+                        <strong style="color: var(--text);">Resumen de tus respuestas:</strong>
+                        <div id="wizPreviewContent" style="margin-top: 10px;"></div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-primary" onclick="wizardNext(3)" style="background: var(--secondary); color: #fff; flex: 1;">← Editar respuestas</button>
+                        <button class="btn-primary" id="processWizardBtn" onclick="processWizard()" style="flex: 1;">
+                            <span id="processWizardBtnText">Procesar con LLM</span>
+                            <div id="processWizardLoader" class="loader"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROFILE VIEWER/EDITOR -->
+            <div id="rpm-profile-section" style="margin-top: 2rem; display: none;">
+                <h3 style="font-size: 18px; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Perfil RPM Procesado</h3>
+                <div class="scraper-panel" id="rpm-profile-viewer">
+                    <div id="rpm-profile-content"></div>
+                    <div style="display: flex; gap: 10px; margin-top: 1.5rem;">
+                        <button class="btn-primary" onclick="toggleEditProfile()" id="editProfileBtn" style="background: var(--info); color: #fff; flex: 1;">Editar Perfil</button>
+                        <button class="btn-primary" onclick="saveProfileEdits()" id="saveProfileBtn" style="background: var(--primary); flex: 1; display: none;">
+                            <span id="saveProfileBtnText">Guardar Cambios</span>
+                            <div id="saveProfileLoader" class="loader"></div>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -401,6 +507,7 @@
         let videosLoaded = false;
         let classificationsLoaded = false;
         let scraperRunsLoaded = false;
+        let wizardLoaded = false;
         document.querySelectorAll('.sidebar-item').forEach(item => {
             item.addEventListener('click', () => {
                 const page = item.dataset.page;
@@ -420,6 +527,7 @@
                 if (page === 'videos' && !videosLoaded) { loadVideos(); videosLoaded = true; }
                 if (page === 'painpoints' && !classificationsLoaded) { loadClassifications(); classificationsLoaded = true; }
                 if (page === 'scraper' && !scraperRunsLoaded) { loadScraperRuns(); scraperRunsLoaded = true; }
+                if (page === 'wizard' && !wizardLoaded) { loadRpmProfile(); wizardLoaded = true; }
             });
         });
 
@@ -728,99 +836,300 @@
             }
         }
 
-        // ==================== WIZARD CHAT LOGIC ====================
-        const chatInput = document.getElementById('chat-input');
-        chatInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') sendChatMessage();
-        });
+        // ==================== RE-CLASSIFY LOGIC ====================
+        async function startReclassification() {
+            if (!confirm('⚠️ Esto eliminará TODAS las clasificaciones actuales y re-procesará cada video con IA.\n\nEsto puede tardar varios minutos y consumir cuota de la API.\n\n¿Continuar?')) return;
 
-        async function sendChatMessage() {
-            const text = chatInput.value.trim();
-            if (!text) return;
+            const btn = document.getElementById('reclassifyBtn');
+            const loader = document.getElementById('reclassifyLoader');
+            const btnText = document.getElementById('reclassifyBtnText');
+            const resultsDiv = document.getElementById('classification-results');
 
-            const chatHistory = document.getElementById('chat-history');
-            
-            // Si es el primer mensaje, limpiamos el historial inicial
-            if(chatHistory.innerHTML.includes('Inicia la conversación para construir tu Perfil RPM')) {
-                chatHistory.innerHTML = '';
-            }
-
-            // Añadir mensaje del usuario
-            chatHistory.innerHTML += `
-                <div style="align-self: flex-end; background: var(--primary); color: #000; padding: 10px 15px; border-radius: 15px 15px 0px 15px; max-width: 80%; margin-bottom: 10px;">
-                    ${text}
-                </div>
-            `;
-            chatInput.value = '';
-            
-            // Scroll to bottom
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-
-            // Mostrar estado de "escribiendo"
-            const typingId = 'typing-' + Date.now();
-            chatHistory.innerHTML += `
-                <div id="${typingId}" style="align-self: flex-start; background: rgba(255,255,255,0.1); color: var(--text); padding: 10px 15px; border-radius: 15px 15px 15px 0px; max-width: 80%; margin-bottom: 10px;">
-                    <div class="loader" style="display:inline-block; width:12px; height:12px; border-color:var(--text-muted); border-top-color:var(--text);"></div> Procesando...
-                </div>
-            `;
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-
-            // Recopilar historial actual para enviarlo al backend
-            // (Para un demo funcional, solo enviamos el último mensaje de manera simple y 
-            // dejamos que el backend retenga el contexto o lo enviamos todo)
-            // Aquí extraemos todos los textos del chat
-            const messages = [];
-            const divs = chatHistory.querySelectorAll('div[style*="align-self"]');
-            divs.forEach(div => {
-                if(div.id === typingId) return;
-                const isUser = div.style.alignSelf === 'flex-end';
-                messages.push({
-                    role: isUser ? "user" : "assistant",
-                    content: div.innerText.trim()
-                });
-            });
+            btn.disabled = true;
+            loader.style.display = 'block';
+            btnText.innerText = 'Re-clasificando...';
 
             try {
-                const response = await fetch('/api/wizard_chat', { 
+                const response = await fetch('/api/reclassify', { method: 'POST' });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error);
+
+                const div = document.createElement('div');
+                div.className = 'result-item status-success';
+                div.innerHTML = `<div style="width:100%;"><strong style="color:var(--warning);">Re-clasificación completada</strong><br><span style="color:var(--text-muted);">${data.message}</span>${data.errors && data.errors.length > 0 ? '<br><small style="color:var(--danger);">Errores: ' + data.errors.length + '</small>' : ''}</div>`;
+                resultsDiv.prepend(div);
+                loadDashboardStats();
+                loadClassifications();
+            } catch (error) {
+                const div = document.createElement('div');
+                div.className = 'result-item status-error';
+                div.innerHTML = `<div><strong>Error:</strong><br><small>${error.message}</small></div>`;
+                resultsDiv.prepend(div);
+            } finally {
+                btn.disabled = false;
+                loader.style.display = 'none';
+                btnText.innerText = 'Re-Clasificar Todos (Dinámico)';
+            }
+        }
+
+        // ==================== WIZARD STEPPED LOGIC ====================
+        let currentWizardStep = 1;
+
+        function wizardNext(step) {
+            // Hide all steps
+            document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.wizard-step-indicator').forEach(s => { s.classList.remove('active'); s.classList.remove('done'); });
+
+            // Mark previous steps as done
+            for (let i = 1; i < step; i++) {
+                document.getElementById('stepInd' + i).classList.add('done');
+            }
+
+            // Show current step
+            document.getElementById('wizStep' + step).classList.add('active');
+            document.getElementById('stepInd' + step).classList.add('active');
+            currentWizardStep = step;
+
+            // If step 4, build preview
+            if (step === 4) {
+                buildWizardPreview();
+            }
+        }
+
+        function getWizardAnswers() {
+            return {
+                results_goals: document.getElementById('wiz_results_goals')?.value || '',
+                results_income: document.getElementById('wiz_results_income')?.value || '',
+                results_timeline: document.getElementById('wiz_results_timeline')?.value || '',
+                results_business_type: document.getElementById('wiz_results_business_type')?.value || '',
+                purpose_motivation: document.getElementById('wiz_purpose_motivation')?.value || '',
+                purpose_fear: document.getElementById('wiz_purpose_fear')?.value || '',
+                purpose_beneficiaries: document.getElementById('wiz_purpose_beneficiaries')?.value || '',
+                market_skills: document.getElementById('wiz_market_skills')?.value || '',
+                market_time: document.getElementById('wiz_market_time')?.value || '',
+                market_resources: document.getElementById('wiz_market_resources')?.value || '',
+                market_experience: document.getElementById('wiz_market_experience')?.value || '',
+                market_risk: document.getElementById('wiz_market_risk')?.value || ''
+            };
+        }
+
+        function buildWizardPreview() {
+            const a = getWizardAnswers();
+            let html = '<div style="line-height: 1.6;">';
+            html += `<strong style="color:var(--primary);">Resultados (R):</strong><br>`;
+            html += `Metas: ${a.results_goals || '<em>vacío</em>'}<br>`;
+            html += `Ingresos: ${a.results_income || '<em>vacío</em>'}<br>`;
+            html += `Línea temporal: ${a.results_timeline || '<em>vacío</em>'}<br>`;
+            html += `Tipo de negocio: ${a.results_business_type || '<em>vacío</em>'}<br><br>`;
+            html += `<strong style="color:var(--primary);">Propósito (P):</strong><br>`;
+            html += `Motivación: ${a.purpose_motivation || '<em>vacío</em>'}<br>`;
+            html += `Miedo: ${a.purpose_fear || '<em>vacío</em>'}<br>`;
+            html += `Beneficiarios: ${a.purpose_beneficiaries || '<em>vacío</em>'}<br><br>`;
+            html += `<strong style="color:var(--primary);">Mercado (M):</strong><br>`;
+            html += `Habilidades: ${a.market_skills || '<em>vacío</em>'}<br>`;
+            html += `Tiempo: ${a.market_time || '<em>vacío</em>'}<br>`;
+            html += `Recursos: ${a.market_resources || '<em>vacío</em>'}<br>`;
+            html += `Experiencia: ${a.market_experience || '<em>vacío</em>'}<br>`;
+            html += `Riesgo: ${a.market_risk || '<em>vacío</em>'}`;
+            html += '</div>';
+            document.getElementById('wizPreviewContent').innerHTML = html;
+        }
+
+        async function processWizard() {
+            const answers = getWizardAnswers();
+
+            // Validate minimum required fields
+            if (!answers.results_goals || !answers.purpose_motivation || !answers.market_skills) {
+                alert('Por favor completa al menos las metas principales (R), la motivación (P) y tus habilidades (M) antes de procesar.');
+                return;
+            }
+
+            const btn = document.getElementById('processWizardBtn');
+            const loader = document.getElementById('processWizardLoader');
+            const btnText = document.getElementById('processWizardBtnText');
+
+            btn.disabled = true;
+            loader.style.display = 'block';
+            btnText.innerText = 'Procesando con LLM...';
+
+            try {
+                const response = await fetch('/api/wizard_process', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: messages })
+                    body: JSON.stringify({ answers: answers })
                 });
                 const data = await response.json();
-                
-                document.getElementById(typingId).remove();
 
                 if (!response.ok) throw new Error(data.error);
 
-                // Check si respondió con el JSON final (perfil completado)
-                if(data.is_final) {
-                    chatHistory.innerHTML += `
-                        <div style="align-self: flex-start; background: rgba(30, 215, 96, 0.1); color: var(--text); padding: 10px 15px; border-radius: 15px 15px 15px 0px; width: 100%; border: 1px solid var(--primary); margin-bottom: 10px;">
-                            <strong>¡Perfil RPM Creado y Guardado! 🎉</strong><br><br>
-                            <pre style="background: rgba(0,0,0,0.5); padding: 10px; font-size: 11px; color: var(--primary);">${JSON.stringify(data.profile, null, 2)}</pre>
-                        </div>
-                    `;
-                    loadDashboardStats();
-                } else {
-                    // Respuesta normal del asistente
-                    chatHistory.innerHTML += `
-                        <div style="align-self: flex-start; background: rgba(255,255,255,0.1); color: var(--text); padding: 10px 15px; border-radius: 15px 15px 15px 0px; max-width: 80%; margin-bottom: 10px; white-space: pre-wrap;">
-                            ${data.reply}
-                        </div>
-                    `;
-                }
-                
-                chatHistory.scrollTop = chatHistory.scrollHeight;
-                
+                // Show success and render profile
+                currentRpmProfile = data.profile;
+                currentRpmProfileId = null; // Will be loaded via loadRpmProfile
+                renderProfileViewer(data.profile);
+                document.getElementById('rpm-profile-section').style.display = 'block';
+                loadDashboardStats();
+                loadRpmProfile(); // Load to get the ID for editing
+
+                alert('¡Perfil RPM procesado y guardado exitosamente! Desplázate abajo para verlo.');
             } catch (error) {
-                document.getElementById(typingId).remove();
-                chatHistory.innerHTML += `
-                    <div style="align-self: flex-start; background: rgba(233,20,41,0.2); color: var(--danger); padding: 10px 15px; border-radius: 15px 15px 15px 0px; max-width: 80%; margin-bottom: 10px;">
-                        <strong>Error de IA:</strong> ${error.message}
-                    </div>
-                `;
+                alert('Error: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                loader.style.display = 'none';
+                btnText.innerText = 'Procesar con LLM';
             }
         }
+
+        // ==================== PROFILE VIEWER/EDITOR ====================
+        let currentRpmProfile = null;
+        let currentRpmProfileId = null;
+        let isEditingProfile = false;
+
+        async function loadRpmProfile() {
+            try {
+                const res = await fetch('/api/rpm_profile');
+                const data = await res.json();
+                if (data.profile) {
+                    currentRpmProfileId = data.profile.id;
+                    currentRpmProfile = data.profile.ai_interpretation || {};
+                    renderProfileViewer(currentRpmProfile);
+                    document.getElementById('rpm-profile-section').style.display = 'block';
+                }
+            } catch(e) { /* no profile yet */ }
+        }
+
+        function renderProfileViewer(profile) {
+            if (!profile) return;
+            const container = document.getElementById('rpm-profile-content');
+            let html = '';
+
+            // Profile Summary
+            if (profile.profile_summary) {
+                html += `<div class="profile-section-title">Resumen Ejecutivo</div>`;
+                html += `<div class="profile-field"><p>${profile.profile_summary}</p></div>`;
+                html += `<textarea class="profile-editable" data-field="profile_summary">${profile.profile_summary}</textarea>`;
+            }
+
+            // RPM Profile
+            const rpm = profile.rpm_profile || {};
+            if (rpm.results) {
+                html += `<div class="profile-section-title">Resultados (R)</div>`;
+                Object.entries(rpm.results).forEach(([k, v]) => {
+                    html += `<div class="profile-field"><strong>${k}:</strong> <span>${v || '—'}</span></div>`;
+                });
+            }
+            if (rpm.purpose) {
+                html += `<div class="profile-section-title">Propósito (P)</div>`;
+                Object.entries(rpm.purpose).forEach(([k, v]) => {
+                    const display = Array.isArray(v) ? v.join(', ') : (v || '—');
+                    html += `<div class="profile-field"><strong>${k}:</strong> <span>${display}</span></div>`;
+                });
+            }
+            if (rpm.constraints) {
+                html += `<div class="profile-section-title">Recursos y Restricciones</div>`;
+                Object.entries(rpm.constraints).forEach(([k, v]) => {
+                    const display = Array.isArray(v) ? v.join(', ') : (v || '—');
+                    html += `<div class="profile-field"><strong>${k}:</strong> <span>${display}</span></div>`;
+                });
+            }
+
+            // Pain Point Match
+            if (profile.pain_point_match && profile.pain_point_match.length > 0) {
+                html += `<div class="profile-section-title">Cruce con Pain Points LATAM</div>`;
+                profile.pain_point_match.forEach(pp => {
+                    const color = pp.relevance_score === 'High' ? 'var(--primary)' : (pp.relevance_score === 'Medium' ? 'var(--warning)' : 'var(--text-muted)');
+                    html += `<div class="profile-field" style="background: rgba(0,0,0,0.2); padding: 8px; margin-bottom: 8px;"><strong style="color:${color};">[${pp.relevance_score}] ${pp.category}:</strong> <span>${pp.problem}</span><br><small style="color:var(--text-muted);">${pp.reasoning}</small></div>`;
+                });
+            }
+
+            // Massive Action Plan
+            const map = profile.massive_action_plan || {};
+            if (map.opportunity) {
+                html += `<div class="profile-section-title">Plan de Acción Masiva (MAP)</div>`;
+                html += `<div class="profile-field"><strong>Oportunidad:</strong> <span>${map.opportunity}</span></div>`;
+                html += `<div class="profile-field"><strong>Modelo de negocio:</strong> <span>${map.business_model || '—'}</span></div>`;
+                if (map.steps && map.steps.length) {
+                    html += `<div class="profile-field"><strong>Pasos:</strong></div><ol style="padding-left:20px; color:var(--text-muted); font-size:13px;">`;
+                    map.steps.forEach(s => html += `<li style="margin-bottom:4px;">${s}</li>`);
+                    html += `</ol>`;
+                }
+                if (map.priorities && map.priorities.length) {
+                    html += `<div class="profile-field"><strong>Prioridades:</strong> <span>${map.priorities.join(' → ')}</span></div>`;
+                }
+                if (map.weekly_execution) {
+                    html += `<div class="profile-field"><strong>Plan semanal:</strong> <span>${map.weekly_execution}</span></div>`;
+                }
+                if (map.mvp_definition) {
+                    html += `<div class="profile-field"><strong>MVP/MVT:</strong> <span>${map.mvp_definition}</span></div>`;
+                }
+            }
+
+            container.innerHTML = html;
+        }
+
+        function toggleEditProfile() {
+            isEditingProfile = !isEditingProfile;
+            const editables = document.querySelectorAll('.profile-editable');
+            const saveBtn = document.getElementById('saveProfileBtn');
+            const editBtn = document.getElementById('editProfileBtn');
+
+            if (isEditingProfile) {
+                editables.forEach(e => e.classList.add('editing'));
+                saveBtn.style.display = 'flex';
+                editBtn.innerText = 'Cancelar Edición';
+                editBtn.style.background = 'var(--danger)';
+            } else {
+                editables.forEach(e => e.classList.remove('editing'));
+                saveBtn.style.display = 'none';
+                editBtn.innerText = 'Editar Perfil';
+                editBtn.style.background = 'var(--info)';
+            }
+        }
+
+        async function saveProfileEdits() {
+            if (!currentRpmProfileId) {
+                alert('No se encontró un perfil activo para editar.');
+                return;
+            }
+            const btn = document.getElementById('saveProfileBtn');
+            const loader = document.getElementById('saveProfileLoader');
+            const btnText = document.getElementById('saveProfileBtnText');
+
+            btn.disabled = true;
+            loader.style.display = 'block';
+            btnText.innerText = 'Guardando...';
+
+            // Get edited values
+            const summaryEl = document.querySelector('.profile-editable[data-field="profile_summary"]');
+            if (summaryEl && currentRpmProfile) {
+                currentRpmProfile.profile_summary = summaryEl.value;
+            }
+
+            try {
+                const response = await fetch('/api/rpm_profile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: currentRpmProfileId,
+                        ai_interpretation: currentRpmProfile
+                    })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error);
+                alert('Perfil actualizado correctamente.');
+                toggleEditProfile();
+                renderProfileViewer(currentRpmProfile);
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                loader.style.display = 'none';
+                btnText.innerText = 'Guardar Cambios';
+            }
+        }
+
+        // Load existing profile on wizard page visit
+        // (triggered by nav logic — 'wizard' page)
     </script>
 </body>
 
