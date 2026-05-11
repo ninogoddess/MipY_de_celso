@@ -31,6 +31,34 @@ body {
 }
 
 /* =============================================
+   HAMBURGER BUTTON (mobile only)
+   ============================================= */
+.hamburger {
+    display: none;
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 200;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    cursor: pointer;
+    color: var(--primary);
+    line-height: 0;
+}
+.hamburger svg { width: 22px; height: 22px; }
+
+/* Overlay for mobile */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 90;
+}
+
+/* =============================================
    SIDEBAR
    ============================================= */
 .sidebar {
@@ -46,6 +74,7 @@ body {
     display: flex;
     flex-direction: column;
     z-index: 100;
+    transition: transform 0.3s ease;
 }
 
 .sidebar-logo {
@@ -118,8 +147,21 @@ body {
 
 .sidebar-item .icon {
     width: 18px;
-    text-align: center;
-    font-size: 14px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.sidebar-item .icon svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .sidebar-item.locked {
@@ -135,6 +177,8 @@ body {
     flex: 1;
     padding: 2.5rem 3rem;
     min-height: 100vh;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 .page { display: none; animation: fadeIn 0.3s ease; }
@@ -339,6 +383,7 @@ body {
     justify-content: space-between;
     align-items: center;
     animation: fadeIn 0.4s ease;
+    word-break: break-word;
 }
 .result-item.status-success { border-left-color: var(--primary); }
 .result-item.status-skipped { border-left-color: var(--info); }
@@ -388,18 +433,32 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* =============================================
-   RESPONSIVE
+   SCRAPER RUNS LOG TABLE
    ============================================= */
-@media (max-width: 768px) {
-    .sidebar { width: 60px; padding: 1rem 0; }
-    .sidebar-logo span, .sidebar-section-title, .sidebar-item span:not(.icon) { display: none; }
-    .main { margin-left: 60px; padding: 1.5rem; width: calc(100% - 60px); }
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .info-grid { grid-template-columns: 1fr; }
-    .scraper-panel { padding: 1.25rem; }
-    .page-header h2 { font-size: 20px; }
+.runs-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 13px;
+}
+.runs-table th, .runs-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+.runs-table th {
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+.runs-table tr:hover td {
+    background: rgba(255,255,255,0.02);
 }
 
+/* =============================================
+   PRE / CODE
+   ============================================= */
 pre {
     white-space: pre-wrap;
     word-wrap: break-word;
@@ -454,4 +513,44 @@ pre {
 }
 .video-card a:hover {
     text-decoration: underline;
+}
+
+/* =============================================
+   RESPONSIVE — TABLET + MOBILE
+   ============================================= */
+@media (max-width: 900px) {
+    /* Show hamburger */
+    .hamburger { display: block; }
+
+    /* Hide sidebar off-screen by default */
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    .sidebar-overlay.open {
+        display: block;
+    }
+
+    .main {
+        margin-left: 0;
+        padding: 1.5rem;
+        padding-top: 3.5rem; /* space for hamburger */
+        width: 100%;
+    }
+
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .info-grid { grid-template-columns: 1fr; }
+    .scraper-panel { padding: 1.25rem; }
+    .page-header h2 { font-size: 20px; }
+    .hero-banner { padding: 1.5rem; }
+    .hero-banner h1 { font-size: 20px; }
+    .videos-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+}
+
+@media (max-width: 500px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .videos-grid { grid-template-columns: 1fr; }
+    .main { padding: 1rem; padding-top: 3.5rem; }
 }

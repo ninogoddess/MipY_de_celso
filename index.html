@@ -12,8 +12,14 @@
 
 <body>
 
+    <!-- Hamburger toggle (mobile) -->
+    <button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
     <!-- ==================== SIDEBAR ==================== -->
-    <nav class="sidebar">
+    <nav class="sidebar" id="sidebar">
         <div class="sidebar-logo">
             <img src="/assets/logo_principal.png" alt="Logo" class="logo-icon" style="object-fit: cover;">
             <span>MiPy de Celso <em>LATAM</em></span>
@@ -23,70 +29,67 @@
             <div class="sidebar-section-title">Inicio</div>
         </div>
         <div class="sidebar-item active" data-page="dashboard">
-            <span class="icon">📊</span><span>Dashboard</span>
+            <span class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></span><span>Dashboard</span>
         </div>
         <div class="sidebar-item" data-page="hitos">
-            <span class="icon">🏆</span><span>Entrega Hitos</span>
+            <span class="icon"><svg viewBox="0 0 24 24"><path d="M6 9l6-6 6 6"/><path d="M12 3v18"/><path d="M3 21h18"/></svg></span><span>Entrega Hitos</span>
         </div>
 
         <div class="sidebar-section">
             <div class="sidebar-section-title">Fase 1 — Scraping</div>
         </div>
         <div class="sidebar-item" data-page="scraper">
-            <span class="icon">⚡</span><span>Scraper &amp; Logs</span>
+            <span class="icon"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span><span>Scraper &amp; Logs</span>
         </div>
         <div class="sidebar-item" data-page="videos">
-            <span class="icon">🎬</span><span>Videos</span>
+            <span class="icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></span><span>Videos</span>
         </div>
 
         <div class="sidebar-section">
             <div class="sidebar-section-title">Fase 2 — Clasificación</div>
         </div>
         <div class="sidebar-item" data-page="painpoints">
-            <span class="icon">📍</span><span>Pain Points LATAM</span>
+            <span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span><span>Pain Points LATAM</span>
         </div>
         <div class="sidebar-item" data-page="wizard">
-            <span class="icon">🧭</span><span>Wizard RPM</span>
+            <span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span><span>Wizard RPM</span>
         </div>
 
         <div class="sidebar-section">
             <div class="sidebar-section-title">Fase 3 — Soluciones</div>
         </div>
         <div class="sidebar-item locked" data-page="solutions">
-            <span class="icon">💡</span><span>Motor de Soluciones</span>
+            <span class="icon"><svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 4 12.7V17H8v-2.3A7 7 0 0 1 12 2z"/></svg></span><span>Motor de Soluciones</span>
         </div>
 
         <div class="sidebar-section">
             <div class="sidebar-section-title">Fase 4 — Validación</div>
         </div>
         <div class="sidebar-item locked" data-page="mvt">
-            <span class="icon">🧪</span><span>MVT</span>
+            <span class="icon"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91A6 6 0 0 1 18.47 2.53z"/></svg></span><span>MVT</span>
         </div>
 
         <div class="sidebar-section">
             <div class="sidebar-section-title">Sistema</div>
         </div>
         <div class="sidebar-item locked" data-page="settings">
-            <span class="icon">⚙️</span><span>Ajustes</span>
+            <span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span>Ajustes</span>
         </div>
 
         <div class="sidebar-section" style="margin-top:auto;">
             <div class="sidebar-section-title">Conexiones</div>
         </div>
-        <a href="https://github.com/ninogoddess/MipY_de_celso" target="_blank" class="sidebar-item"
-            style="text-decoration: none;">
-            <span class="icon">🐙</span><span>GitHub</span>
+        <a href="https://github.com/ninogoddess/MipY_de_celso" target="_blank" class="sidebar-item" style="text-decoration: none;">
+            <span class="icon"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></span><span>GitHub</span>
         </a>
-        <a href="https://vercel.com/maxiipaxy-7307s-projects/mip-y-de-celso" target="_blank" class="sidebar-item"
-            style="text-decoration: none;">
-            <span class="icon">▲</span><span>Vercel</span>
+        <a href="https://vercel.com/maxiipaxy-7307s-projects/mip-y-de-celso" target="_blank" class="sidebar-item" style="text-decoration: none;">
+            <span class="icon"><svg viewBox="0 0 24 24"><polygon points="12 2 22 22 2 22"/></svg></span><span>Vercel</span>
         </a>
-        <a href="https://supabase.com/dashboard/project/bwqqbpuckinrizoelpcc/sql/2cb00856-46e6-450d-a365-ff3a0bc80a35"
-            target="_blank" class="sidebar-item" style="text-decoration: none;">
-            <span class="icon">⚡</span><span>Supabase</span>
+        <a href="https://supabase.com/dashboard/project/bwqqbpuckinrizoelpcc/sql/2cb00856-46e6-450d-a365-ff3a0bc80a35" target="_blank" class="sidebar-item" style="text-decoration: none;">
+            <span class="icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span><span>Supabase</span>
         </a>
         <a href="http://openrouter.ai/workspaces" target="_blank" class="sidebar-item" style="text-decoration: none;">
-            <span class="icon">🤖</span><span>OpenRouter</span>
+            <span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2a4 4 0 0 1 4 4c0 1.1-.9 2-2 2h-4a2 2 0 0 1 0-4h.5A4 4 0 0 1 12 2z"/><path d="M12 8v8"/><circle cx="12" cy="20" r="2"/><path d="M6 12h12"/></svg></span><span>OpenRouter</span>
         </a>
     </nav>
 
@@ -201,6 +204,13 @@
                 </button>
             </div>
             <div id="results" class="results-list"></div>
+
+            <div style="margin-top: 2rem;">
+                <h3 style="font-size: 16px; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Historial de Ejecuciones del Scraper</h3>
+                <div id="scraper-runs-container">
+                    <p style="color: var(--text-muted); font-size: 13px;">Cargando historial...</p>
+                </div>
+            </div>
         </div>
 
         <!-- ========== VIDEOS ========== -->
@@ -350,31 +360,35 @@
         // Ejecutar al cargar
         setCircleFavicon('/assets/logo_principal.png');
 
+        // ==================== SIDEBAR TOGGLE ====================
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('open');
+        }
+
         // ==================== NAVIGATION ====================
         let videosLoaded = false;
         let classificationsLoaded = false;
+        let scraperRunsLoaded = false;
         document.querySelectorAll('.sidebar-item').forEach(item => {
             item.addEventListener('click', () => {
                 const page = item.dataset.page;
-                // Quitar la restricción locked temporalmente también para wizard
                 if (!page || (item.classList.contains('locked') && page !== 'painpoints' && page !== 'wizard')) return;
 
-                // Update sidebar active
                 document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
-                // Update page visibility
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
                 document.getElementById('page-' + page).classList.add('active');
 
-                // Cargar datos correspondientes al cambiar de vista
-                if (page === 'videos' && !videosLoaded) {
-                    loadVideos();
-                    videosLoaded = true;
+                // Close sidebar on mobile after navigation
+                if (window.innerWidth <= 900) {
+                    document.getElementById('sidebar').classList.remove('open');
+                    document.getElementById('sidebarOverlay').classList.remove('open');
                 }
-                if (page === 'painpoints' && !classificationsLoaded) {
-                    loadClassifications();
-                    classificationsLoaded = true;
-                }
+
+                if (page === 'videos' && !videosLoaded) { loadVideos(); videosLoaded = true; }
+                if (page === 'painpoints' && !classificationsLoaded) { loadClassifications(); classificationsLoaded = true; }
+                if (page === 'scraper' && !scraperRunsLoaded) { loadScraperRuns(); scraperRunsLoaded = true; }
             });
         });
 
@@ -389,16 +403,50 @@
                     document.getElementById('stat-painpoints').textContent = data.pain_points ?? 0;
                     document.getElementById('stat-rpm').textContent = data.rpm_completed ? 'Sí' : '—';
                     document.getElementById('stat-solutions').textContent = data.solutions ?? 0;
-                    if (data.last_run) {
+
+                    // Dashboard: show all runs
+                    if (data.all_runs && data.all_runs.length > 0) {
+                        let runsHtml = '';
+                        data.all_runs.forEach(r => {
+                            const badge = r.status === 'completed' ? 'badge-success' : 'badge-error';
+                            runsHtml += `<div class="log-entry"><span class="badge ${badge}">${r.status}</span> ${r.completed_at || r.started_at || ''} &nbsp; Encontrados: ${r.videos_found} &nbsp; Nuevos: ${r.videos_new}</div>`;
+                        });
+                        document.getElementById('last-run-info').innerHTML = runsHtml;
+                    } else if (data.last_run) {
                         const badge = data.last_run.status === 'completed' ? 'badge-success' : 'badge-error';
                         document.getElementById('last-run-info').innerHTML =
                             `<div class="log-entry"><span class="badge ${badge}">${data.last_run.status}</span> ${data.last_run.completed_at || ''}</div>
-                     <div class="log-entry" style="margin-top:4px;">Encontrados: ${data.last_run.videos_found} &nbsp; Nuevos: ${data.last_run.videos_new} &nbsp; Actualizados: ${data.last_run.videos_updated}</div>`;
+                         <div class="log-entry" style="margin-top:4px;">Encontrados: ${data.last_run.videos_found} &nbsp; Nuevos: ${data.last_run.videos_new} &nbsp; Actualizados: ${data.last_run.videos_updated}</div>`;
                     }
                 }
             } catch (e) { /* Stats API not ready yet */ }
         }
         loadDashboardStats();
+
+        // ==================== SCRAPER RUNS LOG ====================
+        async function loadScraperRuns() {
+            const container = document.getElementById('scraper-runs-container');
+            try {
+                const res = await fetch('/api/stats');
+                if (!res.ok) throw new Error("No se pudieron cargar las ejecuciones");
+                const data = await res.json();
+                const runs = data.all_runs || [];
+                if (runs.length === 0) {
+                    container.innerHTML = '<p style="color: var(--text-muted); font-size: 13px;">No hay ejecuciones registradas aún.</p>';
+                    return;
+                }
+                let html = `<table class="runs-table"><thead><tr><th>Estado</th><th>Fecha</th><th>Encontrados</th><th>Nuevos</th><th>Actualizados</th></tr></thead><tbody>`;
+                runs.forEach(r => {
+                    const badge = r.status === 'completed' ? 'badge-success' : (r.status === 'running' ? 'badge-pending' : 'badge-error');
+                    const date = r.completed_at || r.started_at || '—';
+                    html += `<tr><td><span class="badge ${badge}">${r.status}</span></td><td>${date}</td><td>${r.videos_found}</td><td>${r.videos_new}</td><td>${r.videos_updated}</td></tr>`;
+                });
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            } catch(e) {
+                container.innerHTML = `<p style="color: var(--danger); font-size: 13px;">Error: ${e.message}</p>`;
+            }
+        }
 
         // ==================== SCRAPER LOGIC ====================
         async function startScraping() {
@@ -438,6 +486,7 @@
                     resultsDiv.appendChild(div);
                 });
                 loadDashboardStats();
+                loadScraperRuns(); // Refresh the runs log table
             } catch (error) {
                 resultsDiv.innerHTML = `<div class="result-item status-error">
             <div><strong>Error:</strong><br><small>${error.message}</small></div></div>`;

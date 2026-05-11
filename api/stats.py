@@ -21,17 +21,20 @@ class handler(BaseHTTPRequestHandler):
             solutions = sb.table("solutions").select("id", count="exact").execute()
             rpm = sb.table("rpm_profiles").select("id").eq("is_active", True).limit(1).execute()
 
-            last_run_resp = sb.table("scraper_runs").select("*").order("started_at", desc=True).limit(1).execute()
+            last_run_resp = sb.table("scraper_runs").select("*").order("started_at", desc=True).limit(10).execute()
             last_run = None
+            all_runs = []
             if last_run_resp.data:
-                r = last_run_resp.data[0]
-                last_run = {
-                    "status": r.get("status"),
-                    "videos_found": r.get("videos_found", 0),
-                    "videos_new": r.get("videos_new", 0),
-                    "videos_updated": r.get("videos_updated", 0),
-                    "completed_at": r.get("completed_at", "")
-                }
+                for r in last_run_resp.data:
+                    all_runs.append({
+                        "status": r.get("status"),
+                        "videos_found": r.get("videos_found", 0),
+                        "videos_new": r.get("videos_new", 0),
+                        "videos_updated": r.get("videos_updated", 0),
+                        "started_at": r.get("started_at", ""),
+                        "completed_at": r.get("completed_at", "")
+                    })
+                last_run = all_runs[0]
 
             self._send(200, {
                 "videos": videos.count or 0,
@@ -39,7 +42,8 @@ class handler(BaseHTTPRequestHandler):
                 "pain_points": pain_points.count or 0,
                 "solutions": solutions.count or 0,
                 "rpm_completed": len(rpm.data) > 0,
-                "last_run": last_run
+                "last_run": last_run,
+                "all_runs": all_runs
             })
         except Exception as e:
             self._send(500, {"error": str(e)})
