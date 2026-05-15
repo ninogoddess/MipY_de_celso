@@ -642,7 +642,7 @@ por las q ya no están y por las que se han quedado -->
         document.querySelectorAll('.sidebar-item').forEach(item => {
             item.addEventListener('click', () => {
                 const page = item.dataset.page;
-                if (!page || (item.classList.contains('locked') && page !== 'painpoints' && page !== 'wizard')) return;
+                if (!page || item.classList.contains('locked')) return;
 
                 document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
