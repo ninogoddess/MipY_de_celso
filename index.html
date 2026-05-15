@@ -335,16 +335,24 @@ por las q ya no están y por las que se han quedado -->
                 <p>Base de datos "Ground Truth" de dolores de mercado. Los videos se clasifican contra estos problemas.</p>
             </div>
 
-            <div class="scraper-panel" style="margin-bottom: 2rem;">
-                <p style="margin-bottom: 1rem; color: var(--text-muted);">Si modificas un pain point, los videos afectados deberán ser re-clasificados para mantener la integridad.</p>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button class="btn-primary" id="reclassifyBtn" onclick="startReclassification()"
-                        style="background-color: var(--warning); color: #000; flex: 1;">
-                        <span id="reclassifyBtnText">Re-clasificar Lote (1 video)</span>
-                        <div id="reclassifyLoader" class="loader"></div>
-                    </button>
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                <div class="scraper-panel">
+                    <p style="margin-bottom: 1rem; color: var(--text-muted);">Si modificas un pain point, los videos afectados deberán ser re-clasificados para mantener la integridad.</p>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn-primary" id="reclassifyBtn" onclick="startReclassification()"
+                            style="background-color: var(--warning); color: #000; flex: 1;">
+                            <span id="reclassifyBtnText">Re-clasificar Lote (1 video)</span>
+                            <div id="reclassifyLoader" class="loader"></div>
+                        </button>
+                    </div>
+                    <div id="classification-results" class="results-list"></div>
                 </div>
-                <div id="classification-results" class="results-list"></div>
+                
+                <div class="info-card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                    <h3 style="margin: 0; color: var(--text-muted); font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Videos Clasificados</h3>
+                    <div id="big-classified-count" style="font-size: 48px; font-weight: 800; color: var(--primary); line-height: 1.2; margin: 10px 0;">0</div>
+                    <p style="margin: 0; font-size: 12px; color: var(--text-muted);">con la v2 (Multi-label)</p>
+                </div>
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
@@ -903,8 +911,8 @@ por las q ya no están y por las que se han quedado -->
         // ==================== CLASSIFICATIONS GALLERY LOGIC ====================
         async function loadClassifications() {
             const container = document.getElementById('classifications-container');
-            const loader = document.getElementById('classifications-loader');
             const countSpan = document.getElementById('videos-analyzed-count');
+            const bigCount = document.getElementById('big-classified-count');
             if (!container) return;
 
             try {
@@ -915,9 +923,9 @@ por las q ya no están y por las que se han quedado -->
 
                 container.innerHTML = '';
                 
-                if (countSpan) {
-                    countSpan.innerText = data.classifications ? data.classifications.length : 0;
-                }
+                const count = data.classifications ? data.classifications.length : 0;
+                if (countSpan) countSpan.innerText = count;
+                if (bigCount) bigCount.innerText = count;
 
                 if (!data.classifications || data.classifications.length === 0) {
                     container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 2rem;">Aún no hay videos clasificados.</div>`;
@@ -1039,6 +1047,12 @@ por las q ya no están y por las que se han quedado -->
                 div.className = 'result-item status-success';
                 div.innerHTML = `<div style="width:100%;"><strong style="color:var(--warning);">Re-clasificación completada</strong><br><span style="color:var(--text-muted);">${data.message}</span>${data.errors && data.errors.length > 0 ? '<br><small style="color:var(--danger);">Errores: ' + JSON.stringify(data.errors) + '</small>' : ''}</div>`;
                 resultsDiv.prepend(div);
+                
+                // Limit to 2 items
+                while (resultsDiv.children.length > 2) {
+                    resultsDiv.removeChild(resultsDiv.lastChild);
+                }
+
                 loadDashboardStats();
                 loadClassifications();
             } catch (error) {
@@ -1046,6 +1060,11 @@ por las q ya no están y por las que se han quedado -->
                 div.className = 'result-item status-error';
                 div.innerHTML = `<div><strong>Error:</strong><br><small>${error.message}</small></div>`;
                 resultsDiv.prepend(div);
+                
+                // Limit to 2 items
+                while (resultsDiv.children.length > 2) {
+                    resultsDiv.removeChild(resultsDiv.lastChild);
+                }
             } finally {
                 btn.disabled = false;
                 loader.style.display = 'none';
