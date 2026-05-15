@@ -84,7 +84,7 @@ por las q ya no están y por las que se han quedado -->
         <div class="sidebar-section">
             <div class="sidebar-section-title">Fase 3 — Soluciones</div>
         </div>
-        <div class="sidebar-item locked" data-page="solutions">
+        <div class="sidebar-item" data-page="solutions">
             <span class="icon"><svg viewBox="0 0 24 24">
                     <path d="M9 18h6" />
                     <path d="M10 22h4" />
@@ -544,14 +544,21 @@ por las q ya no están y por las que se han quedado -->
         <!-- ========== SOLUTIONS ========== -->
         <div id="page-solutions" class="page">
             <div class="page-header">
-                <h2>Motor de Soluciones</h2>
-                <p>Propuestas de negocio generadas desde videos reales y tu perfil RPM.</p>
+                <h2>Motor de Emparejamiento (Fase 6)</h2>
+                <p>Cruza tu Perfil RPM Inteligente con la base de datos de videos clasificados para encontrar las 3 mejores soluciones de negocio personalizadas para ti.</p>
             </div>
-            <div class="placeholder-card">
-                <div class="placeholder-icon">💡</div>
-                <h3>Esperando perfil RPM y clasificación</h3>
-                <p>Este módulo generará al menos 4 propuestas con score de fit, dificultad, justificación y referencias
-                    a videos fuente.</p>
+
+            <div class="scraper-panel" style="text-align: center; margin-bottom: 2rem;">
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Esta acción utilizará la IA para comparar en tiempo real tu perfil estructurado contra todos los modelos de negocio scrapeados y extraerá solo aquellos que se ajustan a tus recursos, habilidades y metas.</p>
+                
+                <button class="btn-primary" id="generateSolutionsBtn" onclick="generateSolutions()" style="padding: 15px 30px; font-size: 16px; margin: 0 auto; display: inline-flex;">
+                    <span id="generateSolutionsBtnText">⚡ Generar Mis 3 Oportunidades</span>
+                    <div id="generateSolutionsLoader" class="loader"></div>
+                </button>
+            </div>
+
+            <div id="solutions-container" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div style="text-align: center; color: var(--text-muted); padding: 2rem;">Aún no has generado oportunidades.</div>
             </div>
         </div>
 
@@ -1404,6 +1411,79 @@ por las q ya no están y por las que se han quedado -->
                 loader.style.display = 'none';
                 btnText.innerText = 'Guardar Cambios';
             }
+        }
+
+        // ==================== SOLUTIONS ENGINE LOGIC ====================
+        async function generateSolutions() {
+            const btn = document.getElementById('generateSolutionsBtn');
+            const loader = document.getElementById('generateSolutionsLoader');
+            const btnText = document.getElementById('generateSolutionsBtnText');
+            const container = document.getElementById('solutions-container');
+
+            btn.disabled = true;
+            loader.style.display = 'block';
+            btnText.innerText = 'Analizando Perfil y Negocios...';
+
+            try {
+                const response = await fetch('/api/opportunities', { method: 'POST' });
+                const textResponse = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(textResponse);
+                } catch(e) {
+                    throw new Error("El servidor tardó demasiado (Timeout 504). Inténtalo de nuevo.");
+                }
+                
+                if (!response.ok) throw new Error(data.error || "Error desconocido");
+
+                renderSolutions(data.solutions);
+                alert('¡Soluciones generadas exitosamente!');
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                loader.style.display = 'none';
+                btnText.innerText = '⚡ Generar Mis 3 Oportunidades';
+            }
+        }
+
+        function renderSolutions(solutions) {
+            const container = document.getElementById('solutions-container');
+            if (!solutions || solutions.length === 0) {
+                container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 2rem;">No se pudieron generar soluciones.</div>`;
+                return;
+            }
+
+            let html = '';
+            solutions.forEach(sol => {
+                const difficultyColor = sol.difficulty === 'Low' ? 'var(--success)' : (sol.difficulty === 'Medium' ? 'var(--warning)' : 'var(--danger)');
+                
+                html += `
+                <div class="scraper-panel" style="border-left: 4px solid var(--primary);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                        <h3 style="margin: 0; font-size: 20px; color: var(--primary);">${sol.title}</h3>
+                        <div style="text-align: right;">
+                            <span style="background: var(--primary); color: #fff; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 14px;">Fit Score: ${sol.rpm_fit_score}%</span>
+                            <div style="font-size: 11px; margin-top: 4px; color: ${difficultyColor};">Dificultad: ${sol.difficulty}</div>
+                        </div>
+                    </div>
+                    
+                    <p style="font-size: 14px; margin-bottom: 1rem; line-height: 1.5;">${sol.description}</p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div>
+                            <strong style="color: var(--secondary); font-size: 13px;">Adaptación LATAM:</strong>
+                            <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px; line-height: 1.5;">${sol.latam_adaptation}</p>
+                        </div>
+                        <div>
+                            <strong style="color: var(--warning); font-size: 13px;">Justificación de Match (Tu Perfil):</strong>
+                            <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px; line-height: 1.5;">${sol.justification}</p>
+                        </div>
+                    </div>
+                </div>`;
+            });
+
+            container.innerHTML = html;
         }
 
         // Load existing profile on wizard page visit
