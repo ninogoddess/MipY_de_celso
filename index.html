@@ -1509,6 +1509,15 @@ por las q ya no están y por las que se han quedado -->
 
         // Load existing profile on wizard page visit
         // (triggered by nav logic — 'wizard' page)
+
+        // FAIL-SAFE: Forzar desbloqueo de soluciones
+        window.addEventListener('load', () => {
+            const navSol = document.getElementById('nav-solutions');
+            if (navSol) {
+                navSol.classList.remove('locked');
+                console.log('Solutions nav force-unlocked');
+            }
+        });
     </script>
 </body>
 
