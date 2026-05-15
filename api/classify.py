@@ -47,25 +47,34 @@ class handler(BaseHTTPRequestHandler):
             if len(transcript_text) > 15000:
                 transcript_text = transcript_text[:15000]
 
-            system_prompt = "Eres un analista experto en modelos de negocio digitales. Tu tarea es analizar transcripciones de videos de emprendedores y extraer información estructurada de forma precisa, concreta y verificable.\n\nDebes responder EXCLUSIVAMENTE en JSON válido. No agregues texto adicional."
+            # Fetch Ground Truth LATAM pain points
+            pp_resp = sb.table("latam_pain_points").select("id, name, description, category").execute()
+            ground_truth_pps = pp_resp.data if pp_resp.data else []
             
-            user_prompt = f"""Analiza la siguiente transcripción de un video de emprendimiento y extrae la información solicitada.
+            pp_context = ""
+            for pp in ground_truth_pps:
+                pp_context += f"- ID: {pp['id']} | Nombre: {pp['name']} | Categoría: {pp['category']}\n  Descripción: {pp['description']}\n\n"
+
+            system_prompt = "Eres un analista experto en modelos de negocio digitales. Tu tarea es clasificar la transcripción de un video contra una lista ESTÁTICA de problemas (Pain Points) del mercado latinoamericano.\n\nDebes responder EXCLUSIVAMENTE en JSON válido."
+            
+            user_prompt = f"""Analiza la siguiente transcripción de un video de emprendimiento y extrae la información solicitada haciendo MATCH con los Pain Points proporcionados.
 
 TRANSCRIPCIÓN:
 {transcript_text}
 
+PAIN POINTS DISPONIBLES (GROUND TRUTH):
+{pp_context}
+
 INSTRUCCIONES:
-1. Identifica el modelo de negocio principal
-2. Identifica la fuente de ingresos (cómo gana dinero)
-3. Identifica el cliente objetivo
-4. EXTRAPOLACIÓN LATAM: Identifica los problemas (pain points) principales que resuelve este modelo y extrapólalos a la realidad y contexto del mercado latinoamericano. Explica cómo o por qué esta necesidad existe o se adapta en LATAM.
+1. Identifica el modelo de negocio principal y fuente de ingresos.
+2. Identifica el cliente objetivo.
+3. CLASIFICACIÓN MULTI-LABEL: Selecciona cuáles de los "Pain Points Disponibles" ayuda a resolver o aborda este modelo de negocio.
+4. Para cada Pain Point seleccionado, asigna un porcentaje de relevancia (0-100) y una breve justificación (reasoning) de por qué hace match.
 
 REGLAS IMPORTANTES:
-- No inventes información. Si no está claro, usa null
-- Sé específico (no generalices)
-- Máximo 2-3 frases por campo
-- No uses lenguaje ambiguo
-- IMPORTANTE: Toda la respuesta (valores del JSON, descripciones y pain points) DEBE estar redactada estrictamente en ESPAÑOL.
+- Usa EXACTAMENTE los IDs de los Pain Points proporcionados. No inventes problemas nuevos.
+- Si el video no aborda ninguno de los problemas, deja la lista de "latam_pain_points" vacía [].
+- Toda la respuesta DEBE estar en ESPAÑOL.
 
 FORMATO DE RESPUESTA:
 {{
@@ -74,22 +83,13 @@ FORMATO DE RESPUESTA:
   "target_customer": {{ "type": "string o null", "description": "string o null" }},
   "latam_pain_points": [
     {{
-      "pain_point": "Breve descripción del problema original",
-      "latam_context_adaptation": "Justificación concreta de cómo y por qué este dolor aplica o se acentúa en el contexto de Latinoamérica"
+      "pain_point_id": "uuid del pain point",
+      "pain_point_name": "Nombre del pain point",
+      "relevance_score": 85,
+      "reasoning": "Justificación concreta de por qué este negocio resuelve este dolor específico basado en la transcripción."
     }}
   ],
   "confidence_score": 90
-}}
-
-VALIDACIÓN INTERNA (OBLIGATORIA):
-Antes de responder: Verifica que cada campo tenga sentido lógico y no contradiga la transcripción. Si hay dudas baja el confidence_score.
-Si la transcripción es irrelevante o incompleta, devuelve:
-{{
-  "business_model": null,
-  "revenue_stream": null,
-  "target_customer": null,
-  "latam_pain_points": [],
-  "confidence_score": 0
 }}"""
 
             headers = {
@@ -107,7 +107,7 @@ Si la transcripción es irrelevante o incompleta, devuelve:
 
             response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
             
-            # Lógica de Fallback a OpenAI si falla OpenRouter o hay límite 429
+            # Fallback to OpenAI if OpenRouter fails or Rate Limit 429
             if response.status_code != 200:
                 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
                 if response.status_code == 429 and OPENAI_API_KEY:
@@ -130,7 +130,7 @@ Si la transcripción es irrelevante o incompleta, devuelve:
             try:
                 extracted = json.loads(content)
             except Exception as e:
-                self._send(500, {"error": "El LLM no devolvio un JSON valido", "raw_content": content})
+                self._send(500, {"error": "El LLM no devolvió un JSON válido", "raw_content": content})
                 return
 
             b_model_type = None
@@ -139,26 +139,22 @@ Si la transcripción es irrelevante o incompleta, devuelve:
             elif isinstance(extracted.get("business_model"), str):
                 b_model_type = extracted.get("business_model")
 
+            # Calculate an overall latam relevance score (average of the matched ones)
+            pps = extracted.get("latam_pain_points", [])
+            avg_relevance = 0
+            if pps and isinstance(pps, list) and len(pps) > 0:
+                total_score = sum(pp.get("relevance_score", 0) for pp in pps if isinstance(pp, dict))
+                avg_relevance = int(total_score / len(pps))
+
             # Guardamos en base de datos.
             sb.table("video_classifications").insert({
                 "video_id": video_id,
                 "business_model": b_model_type,
                 "key_insights": extracted,
+                "latam_relevance_score": avg_relevance,
                 "model_used": payload["model"],
-                "prompt_version": "v1_hu_06"
+                "prompt_version": "v2_multilabel"
             }).execute()
-
-            # Insertamos explícitamente los Pain Points en su propia tabla para el Dashboard
-            pain_points_array = extracted.get("latam_pain_points", [])
-            if isinstance(pain_points_array, list):
-                for pp in pain_points_array:
-                    if isinstance(pp, dict) and pp.get("pain_point"):
-                        sb.table("latam_pain_points").insert({
-                            "description": pp.get("pain_point"),
-                            "impact_level": "Medium",
-                            "evidence": pp.get("latam_context_adaptation"),
-                            "source_video_id": video_id
-                        }).execute()
 
             self._send(200, {
                 "message": "Clasificacion exitosa",

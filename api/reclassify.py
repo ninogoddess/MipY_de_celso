@@ -25,8 +25,7 @@ class handler(BaseHTTPRequestHandler):
 
             sb = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-            # Step 1: Wipe existing classifications and pain points
-            sb.table("latam_pain_points").delete().neq("id", "00000000-0000-0000-0000-000000000000").execute()
+            # Step 1: Wipe existing classifications ONLY. DO NOT WIPE latam_pain_points!
             sb.table("video_classifications").delete().neq("id", "00000000-0000-0000-0000-000000000000").execute()
 
             # Step 2: Get all transcriptions
@@ -35,7 +34,15 @@ class handler(BaseHTTPRequestHandler):
                 self._send(200, {"message": "No hay transcripciones para re-clasificar.", "reclassified": 0})
                 return
 
-            system_prompt = "Eres un analista experto en modelos de negocio digitales. Tu tarea es analizar transcripciones de videos de emprendedores y extraer información estructurada de forma precisa, concreta y verificable.\n\nDebes responder EXCLUSIVAMENTE en JSON válido. No agregues texto adicional."
+            # Fetch Ground Truth LATAM pain points
+            pp_resp = sb.table("latam_pain_points").select("id, name, description, category").execute()
+            ground_truth_pps = pp_resp.data if pp_resp.data else []
+            
+            pp_context = ""
+            for pp in ground_truth_pps:
+                pp_context += f"- ID: {pp['id']} | Nombre: {pp['name']} | Categoría: {pp['category']}\n  Descripción: {pp['description']}\n\n"
+
+            system_prompt = "Eres un analista experto en modelos de negocio digitales. Tu tarea es clasificar la transcripción de un video contra una lista ESTÁTICA de problemas (Pain Points) del mercado latinoamericano.\n\nDebes responder EXCLUSIVAMENTE en JSON válido. No agregues texto adicional."
 
             reclassified = 0
             errors = []
@@ -44,22 +51,24 @@ class handler(BaseHTTPRequestHandler):
                 video_id = t["video_id"]
                 transcript_text = t["full_text"][:15000]
 
-                user_prompt = f"""Analiza la siguiente transcripción de un video de emprendimiento y extrae la información solicitada.
+                user_prompt = f"""Analiza la siguiente transcripción de un video de emprendimiento y extrae la información solicitada haciendo MATCH con los Pain Points proporcionados.
 
 TRANSCRIPCIÓN:
 {transcript_text}
 
+PAIN POINTS DISPONIBLES (GROUND TRUTH):
+{pp_context}
+
 INSTRUCCIONES:
-1. Identifica el modelo de negocio principal
-2. Identifica la fuente de ingresos (cómo gana dinero)
-3. Identifica el cliente objetivo
-4. EXTRAPOLACIÓN LATAM: Identifica los problemas (pain points) principales que resuelve este modelo y extrapólalos a la realidad y contexto del mercado latinoamericano. Explica cómo o por qué esta necesidad existe o se adapta en LATAM.
+1. Identifica el modelo de negocio principal y fuente de ingresos.
+2. Identifica el cliente objetivo.
+3. CLASIFICACIÓN MULTI-LABEL: Selecciona cuáles de los "Pain Points Disponibles" ayuda a resolver o aborda este modelo de negocio.
+4. Para cada Pain Point seleccionado, asigna un porcentaje de relevancia (0-100) y una breve justificación (reasoning) de por qué hace match.
 
 REGLAS IMPORTANTES:
-- No inventes información. Si no está claro, usa null
-- Sé específico (no generalices)
-- Máximo 2-3 frases por campo
-- IMPORTANTE: Toda la respuesta DEBE estar en ESPAÑOL.
+- Usa EXACTAMENTE los IDs de los Pain Points proporcionados. No inventes problemas nuevos.
+- Si el video no aborda ninguno de los problemas, deja la lista de "latam_pain_points" vacía [].
+- Toda la respuesta DEBE estar en ESPAÑOL.
 
 FORMATO DE RESPUESTA:
 {{
@@ -68,10 +77,10 @@ FORMATO DE RESPUESTA:
   "target_customer": {{ "type": "string o null", "description": "string o null" }},
   "latam_pain_points": [
     {{
-      "pain_point": "Breve descripción del problema original",
-      "latam_context_adaptation": "Justificación de cómo y por qué este dolor aplica en LATAM",
-      "category": "Categoría del pain point (ej: Fintech, Logistics, Education, Health, E-commerce, SaaS, etc.)",
-      "relevance_level": "High | Medium | Low"
+      "pain_point_id": "uuid del pain point",
+      "pain_point_name": "Nombre del pain point",
+      "relevance_score": 85,
+      "reasoning": "Justificación concreta de por qué este negocio resuelve este dolor específico basado en la transcripción."
     }}
   ],
   "confidence_score": 90
@@ -116,28 +125,20 @@ FORMATO DE RESPUESTA:
                     elif isinstance(extracted.get("business_model"), str):
                         b_model_type = extracted.get("business_model")
 
+                    pps = extracted.get("latam_pain_points", [])
+                    avg_relevance = 0
+                    if pps and isinstance(pps, list) and len(pps) > 0:
+                        total_score = sum(pp.get("relevance_score", 0) for pp in pps if isinstance(pp, dict))
+                        avg_relevance = int(total_score / len(pps))
+
                     sb.table("video_classifications").insert({
                         "video_id": video_id,
                         "business_model": b_model_type,
                         "key_insights": extracted,
+                        "latam_relevance_score": avg_relevance,
                         "model_used": payload["model"],
-                        "prompt_version": "v2_reclass"
+                        "prompt_version": "v2_multilabel"
                     }).execute()
-
-                    pain_points_array = extracted.get("latam_pain_points", [])
-                    if isinstance(pain_points_array, list):
-                        for pp in pain_points_array:
-                            if isinstance(pp, dict) and pp.get("pain_point"):
-                                impact = pp.get("relevance_level", "Medium")
-                                if impact not in ("Low", "Medium", "High", "Critical"):
-                                    impact = "Medium"
-                                sb.table("latam_pain_points").insert({
-                                    "description": pp.get("pain_point"),
-                                    "impact_level": impact,
-                                    "category": pp.get("category", "General"),
-                                    "evidence": pp.get("latam_context_adaptation"),
-                                    "source_video_id": video_id
-                                }).execute()
 
                     reclassified += 1
                 except Exception as inner_e:
