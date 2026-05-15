@@ -1249,57 +1249,59 @@ por las q ya no están y por las que se han quedado -->
                 html += `<textarea class="profile-editable" data-field="profile_summary">${profile.profile_summary}</textarea>`;
             }
 
-            // RPM Profile
-            const rpm = profile.rpm_profile || {};
-            if (rpm.results) {
-                html += `<div class="profile-section-title">Resultados (R)</div>`;
-                Object.entries(rpm.results).forEach(([k, v]) => {
-                    html += `<div class="profile-field"><strong>${k}:</strong> <span>${v || '—'}</span></div>`;
-                });
-            }
-            if (rpm.purpose) {
-                html += `<div class="profile-section-title">Propósito (P)</div>`;
-                Object.entries(rpm.purpose).forEach(([k, v]) => {
-                    const display = Array.isArray(v) ? v.join(', ') : (v || '—');
-                    html += `<div class="profile-field"><strong>${k}:</strong> <span>${display}</span></div>`;
-                });
-            }
-            if (rpm.constraints) {
-                html += `<div class="profile-section-title">Recursos y Restricciones</div>`;
-                Object.entries(rpm.constraints).forEach(([k, v]) => {
-                    const display = Array.isArray(v) ? v.join(', ') : (v || '—');
-                    html += `<div class="profile-field"><strong>${k}:</strong> <span>${display}</span></div>`;
-                });
-            }
+            // RPM Core
+            html += `<div class="profile-section-title">Perfil Base</div>`;
+            
+            const fields = [
+                { key: 'goal_type', label: 'Tipo de Meta' },
+                { key: 'financial_goal', label: 'Meta Financiera' },
+                { key: 'time_commitment', label: 'Compromiso de Tiempo' },
+                { key: 'risk_profile', label: 'Perfil de Riesgo' },
+            ];
+
+            fields.forEach(f => {
+                if (profile[f.key]) {
+                    html += `<div class="profile-field"><strong>${f.label}:</strong> <span>${profile[f.key]}</span></div>`;
+                    html += `<textarea class="profile-editable" data-field="${f.key}">${profile[f.key]}</textarea>`;
+                }
+            });
+
+            // Arrays
+            const arrayFields = [
+                { key: 'business_preferences', label: 'Preferencias de Negocio' },
+                { key: 'skills', label: 'Habilidades' },
+                { key: 'constraints', label: 'Restricciones / Recursos' }
+            ];
+
+            arrayFields.forEach(f => {
+                if (profile[f.key] && Array.isArray(profile[f.key])) {
+                    const val = profile[f.key].join(', ');
+                    html += `<div class="profile-field"><strong>${f.label}:</strong> <span>${val}</span></div>`;
+                    html += `<textarea class="profile-editable" data-field="${f.key}">${val}</textarea>`;
+                }
+            });
 
             // Pain Point Match
-            if (profile.pain_point_match && profile.pain_point_match.length > 0) {
+            if (profile.market_match && profile.market_match.length > 0) {
                 html += `<div class="profile-section-title">Cruce con Pain Points LATAM</div>`;
-                profile.pain_point_match.forEach(pp => {
-                    const color = pp.relevance_score === 'High' ? 'var(--primary)' : (pp.relevance_score === 'Medium' ? 'var(--warning)' : 'var(--text-muted)');
-                    html += `<div class="profile-field" style="background: rgba(0,0,0,0.2); padding: 8px; margin-bottom: 8px;"><strong style="color:${color};">[${pp.relevance_score}] ${pp.category}:</strong> <span>${pp.problem}</span><br><small style="color:var(--text-muted);">${pp.reasoning}</small></div>`;
+                profile.market_match.forEach(pp => {
+                    const color = pp.relevance === 'High' ? 'var(--primary)' : (pp.relevance === 'Medium' ? 'var(--warning)' : 'var(--text-muted)');
+                    html += `<div class="profile-field" style="background: rgba(0,0,0,0.2); padding: 8px; margin-bottom: 8px;"><strong style="color:${color};">[${pp.relevance}] ${pp.pain_point}:</strong><br><small style="color:var(--text-muted);">${pp.reasoning}</small></div>`;
                 });
             }
 
             // Massive Action Plan
             const map = profile.massive_action_plan || {};
-            if (map.opportunity) {
+            if (map.recommended_model) {
                 html += `<div class="profile-section-title">Plan de Acción Masiva (MAP)</div>`;
-                html += `<div class="profile-field"><strong>Oportunidad:</strong> <span>${map.opportunity}</span></div>`;
-                html += `<div class="profile-field"><strong>Modelo de negocio:</strong> <span>${map.business_model || '—'}</span></div>`;
+                html += `<div class="profile-field"><strong>Modelo Recomendado:</strong> <span>${map.recommended_model}</span></div>`;
+                html += `<textarea class="profile-editable" data-map-field="recommended_model">${map.recommended_model}</textarea>`;
+
                 if (map.steps && map.steps.length) {
                     html += `<div class="profile-field"><strong>Pasos:</strong></div><ol style="padding-left:20px; color:var(--text-muted); font-size:13px;">`;
                     map.steps.forEach(s => html += `<li style="margin-bottom:4px;">${s}</li>`);
                     html += `</ol>`;
-                }
-                if (map.priorities && map.priorities.length) {
-                    html += `<div class="profile-field"><strong>Prioridades:</strong> <span>${map.priorities.join(' → ')}</span></div>`;
-                }
-                if (map.weekly_execution) {
-                    html += `<div class="profile-field"><strong>Plan semanal:</strong> <span>${map.weekly_execution}</span></div>`;
-                }
-                if (map.mvp_definition) {
-                    html += `<div class="profile-field"><strong>MVP/MVT:</strong> <span>${map.mvp_definition}</span></div>`;
+                    html += `<textarea class="profile-editable" data-map-field="steps">${map.steps.join('\n')}</textarea>`;
                 }
             }
 
@@ -1339,10 +1341,28 @@ por las q ya no están y por las que se han quedado -->
             btnText.innerText = 'Guardando...';
 
             // Get edited values
-            const summaryEl = document.querySelector('.profile-editable[data-field="profile_summary"]');
-            if (summaryEl && currentRpmProfile) {
-                currentRpmProfile.profile_summary = summaryEl.value;
-            }
+            const editableFields = document.querySelectorAll('.profile-editable');
+            editableFields.forEach(el => {
+                const fieldName = el.getAttribute('data-field');
+                const mapField = el.getAttribute('data-map-field');
+
+                if (fieldName && currentRpmProfile) {
+                    // For arrays, split by comma if needed, but since it's text we might just keep it as string or try to arrayify
+                    if (['business_preferences', 'skills', 'constraints'].includes(fieldName)) {
+                        currentRpmProfile[fieldName] = el.value.split(',').map(s => s.trim());
+                    } else {
+                        currentRpmProfile[fieldName] = el.value;
+                    }
+                }
+
+                if (mapField && currentRpmProfile && currentRpmProfile.massive_action_plan) {
+                    if (mapField === 'steps') {
+                        currentRpmProfile.massive_action_plan[mapField] = el.value.split('\n').filter(s => s.trim() !== '');
+                    } else {
+                        currentRpmProfile.massive_action_plan[mapField] = el.value;
+                    }
+                }
+            });
 
             try {
                 const response = await fetch('/api/rpm_profile', {

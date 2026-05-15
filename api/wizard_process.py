@@ -60,46 +60,25 @@ Tu tarea es:
 
 RESPONDE EXCLUSIVAMENTE en JSON válido con esta estructura:
 {
-  "rpm_profile": {
-    "results": {
-      "goal": "Meta principal sintetizada",
-      "timeline": "Línea temporal",
-      "income_target": "Meta de ingresos",
-      "business_type": "Tipo de negocio que busca",
-      "commitment_level": "Nivel de compromiso"
-    },
-    "purpose": {
-      "core_motivation": "Motivación central",
-      "emotional_drivers": ["Lista de drivers emocionales"],
-      "fear_if_not_achieved": "Miedo principal",
-      "beneficiaries": ["Quiénes se benefician"]
-    },
-    "constraints": {
-      "time_per_week": "Horas disponibles",
-      "skills": ["Habilidades identificadas"],
-      "resources": ["Recursos disponibles"],
-      "risk_tolerance": "Tolerancia al riesgo",
-      "experience_level": "Nivel de experiencia"
-    }
-  },
-  "pain_point_match": [
+  "goal_type": "string",
+  "business_preferences": ["string", "string"],
+  "time_commitment": "string",
+  "financial_goal": "string",
+  "risk_profile": "string",
+  "skills": ["string", "string"],
+  "constraints": ["string", "string"],
+  "market_match": [
     {
-      "category": "Categoría",
-      "problem": "Problema del mercado",
-      "relevance_score": "High/Medium/Low",
-      "reasoning": "Por qué encaja con este perfil"
+      "pain_point": "Problema del mercado",
+      "relevance": "High/Medium/Low",
+      "reasoning": "Por qué hace match"
     }
   ],
   "massive_action_plan": {
-    "opportunity": "Oportunidad principal identificada",
-    "business_model": "Modelo de negocio recomendado",
-    "steps": ["Paso 1", "Paso 2", "..."],
-    "priorities": ["Prioridad 1", "Prioridad 2"],
-    "weekly_execution": "Plan semanal sugerido",
-    "learning_path": ["Qué aprender primero"],
-    "mvp_definition": "Definición del MVP/MVT"
+    "recommended_model": "Modelo recomendado",
+    "steps": ["Paso 1", "Paso 2", "Paso 3"]
   },
-  "profile_summary": "Resumen ejecutivo de 2-3 párrafos del perfil completo"
+  "profile_summary": "Resumen ejecutivo de 2 párrafos."
 }
 
 IMPORTANTE: Responde en español. No inventes datos que no estén en las respuestas."""
