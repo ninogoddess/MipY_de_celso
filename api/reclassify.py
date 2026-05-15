@@ -25,13 +25,24 @@ class handler(BaseHTTPRequestHandler):
 
             sb = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-            # Step 1: Wipe existing classifications ONLY. DO NOT WIPE latam_pain_points!
-            sb.table("video_classifications").delete().neq("id", "00000000-0000-0000-0000-000000000000").execute()
+            # Step 1: En lugar de borrar todo, buscamos los videos que YA están clasificados con la nueva versión v2_multilabel
+            cls_resp = sb.table("video_classifications").select("video_id").eq("prompt_version", "v2_multilabel").execute()
+            classified_ids = [c["video_id"] for c in cls_resp.data] if cls_resp.data else []
 
-            # Step 2: Get all transcriptions
-            transcriptions = sb.table("transcriptions").select("video_id, full_text").limit(500).execute()
-            if not transcriptions.data:
-                self._send(200, {"message": "No hay transcripciones para re-clasificar.", "reclassified": 0})
+            # Step 2: Obtener solo 2 transcripciones que no estén en classified_ids
+            # Supabase API python no tiene un 'not in' fácil, así que traemos algunos y filtramos en Python.
+            transcriptions = sb.table("transcriptions").select("video_id, full_text").limit(100).execute()
+            
+            to_process = []
+            if transcriptions.data:
+                for t in transcriptions.data:
+                    if t["video_id"] not in classified_ids:
+                        to_process.append(t)
+                    if len(to_process) >= 2:
+                        break
+
+            if not to_process:
+                self._send(200, {"message": "No hay transcripciones pendientes para re-clasificar a v2_multilabel.", "reclassified": 0})
                 return
 
             # Fetch Ground Truth LATAM pain points
@@ -47,7 +58,7 @@ class handler(BaseHTTPRequestHandler):
             reclassified = 0
             errors = []
 
-            for t in transcriptions.data:
+            for t in to_process:
                 video_id = t["video_id"]
                 transcript_text = t["full_text"][:15000]
 
@@ -131,6 +142,10 @@ FORMATO DE RESPUESTA:
                         total_score = sum(pp.get("relevance_score", 0) for pp in pps if isinstance(pp, dict))
                         avg_relevance = int(total_score / len(pps))
 
+                    # Borramos la clasificación vieja para este video si existe
+                    sb.table("video_classifications").delete().eq("video_id", video_id).execute()
+
+                    # Insertamos la nueva
                     sb.table("video_classifications").insert({
                         "video_id": video_id,
                         "business_model": b_model_type,

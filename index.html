@@ -340,7 +340,7 @@ por las q ya no están y por las que se han quedado -->
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                     <button class="btn-primary" id="reclassifyBtn" onclick="startReclassification()"
                         style="background-color: var(--warning); color: #000; flex: 1;">
-                        <span id="reclassifyBtnText">Re-Clasificar Todos (Reactivo)</span>
+                        <span id="reclassifyBtnText">Re-clasificar Lote (2 videos)</span>
                         <div id="reclassifyLoader" class="loader"></div>
                     </button>
                     <!-- <button class="btn-primary" id="addPainPointBtn" onclick="openAddPainPointModal()"
@@ -931,7 +931,7 @@ por las q ya no están y por las que se han quedado -->
 
         // ==================== RE-CLASSIFY LOGIC ====================
         async function startReclassification() {
-            if (!confirm('⚠️ Esto eliminará TODAS las clasificaciones actuales y re-procesará cada video con IA.\n\nEsto puede tardar varios minutos y consumir cuota de la API.\n\n¿Continuar?')) return;
+            if (!confirm('Esto tomará 2 videos que aún NO han sido clasificados con los nuevos Pain Points (v2) y los procesará.\n\nPuedes presionar este botón varias veces seguidas, procesando de a 2 en 2 para no saturar la cuota.\n\n¿Continuar?')) return;
 
             const btn = document.getElementById('reclassifyBtn');
             const loader = document.getElementById('reclassifyLoader');
@@ -940,7 +940,7 @@ por las q ya no están y por las que se han quedado -->
 
             btn.disabled = true;
             loader.style.display = 'block';
-            btnText.innerText = 'Re-clasificando...';
+            btnText.innerText = 'Procesando Lote...';
 
             try {
                 const response = await fetch('/api/reclassify', { method: 'POST' });
@@ -961,7 +961,7 @@ por las q ya no están y por las que se han quedado -->
             } finally {
                 btn.disabled = false;
                 loader.style.display = 'none';
-                btnText.innerText = 'Re-Clasificar Todos (Dinámico)';
+                btnText.innerText = 'Re-clasificar Lote (2 videos)';
             }
         }
 
