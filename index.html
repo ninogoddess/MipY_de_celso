@@ -1,3 +1,5 @@
+<!-- frab+
+por las q ya no están y por las que se han quedado -->
 <!DOCTYPE html>
 <html lang="es">
 
@@ -14,7 +16,11 @@
 
     <!-- Hamburger toggle (mobile) -->
     <button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
     </button>
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
@@ -29,67 +35,113 @@
             <div class="sidebar-section-title">Inicio</div>
         </div>
         <div class="sidebar-item active" data-page="dashboard">
-            <span class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></span><span>Dashboard</span>
+            <span class="icon"><svg viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="3" y="14" width="7" height="7" />
+                    <rect x="14" y="14" width="7" height="7" />
+                </svg></span><span>Dashboard</span>
         </div>
         <div class="sidebar-item" data-page="hitos">
-            <span class="icon"><svg viewBox="0 0 24 24"><path d="M6 9l6-6 6 6"/><path d="M12 3v18"/><path d="M3 21h18"/></svg></span><span>Entrega Hitos</span>
+            <span class="icon"><svg viewBox="0 0 24 24">
+                    <path d="M6 9l6-6 6 6" />
+                    <path d="M12 3v18" />
+                    <path d="M3 21h18" />
+                </svg></span><span>Entrega Hitos</span>
         </div>
 
         <div class="sidebar-section">
             <div class="sidebar-section-title">Fase 1 — Scraping</div>
         </div>
         <div class="sidebar-item" data-page="scraper">
-            <span class="icon"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span><span>Scraper &amp; Logs</span>
+            <span class="icon"><svg viewBox="0 0 24 24">
+                    <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg></span><span>Scraper &amp; Logs</span>
         </div>
         <div class="sidebar-item" data-page="videos">
-            <span class="icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></span><span>Videos</span>
+            <span class="icon"><svg viewBox="0 0 24 24">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                </svg></span><span>Videos</span>
         </div>
 
         <div class="sidebar-section">
             <div class="sidebar-section-title">Fase 2 — Clasificación</div>
         </div>
         <div class="sidebar-item" data-page="painpoints">
-            <span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span><span>Pain Points LATAM</span>
+            <span class="icon"><svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg></span><span>Pain Points LATAM</span>
         </div>
         <div class="sidebar-item" data-page="wizard">
-            <span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span><span>Wizard RPM</span>
+            <span class="icon"><svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" />
+                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+                </svg></span><span>Wizard RPM</span>
         </div>
 
         <div class="sidebar-section">
             <div class="sidebar-section-title">Fase 3 — Soluciones</div>
         </div>
         <div class="sidebar-item locked" data-page="solutions">
-            <span class="icon"><svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 4 12.7V17H8v-2.3A7 7 0 0 1 12 2z"/></svg></span><span>Motor de Soluciones</span>
+            <span class="icon"><svg viewBox="0 0 24 24">
+                    <path d="M9 18h6" />
+                    <path d="M10 22h4" />
+                    <path d="M12 2a7 7 0 0 1 4 12.7V17H8v-2.3A7 7 0 0 1 12 2z" />
+                </svg></span><span>Motor de Soluciones</span>
         </div>
 
         <div class="sidebar-section">
             <div class="sidebar-section-title">Fase 4 — Validación</div>
         </div>
         <div class="sidebar-item locked" data-page="mvt">
-            <span class="icon"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91A6 6 0 0 1 18.47 2.53z"/></svg></span><span>MVT</span>
+            <span class="icon"><svg viewBox="0 0 24 24">
+                    <path
+                        d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91A6 6 0 0 1 18.47 2.53z" />
+                </svg></span><span>MVT</span>
         </div>
 
         <div class="sidebar-section">
             <div class="sidebar-section-title">Sistema</div>
         </div>
         <div class="sidebar-item locked" data-page="settings">
-            <span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span>Ajustes</span>
+            <span class="icon"><svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="3" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg></span><span>Ajustes</span>
         </div>
 
         <div class="sidebar-section" style="margin-top:auto;">
             <div class="sidebar-section-title">Conexiones</div>
         </div>
-        <a href="https://github.com/ninogoddess/MipY_de_celso" target="_blank" class="sidebar-item" style="text-decoration: none;">
-            <span class="icon"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></span><span>GitHub</span>
+        <a href="https://github.com/ninogoddess/MipY_de_celso" target="_blank" class="sidebar-item"
+            style="text-decoration: none;">
+            <span class="icon"><svg viewBox="0 0 24 24">
+                    <path
+                        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+                </svg></span><span>GitHub</span>
         </a>
-        <a href="https://vercel.com/maxiipaxy-7307s-projects/mip-y-de-celso" target="_blank" class="sidebar-item" style="text-decoration: none;">
-            <span class="icon"><svg viewBox="0 0 24 24"><polygon points="12 2 22 22 2 22"/></svg></span><span>Vercel</span>
+        <a href="https://vercel.com/maxiipaxy-7307s-projects/mip-y-de-celso" target="_blank" class="sidebar-item"
+            style="text-decoration: none;">
+            <span class="icon"><svg viewBox="0 0 24 24">
+                    <polygon points="12 2 22 22 2 22" />
+                </svg></span><span>Vercel</span>
         </a>
-        <a href="https://supabase.com/dashboard/project/bwqqbpuckinrizoelpcc/sql/2cb00856-46e6-450d-a365-ff3a0bc80a35" target="_blank" class="sidebar-item" style="text-decoration: none;">
-            <span class="icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span><span>Supabase</span>
+        <a href="https://supabase.com/dashboard/project/bwqqbpuckinrizoelpcc/sql/2cb00856-46e6-450d-a365-ff3a0bc80a35"
+            target="_blank" class="sidebar-item" style="text-decoration: none;">
+            <span class="icon"><svg viewBox="0 0 24 24">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg></span><span>Supabase</span>
         </a>
         <a href="http://openrouter.ai/workspaces" target="_blank" class="sidebar-item" style="text-decoration: none;">
-            <span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2a4 4 0 0 1 4 4c0 1.1-.9 2-2 2h-4a2 2 0 0 1 0-4h.5A4 4 0 0 1 12 2z"/><path d="M12 8v8"/><circle cx="12" cy="20" r="2"/><path d="M6 12h12"/></svg></span><span>OpenRouter</span>
+            <span class="icon"><svg viewBox="0 0 24 24">
+                    <path d="M12 2a4 4 0 0 1 4 4c0 1.1-.9 2-2 2h-4a2 2 0 0 1 0-4h.5A4 4 0 0 1 12 2z" />
+                    <path d="M12 8v8" />
+                    <circle cx="12" cy="20" r="2" />
+                    <path d="M6 12h12" />
+                </svg></span><span>OpenRouter</span>
         </a>
     </nav>
 
@@ -152,12 +204,13 @@
                 <h2>Entrega de Hitos</h2>
                 <p>Evidencias y avances del desarrollo del proyecto.</p>
             </div>
-            
+
             <div class="videos-grid">
                 <!-- Hito 1 -->
                 <div class="video-card" style="display: flex; flex-direction: column;">
                     <a href="/assets/hito_1_celso_desarrollo_scrap.png" target="_blank" style="text-decoration: none;">
-                        <img src="/assets/hito_1_celso_desarrollo_scrap.png" alt="Hito 1" loading="lazy" style="height: 200px; object-fit: cover;">
+                        <img src="/assets/hito_1_celso_desarrollo_scrap.png" alt="Hito 1" loading="lazy"
+                            style="height: 200px; object-fit: cover;">
                         <div class="video-card-content" style="flex: 1;">
                             <h4 style="border-bottom: 1px solid var(--border); padding-bottom: 8px;">Entrega Hito 1</h4>
                             <div style="font-size: 13px; margin-top: 12px; color: var(--text-muted);">
@@ -169,7 +222,8 @@
 
                 <!-- Hito 2 -->
                 <div class="video-card" style="display: flex; flex-direction: column;">
-                    <a href="/assets/avance_hito_2%20desarrollo_celso_scrap.mkv" target="_blank" style="text-decoration: none;">
+                    <a href="/assets/avance_hito_2%20desarrollo_celso_scrap.mkv" target="_blank"
+                        style="text-decoration: none;">
                         <video style="width: 100%; height: 200px; object-fit: cover; background: #000;" controls>
                             <source src="/assets/avance_hito_2%20desarrollo_celso_scrap.mkv" type="video/mp4">
                             <source src="/assets/avance_hito_2%20desarrollo_celso_scrap.mkv" type="video/x-matroska">
@@ -186,31 +240,48 @@
 
                 <!-- Hito 3 -->
                 <div class="video-card" style="display: flex; flex-direction: column;">
-                    <div style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; border-bottom: 1px solid var(--border);">
-                        <a href="/assets/BD_hito3.png" target="_blank" style="flex: 0 0 100%; scroll-snap-align: start;">
-                            <img src="/assets/BD_hito3.png" alt="Base de Datos" loading="lazy" style="height: 200px; width: 100%; object-fit: cover;">
+                    <div
+                        style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; border-bottom: 1px solid var(--border);">
+                        <a href="/assets/BD_hito3.png" target="_blank"
+                            style="flex: 0 0 100%; scroll-snap-align: start;">
+                            <img src="/assets/BD_hito3.png" alt="Base de Datos" loading="lazy"
+                                style="height: 200px; width: 100%; object-fit: cover;">
                         </a>
-                        <a href="/assets/arquitectura_hito3.png" target="_blank" style="flex: 0 0 100%; scroll-snap-align: start;">
-                            <img src="/assets/arquitectura_hito3.png" alt="Arquitectura" loading="lazy" style="height: 200px; width: 100%; object-fit: cover;">
+                        <a href="/assets/arquitectura_hito3.png" target="_blank"
+                            style="flex: 0 0 100%; scroll-snap-align: start;">
+                            <img src="/assets/arquitectura_hito3.png" alt="Arquitectura" loading="lazy"
+                                style="height: 200px; width: 100%; object-fit: cover;">
                         </a>
-                        <a href="/assets/painpoints_hito3.png" target="_blank" style="flex: 0 0 100%; scroll-snap-align: start;">
-                            <img src="/assets/painpoints_hito3.png" alt="Pain Points" loading="lazy" style="height: 200px; width: 100%; object-fit: cover;">
+                        <a href="/assets/painpoints_hito3.png" target="_blank"
+                            style="flex: 0 0 100%; scroll-snap-align: start;">
+                            <img src="/assets/painpoints_hito3.png" alt="Pain Points" loading="lazy"
+                                style="height: 200px; width: 100%; object-fit: cover;">
                         </a>
-                        <a href="/assets/schedule_hito3.png" target="_blank" style="flex: 0 0 100%; scroll-snap-align: start;">
-                            <img src="/assets/schedule_hito3.png" alt="Schedule" loading="lazy" style="height: 200px; width: 100%; object-fit: cover;">
+                        <a href="/assets/schedule_hito3.png" target="_blank"
+                            style="flex: 0 0 100%; scroll-snap-align: start;">
+                            <img src="/assets/schedule_hito3.png" alt="Schedule" loading="lazy"
+                                style="height: 200px; width: 100%; object-fit: cover;">
                         </a>
                     </div>
                     <div class="video-card-content" style="flex: 1;">
-                        <h4 style="border-bottom: 1px solid var(--border); padding-bottom: 8px;">Entrega Hito 3: BD + Pain Points</h4>
+                        <h4 style="border-bottom: 1px solid var(--border); padding-bottom: 8px;">Entrega Hito 3: BD +
+                            Pain Points</h4>
                         <div style="font-size: 13px; margin-top: 12px; color: var(--text-muted); line-height: 1.5;">
                             <p style="margin-bottom: 6px;"><strong>Resumen de implementaciones:</strong></p>
                             <ul style="padding-left: 16px; margin-bottom: 8px;">
-                                <li style="margin-bottom: 4px;"><strong>Base de Datos:</strong> Diseño relacional (14 tablas en 3 capas) implementado en Supabase (PostgreSQL) con retención de datos persistente.</li>
-                                <li style="margin-bottom: 4px;"><strong>Investigación LATAM:</strong> Extracción de Pain Points basada en transcripciones de Starter Story.</li>
-                                <li style="margin-bottom: 4px;"><strong>Automatización:</strong> Scraper configurado con logs de ejecución visibles en el sistema (Encontrados, Nuevos, Actualizados).</li>
-                                <li><strong>Responsividad:</strong> UI rediseñada para soporte móvil y documentación completa de la arquitectura en README.</li>
+                                <li style="margin-bottom: 4px;"><strong>Base de Datos:</strong> Diseño relacional (14
+                                    tablas en 3 capas) implementado en Supabase (PostgreSQL) con retención de datos
+                                    persistente.</li>
+                                <li style="margin-bottom: 4px;"><strong>Investigación LATAM:</strong> Extracción de Pain
+                                    Points basada en transcripciones de Starter Story.</li>
+                                <li style="margin-bottom: 4px;"><strong>Automatización:</strong> Scraper configurado con
+                                    logs de ejecución visibles en el sistema (Encontrados, Nuevos, Actualizados).</li>
+                                <li><strong>Responsividad:</strong> UI rediseñada para soporte móvil y documentación
+                                    completa de la arquitectura en README.</li>
                             </ul>
-                            <p style="font-size: 11px; font-style: italic;">* Desliza la imagen hacia los lados para ver todas las capturas (BD, Arquitectura, Pain Points, Schedule). Haz clic en una para verla completa.</p>
+                            <p style="font-size: 11px; font-style: italic;">* Desliza la imagen hacia los lados para ver
+                                todas las capturas (BD, Arquitectura, Pain Points, Schedule). Haz clic en una para verla
+                                completa.</p>
                         </div>
                     </div>
                 </div>
@@ -237,7 +308,9 @@
             <div id="results" class="results-list"></div>
 
             <div style="margin-top: 2rem;">
-                <h3 style="font-size: 16px; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Historial de Ejecuciones del Scraper</h3>
+                <h3
+                    style="font-size: 16px; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+                    Historial de Ejecuciones del Scraper</h3>
                 <div id="scraper-runs-container">
                     <p style="color: var(--text-muted); font-size: 13px;">Cargando historial...</p>
                 </div>
@@ -258,38 +331,31 @@
         <!-- ========== PAIN POINTS ========== -->
         <div id="page-painpoints" class="page">
             <div class="page-header">
-                <h2>Pain Points & Modelos de Negocio</h2>
-                <p>Extracción semántica de transcripciones usando LLM.</p>
+                <h2>Repositorio de Pain Points LATAM</h2>
+                <p>Base de datos "Ground Truth" de dolores de mercado. Los videos se clasificarán contra estos problemas.</p>
             </div>
 
             <div class="scraper-panel" style="margin-bottom: 2rem;">
-                <p style="margin-bottom: 1rem; color: var(--text-muted);">El sistema buscará una transcripción pendiente
-                    en la base de datos y la clasificará usando IA.</p>
+                <p style="margin-bottom: 1rem; color: var(--text-muted);">Si modificas un pain point, los videos afectados deberán ser re-clasificados para mantener la integridad.</p>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button class="btn-primary" id="classifyBtn" onclick="startClassification()"
-                    style="background-color: var(--secondary); color: #fff; flex: 1;">
-                    <span id="classifyBtnText">Clasificar Siguiente Video</span>
-                    <div id="classifyLoader" class="loader"></div>
-                </button>
-                <button class="btn-primary" id="summarizeBtn" onclick="summarizePainPoints()"
-                    style="background-color: var(--info); color: #fff; flex: 1;">
-                    <span id="summarizeBtnText">Resumir Pain Points (LLM)</span>
-                    <div id="summarizeLoader" class="loader"></div>
-                </button>
-                <button class="btn-primary" id="reclassifyBtn" onclick="startReclassification()"
-                    style="background-color: var(--warning); color: #000; flex: 1;">
-                    <span id="reclassifyBtnText">Re-Clasificar Todos (Dinámico)</span>
-                    <div id="reclassifyLoader" class="loader"></div>
-                </button>
-            </div>
-            <div id="classification-results" class="results-list"></div>
+                    <button class="btn-primary" id="reclassifyBtn" onclick="startReclassification()"
+                        style="background-color: var(--warning); color: #000; flex: 1;">
+                        <span id="reclassifyBtnText">Re-Clasificar Todos (Reactivo)</span>
+                        <div id="reclassifyLoader" class="loader"></div>
+                    </button>
+                    <!-- <button class="btn-primary" id="addPainPointBtn" onclick="openAddPainPointModal()"
+                        style="background-color: var(--primary); color: #fff; flex: 1;">
+                        <span id="addPainPointBtnText">+ Nuevo Pain Point</span>
+                    </button> -->
+                </div>
+                <div id="classification-results" class="results-list"></div>
             </div>
 
             <h3
                 style="margin-bottom: 1rem; font-size: 18px; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
-                Galería de Modelos y Pain Points</h3>
-            <div id="classifications-container" class="videos-grid">
-                <div class="loader" id="classifications-loader" style="display:block; margin: 2rem auto;"></div>
+                Listado de Pain Points (Ground Truth)</h3>
+            <div id="painpoints-container" class="videos-grid" style="grid-template-columns: 1fr;">
+                <div class="loader" id="painpoints-loader" style="display:block; margin: 2rem auto;"></div>
             </div>
         </div>
 
@@ -311,43 +377,59 @@
             <!-- STEP 1: RESULTS -->
             <div class="wizard-step active" id="wizStep1">
                 <div class="scraper-panel">
-                    <h3 style="margin-bottom: 0.5rem; color: var(--primary);">Paso 1 — ¿Qué quieres lograr? (Results)</h3>
-                    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 1.5rem;">Define metas concretas y medibles. Sé específico: nada de "quiero ganar dinero". ¿Cuánto? ¿En cuánto tiempo? ¿Qué tipo de negocio?</p>
+                    <h3 style="margin-bottom: 0.5rem; color: var(--primary);">Paso 1 — ¿Qué quieres lograr? (Results)
+                    </h3>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 1.5rem;">Define metas concretas
+                        y medibles. Sé específico: nada de "quiero ganar dinero". ¿Cuánto? ¿En cuánto tiempo? ¿Qué tipo
+                        de negocio?</p>
 
                     <label class="wizard-label">¿Cuáles son tus metas principales?</label>
-                    <textarea id="wiz_results_goals" class="wizard-textarea" placeholder="Ej: Quiero lanzar un SaaS de gestión para pymes en Colombia que genere $3,000 USD/mes en 12 meses..."></textarea>
+                    <textarea id="wiz_results_goals" class="wizard-textarea"
+                        placeholder="Ej: Quiero lanzar un SaaS de gestión para pymes en Colombia que genere $3,000 USD/mes en 12 meses..."></textarea>
 
                     <label class="wizard-label">¿Cuánto ingreso necesitas generar y en cuánto tiempo?</label>
-                    <textarea id="wiz_results_income" class="wizard-textarea" rows="2" placeholder="Ej: $2,000-$5,000 USD mensuales en los próximos 6-12 meses..."></textarea>
+                    <textarea id="wiz_results_income" class="wizard-textarea" rows="2"
+                        placeholder="Ej: $2,000-$5,000 USD mensuales en los próximos 6-12 meses..."></textarea>
 
                     <label class="wizard-label">Línea temporal: ¿cuándo quieres tener resultados tangibles?</label>
-                    <textarea id="wiz_results_timeline" class="wizard-textarea" rows="2" placeholder="Ej: Primeros clientes en 3 meses, rentabilidad en 8 meses..."></textarea>
+                    <textarea id="wiz_results_timeline" class="wizard-textarea" rows="2"
+                        placeholder="Ej: Primeros clientes en 3 meses, rentabilidad en 8 meses..."></textarea>
 
-                    <label class="wizard-label">¿Qué tipo de negocio te interesa? (digital, físico, servicios, producto...)</label>
-                    <textarea id="wiz_results_business_type" class="wizard-textarea" rows="2" placeholder="Ej: Negocio digital, SaaS, e-commerce de nicho, consultoría..."></textarea>
+                    <label class="wizard-label">¿Qué tipo de negocio te interesa? (digital, físico, servicios,
+                        producto...)</label>
+                    <textarea id="wiz_results_business_type" class="wizard-textarea" rows="2"
+                        placeholder="Ej: Negocio digital, SaaS, e-commerce de nicho, consultoría..."></textarea>
 
-                    <button class="btn-primary" onclick="wizardNext(2)" style="margin-top: 1rem;">Siguiente → Propósito (P)</button>
+                    <button class="btn-primary" onclick="wizardNext(2)" style="margin-top: 1rem;">Siguiente → Propósito
+                        (P)</button>
                 </div>
             </div>
 
             <!-- STEP 2: PURPOSE -->
             <div class="wizard-step" id="wizStep2">
                 <div class="scraper-panel">
-                    <h3 style="margin-bottom: 0.5rem; color: var(--primary);">Paso 2 — ¿Por qué es importante? (Purpose)</h3>
-                    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 1.5rem;">Identificar tu motivación real es clave. Los negocios que sobreviven tienen un "por qué" fuerte detrás.</p>
+                    <h3 style="margin-bottom: 0.5rem; color: var(--primary);">Paso 2 — ¿Por qué es importante? (Purpose)
+                    </h3>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 1.5rem;">Identificar tu
+                        motivación real es clave. Los negocios que sobreviven tienen un "por qué" fuerte detrás.</p>
 
                     <label class="wizard-label">¿Cuál es tu motivación principal para emprender?</label>
-                    <textarea id="wiz_purpose_motivation" class="wizard-textarea" placeholder="Ej: Libertad financiera, dejar mi trabajo corporativo, crear impacto en mi comunidad..."></textarea>
+                    <textarea id="wiz_purpose_motivation" class="wizard-textarea"
+                        placeholder="Ej: Libertad financiera, dejar mi trabajo corporativo, crear impacto en mi comunidad..."></textarea>
 
                     <label class="wizard-label">¿Qué pasa si NO lo logras? ¿Qué te asusta de no actuar?</label>
-                    <textarea id="wiz_purpose_fear" class="wizard-textarea" rows="2" placeholder="Ej: Seguir en un empleo que no me satisface, no poder darle mejor calidad de vida a mi familia..."></textarea>
+                    <textarea id="wiz_purpose_fear" class="wizard-textarea" rows="2"
+                        placeholder="Ej: Seguir en un empleo que no me satisface, no poder darle mejor calidad de vida a mi familia..."></textarea>
 
                     <label class="wizard-label">¿A quién más impacta tu éxito además de ti?</label>
-                    <textarea id="wiz_purpose_beneficiaries" class="wizard-textarea" rows="2" placeholder="Ej: Mi esposa e hijos, mis padres, mi comunidad local..."></textarea>
+                    <textarea id="wiz_purpose_beneficiaries" class="wizard-textarea" rows="2"
+                        placeholder="Ej: Mi esposa e hijos, mis padres, mi comunidad local..."></textarea>
 
                     <div style="display: flex; gap: 10px; margin-top: 1rem;">
-                        <button class="btn-primary" onclick="wizardNext(1)" style="background: var(--secondary); color: #fff; flex: 1;">← Resultados</button>
-                        <button class="btn-primary" onclick="wizardNext(3)" style="flex: 1;">Siguiente → Mercado (M)</button>
+                        <button class="btn-primary" onclick="wizardNext(1)"
+                            style="background: var(--secondary); color: #fff; flex: 1;">← Resultados</button>
+                        <button class="btn-primary" onclick="wizardNext(3)" style="flex: 1;">Siguiente → Mercado
+                            (M)</button>
                     </div>
                 </div>
             </div>
@@ -355,27 +437,38 @@
             <!-- STEP 3: MARKET & RESOURCES -->
             <div class="wizard-step" id="wizStep3">
                 <div class="scraper-panel">
-                    <h3 style="margin-bottom: 0.5rem; color: var(--primary);">Paso 3 — ¿Con qué cuentas? (Market & Resources)</h3>
-                    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 1.5rem;">La IA cruzará tus recursos con los pain points LATAM detectados para encontrar las mejores oportunidades para tu perfil.</p>
+                    <h3 style="margin-bottom: 0.5rem; color: var(--primary);">Paso 3 — ¿Con qué cuentas? (Market &
+                        Resources)</h3>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 1.5rem;">La IA cruzará tus
+                        recursos con los pain points LATAM detectados para encontrar las mejores oportunidades para tu
+                        perfil.</p>
 
                     <label class="wizard-label">¿Qué habilidades tienes? (técnicas, creativas, de negocio...)</label>
-                    <textarea id="wiz_market_skills" class="wizard-textarea" placeholder="Ej: Programación Python, marketing digital, diseño gráfico, ventas B2B..."></textarea>
+                    <textarea id="wiz_market_skills" class="wizard-textarea"
+                        placeholder="Ej: Programación Python, marketing digital, diseño gráfico, ventas B2B..."></textarea>
 
                     <label class="wizard-label">¿Cuántas horas por semana puedes dedicar?</label>
-                    <textarea id="wiz_market_time" class="wizard-textarea" rows="2" placeholder="Ej: 20 horas semanales (noches y fines de semana)..."></textarea>
+                    <textarea id="wiz_market_time" class="wizard-textarea" rows="2"
+                        placeholder="Ej: 20 horas semanales (noches y fines de semana)..."></textarea>
 
-                    <label class="wizard-label">¿Con qué recursos cuentas? (dinero, herramientas, red de contactos...)</label>
-                    <textarea id="wiz_market_resources" class="wizard-textarea" rows="2" placeholder="Ej: $500 USD para inversión inicial, laptop, acceso a internet, red de LinkedIn..."></textarea>
+                    <label class="wizard-label">¿Con qué recursos cuentas? (dinero, herramientas, red de
+                        contactos...)</label>
+                    <textarea id="wiz_market_resources" class="wizard-textarea" rows="2"
+                        placeholder="Ej: $500 USD para inversión inicial, laptop, acceso a internet, red de LinkedIn..."></textarea>
 
                     <label class="wizard-label">¿Cuál es tu experiencia previa en emprendimiento?</label>
-                    <textarea id="wiz_market_experience" class="wizard-textarea" rows="2" placeholder="Ej: Ninguna formal, pero he vendido en redes sociales / He tenido un negocio antes..."></textarea>
+                    <textarea id="wiz_market_experience" class="wizard-textarea" rows="2"
+                        placeholder="Ej: Ninguna formal, pero he vendido en redes sociales / He tenido un negocio antes..."></textarea>
 
                     <label class="wizard-label">¿Cuál es tu tolerancia al riesgo?</label>
-                    <textarea id="wiz_market_risk" class="wizard-textarea" rows="2" placeholder="Ej: Moderada — puedo invertir algo pero no puedo dejar mi empleo actual todavía..."></textarea>
+                    <textarea id="wiz_market_risk" class="wizard-textarea" rows="2"
+                        placeholder="Ej: Moderada — puedo invertir algo pero no puedo dejar mi empleo actual todavía..."></textarea>
 
                     <div style="display: flex; gap: 10px; margin-top: 1rem;">
-                        <button class="btn-primary" onclick="wizardNext(2)" style="background: var(--secondary); color: #fff; flex: 1;">← Propósito</button>
-                        <button class="btn-primary" onclick="wizardNext(4)" style="flex: 1;">Siguiente → Procesar con IA</button>
+                        <button class="btn-primary" onclick="wizardNext(2)"
+                            style="background: var(--secondary); color: #fff; flex: 1;">← Propósito</button>
+                        <button class="btn-primary" onclick="wizardNext(4)" style="flex: 1;">Siguiente → Procesar con
+                            IA</button>
                     </div>
                 </div>
             </div>
@@ -384,15 +477,19 @@
             <div class="wizard-step" id="wizStep4">
                 <div class="scraper-panel">
                     <h3 style="margin-bottom: 0.5rem; color: var(--primary);">Paso 4 — Procesamiento con IA</h3>
-                    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 1.5rem;">La IA analizará tus respuestas, las cruzará con los pain points LATAM identificados y generará tu Perfil RPM + Plan de Acción Masiva personalizado.</p>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 1.5rem;">La IA analizará tus
+                        respuestas, las cruzará con los pain points LATAM identificados y generará tu Perfil RPM + Plan
+                        de Acción Masiva personalizado.</p>
 
-                    <div id="wizard-summary-preview" style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 1.25rem; margin-bottom: 1.5rem; font-size: 13px; color: var(--text-muted);">
+                    <div id="wizard-summary-preview"
+                        style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 1.25rem; margin-bottom: 1.5rem; font-size: 13px; color: var(--text-muted);">
                         <strong style="color: var(--text);">Resumen de tus respuestas:</strong>
                         <div id="wizPreviewContent" style="margin-top: 10px;"></div>
                     </div>
 
                     <div style="display: flex; gap: 10px;">
-                        <button class="btn-primary" onclick="wizardNext(3)" style="background: var(--secondary); color: #fff; flex: 1;">← Editar respuestas</button>
+                        <button class="btn-primary" onclick="wizardNext(3)"
+                            style="background: var(--secondary); color: #fff; flex: 1;">← Editar respuestas</button>
                         <button class="btn-primary" id="processWizardBtn" onclick="processWizard()" style="flex: 1;">
                             <span id="processWizardBtnText">Procesar con LLM</span>
                             <div id="processWizardLoader" class="loader"></div>
@@ -403,12 +500,16 @@
 
             <!-- PROFILE VIEWER/EDITOR -->
             <div id="rpm-profile-section" style="margin-top: 2rem; display: none;">
-                <h3 style="font-size: 18px; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Perfil RPM Procesado</h3>
+                <h3
+                    style="font-size: 18px; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+                    Perfil RPM Procesado</h3>
                 <div class="scraper-panel" id="rpm-profile-viewer">
                     <div id="rpm-profile-content"></div>
                     <div style="display: flex; gap: 10px; margin-top: 1.5rem;">
-                        <button class="btn-primary" onclick="toggleEditProfile()" id="editProfileBtn" style="background: var(--info); color: #fff; flex: 1;">Editar Perfil</button>
-                        <button class="btn-primary" onclick="saveProfileEdits()" id="saveProfileBtn" style="background: var(--primary); flex: 1; display: none;">
+                        <button class="btn-primary" onclick="toggleEditProfile()" id="editProfileBtn"
+                            style="background: var(--info); color: #fff; flex: 1;">Editar Perfil</button>
+                        <button class="btn-primary" onclick="saveProfileEdits()" id="saveProfileBtn"
+                            style="background: var(--primary); flex: 1; display: none;">
                             <span id="saveProfileBtnText">Guardar Cambios</span>
                             <div id="saveProfileLoader" class="loader"></div>
                         </button>
@@ -525,7 +626,7 @@
                 }
 
                 if (page === 'videos' && !videosLoaded) { loadVideos(); videosLoaded = true; }
-                if (page === 'painpoints' && !classificationsLoaded) { loadClassifications(); classificationsLoaded = true; }
+                if (page === 'painpoints' && !classificationsLoaded) { loadPainPoints(); classificationsLoaded = true; }
                 if (page === 'scraper' && !scraperRunsLoaded) { loadScraperRuns(); scraperRunsLoaded = true; }
                 if (page === 'wizard' && !wizardLoaded) { loadRpmProfile(); wizardLoaded = true; }
             });
@@ -582,7 +683,7 @@
                 });
                 html += '</tbody></table>';
                 container.innerHTML = html;
-            } catch(e) {
+            } catch (e) {
                 container.innerHTML = `<p style="color: var(--danger); font-size: 13px;">Error: ${e.message}</p>`;
             }
         }
@@ -736,65 +837,51 @@
             }
         }
 
-        // ==================== CLASSIFICATIONS GALLERY LOGIC ====================
-        async function loadClassifications() {
-            const container = document.getElementById('classifications-container');
-            const loader = document.getElementById('classifications-loader');
+        // ==================== PAIN POINTS GALLERY LOGIC ====================
+        async function loadPainPoints() {
+            const container = document.getElementById('painpoints-container');
+            const loader = document.getElementById('painpoints-loader');
+            if (!container) return;
 
             try {
-                const res = await fetch('/api/classifications');
+                const res = await fetch('/api/painpoints');
                 const data = await res.json();
 
                 if (!res.ok) throw new Error(data.error);
 
                 container.innerHTML = '';
 
-                if (data.classifications.length === 0) {
-                    container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem;">Aún no hay videos clasificados.</div>`;
+                if (!data.painpoints || data.painpoints.length === 0) {
+                    container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem;">Aún no hay pain points en la base de datos. Pide al administrador que ejecute la migración SQL y el seed.</div>`;
                     return;
                 }
 
-                data.classifications.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'video-card';
-                    card.style.display = 'flex';
-                    card.style.flexDirection = 'column';
+                data.painpoints.forEach(pp => {
+                    const color = pp.impact_level === 'Critical' ? 'var(--danger)' : (pp.impact_level === 'High' ? 'var(--warning)' : 'var(--primary)');
+                    
+                    const div = document.createElement('div');
+                    div.className = 'video-card';
+                    div.style.borderLeft = `4px solid ${color}`;
+                    
+                    let sourcesHtml = pp.sources ? `<div style="font-size: 11px; color: var(--info); margin-top: 10px;"><strong>Fuentes:</strong> ${pp.sources}</div>` : '';
+                    let keysHtml = pp.keywords && pp.keywords.length ? `<div style="margin-top: 8px;">${pp.keywords.map(k => `<span style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px; font-size:10px; margin-right:4px;">${k}</span>`).join('')}</div>` : '';
 
-                    const video = item.videos || {};
-                    let yt_id = video.video_id || '';
-                    const thumbUrl = yt_id ? `https://img.youtube.com/vi/${yt_id}/hqdefault.jpg` : 'https://via.placeholder.com/320x180?text=No+Video';
-                    const displayTitle = video.title || 'Sin Título';
-                    const key_insights = item.key_insights || {};
-
-                    let painPointsHtml = '';
-                    if (key_insights.latam_pain_points && Array.isArray(key_insights.latam_pain_points)) {
-                        key_insights.latam_pain_points.forEach(pp => {
-                            painPointsHtml += `<div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; margin-top: 8px; font-size: 11px;">
-                                <strong style="color: var(--primary);">${pp.pain_point}</strong><br>
-                                <span style="color: var(--text-muted);">${pp.latam_context_adaptation}</span>
-                            </div>`;
-                        });
-                    }
-
-                    card.innerHTML = `
-                        <img src="${thumbUrl}" alt="Thumbnail" loading="lazy" style="height: 140px;">
-                        <div class="video-card-content" style="flex: 1; display: flex; flex-direction: column;">
-                            <h4 title="${displayTitle}" style="border-bottom: 1px solid var(--border); padding-bottom: 8px;">${displayTitle}</h4>
-                            <div style="font-size: 12px; margin-top: 8px;">
-                                <strong>Modelo de Negocio:</strong><br>
-                                <span style="color: var(--text-muted);">${item.business_model || key_insights.business_model?.type || 'N/A'}</span>
-                            </div>
-                            <div style="margin-top: 12px; flex: 1;">
-                                <strong>Pain Points (LATAM):</strong>
-                                ${painPointsHtml || '<div style="color: var(--text-muted); font-size: 11px;">No se extrajeron pain points.</div>'}
-                            </div>
+                    div.innerHTML = `
+                        <div class="video-card-content">
+                            <h4 style="color: var(--text); margin-bottom: 5px;">${pp.name || pp.description.substring(0, 50) + '...'}</h4>
+                            <div style="font-size: 11px; color: var(--primary); margin-bottom: 8px; display: inline-block; border: 1px solid var(--primary); padding: 2px 6px; border-radius: 4px;">${pp.category || 'General'}</div>
+                            <span style="font-size: 11px; color: ${color}; border: 1px solid ${color}; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">Impacto: ${pp.impact_level}</span>
+                            
+                            <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px; line-height: 1.5;">${pp.description}</p>
+                            ${keysHtml}
+                            ${sourcesHtml}
                         </div>
                     `;
-                    container.appendChild(card);
+                    container.appendChild(div);
                 });
 
             } catch (err) {
-                container.innerHTML = `<div style="grid-column: 1/-1; color: var(--danger); text-align: center;">Error cargando galería: ${err.message}</div>`;
+                container.innerHTML = `<div style="grid-column: 1/-1; color: var(--danger); text-align: center;">Error cargando pain points: ${err.message}</div>`;
             }
         }
 
@@ -812,9 +899,9 @@
             try {
                 const response = await fetch('/api/summarize_painpoints', { method: 'POST' });
                 const data = await response.json();
-                
+
                 if (!response.ok) throw new Error(data.error);
-                
+
                 const div = document.createElement('div');
                 div.className = `result-item status-success`;
                 div.innerHTML = `
@@ -995,7 +1082,7 @@
                     renderProfileViewer(currentRpmProfile);
                     document.getElementById('rpm-profile-section').style.display = 'block';
                 }
-            } catch(e) { /* no profile yet */ }
+            } catch (e) { /* no profile yet */ }
         }
 
         function renderProfileViewer(profile) {
