@@ -400,7 +400,9 @@ por las q ya no están y por las que se han quedado -->
                     <textarea id="wiz_results_business_type" class="wizard-textarea" rows="2"
                         placeholder="Ej: Negocio digital, SaaS, e-commerce de nicho, consultoría..."></textarea>
 
-                    <button class="btn-primary" onclick="wizardNext(2)" style="margin-top: 1rem;">Siguiente → Propósito
+                    <div id="wiz_feedback_1" style="display: none; color: var(--warning); margin-bottom: 1rem; font-size: 13px; background: rgba(255, 193, 7, 0.1); padding: 10px; border-left: 3px solid var(--warning);"></div>
+
+                    <button class="btn-primary" id="btn_next_1" onclick="validateAndNext(1, 2)" style="margin-top: 1rem;">Siguiente → Propósito
                         (P)</button>
                 </div>
             </div>
@@ -425,10 +427,12 @@ por las q ya no están y por las que se han quedado -->
                     <textarea id="wiz_purpose_beneficiaries" class="wizard-textarea" rows="2"
                         placeholder="Ej: Mi esposa e hijos, mis padres, mi comunidad local..."></textarea>
 
+                    <div id="wiz_feedback_2" style="display: none; color: var(--warning); margin-bottom: 1rem; font-size: 13px; background: rgba(255, 193, 7, 0.1); padding: 10px; border-left: 3px solid var(--warning);"></div>
+
                     <div style="display: flex; gap: 10px; margin-top: 1rem;">
                         <button class="btn-primary" onclick="wizardNext(1)"
                             style="background: var(--secondary); color: #fff; flex: 1;">← Resultados</button>
-                        <button class="btn-primary" onclick="wizardNext(3)" style="flex: 1;">Siguiente → Mercado
+                        <button class="btn-primary" id="btn_next_2" onclick="validateAndNext(2, 3)" style="flex: 1;">Siguiente → Mercado
                             (M)</button>
                     </div>
                 </div>
@@ -464,10 +468,12 @@ por las q ya no están y por las que se han quedado -->
                     <textarea id="wiz_market_risk" class="wizard-textarea" rows="2"
                         placeholder="Ej: Moderada — puedo invertir algo pero no puedo dejar mi empleo actual todavía..."></textarea>
 
+                    <div id="wiz_feedback_3" style="display: none; color: var(--warning); margin-bottom: 1rem; font-size: 13px; background: rgba(255, 193, 7, 0.1); padding: 10px; border-left: 3px solid var(--warning);"></div>
+
                     <div style="display: flex; gap: 10px; margin-top: 1rem;">
                         <button class="btn-primary" onclick="wizardNext(2)"
                             style="background: var(--secondary); color: #fff; flex: 1;">← Propósito</button>
-                        <button class="btn-primary" onclick="wizardNext(4)" style="flex: 1;">Siguiente → Procesar con
+                        <button class="btn-primary" id="btn_next_3" onclick="validateAndNext(3, 4)" style="flex: 1;">Siguiente → Procesar con
                             IA</button>
                     </div>
                 </div>
@@ -961,6 +967,64 @@ por las q ya no están y por las que se han quedado -->
 
         // ==================== WIZARD STEPPED LOGIC ====================
         let currentWizardStep = 1;
+
+        async function validateAndNext(currentStep, nextStep) {
+            const btn = document.getElementById('btn_next_' + currentStep);
+            const feedbackDiv = document.getElementById('wiz_feedback_' + currentStep);
+            
+            // Recolectar respuesta principal del paso actual
+            let answer = "";
+            let stepKey = "";
+            if (currentStep === 1) {
+                stepKey = "R";
+                answer = document.getElementById('wiz_results_goals').value + " " + document.getElementById('wiz_results_income').value;
+            } else if (currentStep === 2) {
+                stepKey = "P";
+                answer = document.getElementById('wiz_purpose_motivation').value + " " + document.getElementById('wiz_purpose_fear').value;
+            } else if (currentStep === 3) {
+                stepKey = "M";
+                answer = document.getElementById('wiz_market_skills').value + " " + document.getElementById('wiz_market_resources').value;
+            }
+
+            // Si está muy vacío, forzar a escribir
+            if (answer.trim().length < 10) {
+                feedbackDiv.style.display = 'block';
+                feedbackDiv.innerHTML = '<strong>Error:</strong> Debes proporcionar más información antes de continuar.';
+                return;
+            }
+
+            const originalBtnText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = 'Validando respuesta...';
+            feedbackDiv.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/wizard_validate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ step: stepKey, answer: answer })
+                });
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.error);
+
+                if (data.is_valid) {
+                    // Passed validation, move to next step
+                    wizardNext(nextStep);
+                } else {
+                    // Failed semantic validation, show feedback
+                    feedbackDiv.style.display = 'block';
+                    feedbackDiv.innerHTML = `<strong>Feedback IA:</strong> ${data.feedback}`;
+                }
+            } catch (error) {
+                // If API fails, just let them pass to not block UX
+                console.error("Validation error:", error);
+                wizardNext(nextStep);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalBtnText;
+            }
+        }
 
         function wizardNext(step) {
             // Hide all steps
