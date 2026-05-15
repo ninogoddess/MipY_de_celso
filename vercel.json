@@ -4,5 +4,15 @@
     "api/**/*.py": {
       "maxDuration": 60
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/api/stats", "destination": "/api/data_engine.py" },
+    { "source": "/api/videos", "destination": "/api/data_engine.py" },
+    { "source": "/api/classifications", "destination": "/api/data_engine.py" },
+    { "source": "/api/painpoints", "destination": "/api/data_engine.py" },
+    { "source": "/api/rpm_profile", "destination": "/api/data_engine.py" },
+    { "source": "/api/wizard_validate", "destination": "/api/wizard_engine.py" },
+    { "source": "/api/wizard_chat", "destination": "/api/wizard_engine.py" },
+    { "source": "/api/wizard_process", "destination": "/api/wizard_engine.py" }
+  ]
 }
