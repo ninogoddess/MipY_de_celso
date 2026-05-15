@@ -84,7 +84,7 @@ por las q ya no están y por las que se han quedado -->
         <div class="sidebar-section">
             <div class="sidebar-section-title">Fase 3 — Soluciones</div>
         </div>
-        <div class="sidebar-item" data-page="solutions">
+        <div class="sidebar-item" id="nav-solutions" data-page="solutions">
             <span class="icon"><svg viewBox="0 0 24 24">
                     <path d="M9 18h6" />
                     <path d="M10 22h4" />
@@ -151,7 +151,7 @@ por las q ya no están y por las que se han quedado -->
         <!-- ========== DASHBOARD ========== -->
         <div id="page-dashboard" class="page active">
             <div class="hero-banner">
-                <div class="version-badge">v0.4 · Fase 1 activa</div>
+                <div class="version-badge">v0.5 · Fase 3 activa</div>
                 <h1>Encuentra tu próxima idea de negocio en LATAM</h1>
                 <p>Esta app extrae los videos de Starter Story, los clasifica contra pain points reales del mercado
                     latinoamericano y los cruza con tu perfil RPM para proponer soluciones viables.</p>
@@ -276,12 +276,33 @@ por las q ya no están y por las que se han quedado -->
                                     Points basada en transcripciones de Starter Story.</li>
                                 <li style="margin-bottom: 4px;"><strong>Automatización:</strong> Scraper configurado con
                                     logs de ejecución visibles en el sistema (Encontrados, Nuevos, Actualizados).</li>
-                                <li><strong>Responsividad:</strong> UI rediseñada para soporte móvil y documentación
-                                    completa de la arquitectura en README.</li>
+                                <li><strong>Responsividad:</strong> UI rediseñada para soporte móvil y documentación completa de la arquitectura en README.</li>
                             </ul>
-                            <p style="font-size: 11px; font-style: italic;">* Desliza la imagen hacia los lados para ver
-                                todas las capturas (BD, Arquitectura, Pain Points, Schedule). Haz clic en una para verla
-                                completa.</p>
+                            <p style="font-size: 11px; font-style: italic;">* Desliza la imagen hacia los lados para ver todas las capturas (BD, Arquitectura, Pain Points, Schedule). Haz clic en una para verla completa.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hito 4 -->
+                <div class="video-card" style="display: flex; flex-direction: column;">
+                    <div style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; border-bottom: 1px solid var(--border);">
+                        <a href="/assets/painpoints_hito4.png" target="_blank" style="flex: 0 0 100%; scroll-snap-align: start;">
+                            <img src="/assets/painpoints_hito4.png" alt="Pain Points Hito 4" loading="lazy" style="height: 200px; width: 100%; object-fit: cover;">
+                        </a>
+                        <a href="/assets/wizzardRPM_hito4.png" target="_blank" style="flex: 0 0 100%; scroll-snap-align: start;">
+                            <img src="/assets/wizzardRPM_hito4.png" alt="Wizard RPM Hito 4" loading="lazy" style="height: 200px; width: 100%; object-fit: cover;">
+                        </a>
+                    </div>
+                    <div class="video-card-content" style="flex: 1;">
+                        <h4 style="border-bottom: 1px solid var(--border); padding-bottom: 8px;">Entrega Hito 4: IA & Matching Engine</h4>
+                        <div style="font-size: 13px; margin-top: 12px; color: var(--text-muted); line-height: 1.5;">
+                            <p style="margin-bottom: 6px;"><strong>Resumen de implementaciones:</strong></p>
+                            <ul style="padding-left: 16px; margin-bottom: 8px;">
+                                <li style="margin-bottom: 4px;"><strong>Motor IA Robusto:</strong> Clasificación 1:1 de videos contra +25 Pain Points LATAM.</li>
+                                <li style="margin-bottom: 4px;"><strong>Wizard RPM Step-by-Step:</strong> Validación semántica de respuestas para evitar datos basura.</li>
+                                <li style="margin-bottom: 4px;"><strong>Matching Engine (Fase 6):</strong> Algoritmo que cruza el perfil del usuario con los mejores videos para proponer soluciones reales.</li>
+                            </ul>
+                            <p style="font-size: 11px; font-style: italic;">* Desliza para ver el panel de Pain Points y el Wizard completo.</p>
                         </div>
                     </div>
                 </div>
