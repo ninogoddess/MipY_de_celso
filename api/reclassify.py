@@ -38,7 +38,7 @@ class handler(BaseHTTPRequestHandler):
                 for t in transcriptions.data:
                     if t["video_id"] not in classified_ids:
                         to_process.append(t)
-                    if len(to_process) >= 2:
+                    if len(to_process) >= 1:
                         break
 
             if not to_process:
