@@ -80,7 +80,7 @@ class handler(BaseHTTPRequestHandler):
                     stats[cat] = stats.get(cat, 0) + 1
                 
                 self._send(200, {
-                    "pain_points": pp_resp.data,
+                    "painpoints": pp_resp.data,
                     "stats": stats
                 })
 
