@@ -573,7 +573,7 @@ por las q ya no están y por las que se han quedado -->
                 <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Esta acción utilizará la IA para comparar en tiempo real tu perfil estructurado contra todos los modelos de negocio scrapeados y extraerá solo aquellos que se ajustan a tus recursos, habilidades y metas.</p>
                 
                 <button class="btn-primary" id="generateSolutionsBtn" onclick="generateSolutions()" style="padding: 15px 30px; font-size: 16px; margin: 0 auto; display: inline-flex;">
-                    <span id="generateSolutionsBtnText">⚡ Generar Mis 3 Oportunidades</span>
+                    <span id="generateSolutionsBtnText">⚡ Generar 4 Oportunidades Dinámicas</span>
                     <div id="generateSolutionsLoader" class="loader"></div>
                 </button>
             </div>
@@ -1464,7 +1464,7 @@ por las q ya no están y por las que se han quedado -->
             } finally {
                 btn.disabled = false;
                 loader.style.display = 'none';
-                btnText.innerText = '⚡ Generar Mis 3 Oportunidades';
+                btnText.innerText = '⚡ Generar 4 Oportunidades Dinámicas';
             }
         }
 
@@ -1477,34 +1477,111 @@ por las q ya no están y por las que se han quedado -->
 
             let html = '';
             solutions.forEach(sol => {
-                const difficultyColor = sol.difficulty === 'Low' ? 'var(--success)' : (sol.difficulty === 'Medium' ? 'var(--warning)' : 'var(--danger)');
+                let richData = {};
+                try {
+                    richData = JSON.parse(sol.justification);
+                } catch(e) {
+                    // Fallback si no es JSON válido
+                    richData = { reasoning: sol.justification };
+                }
+
+                const difficultyColor = sol.difficulty < 40 ? 'var(--success)' : (sol.difficulty < 70 ? 'var(--warning)' : 'var(--danger)');
                 
+                let videosHtml = '';
+                if (richData.related_videos && richData.related_videos.length > 0) {
+                    videosHtml = `<div style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+                        <h4 style="font-size: 14px; margin-bottom: 10px; color: var(--text);">Videos Inspiración:</h4>
+                        <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;">`;
+                    
+                    richData.related_videos.forEach(v => {
+                        videosHtml += `
+                        <a href="${v.url}" target="_blank" style="flex: 0 0 200px; text-decoration: none; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.2);">
+                            <img src="${v.thumbnail || ''}" style="width: 100%; height: 110px; object-fit: cover; display: block;">
+                            <div style="padding: 8px;">
+                                <div style="font-size: 11px; color: var(--text); font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${v.title}</div>
+                                <div style="font-size: 10px; color: var(--info); margin-top: 4px; line-height: 1.3;">${v.relevance}</div>
+                            </div>
+                        </a>`;
+                    });
+                    videosHtml += `</div></div>`;
+                }
+
                 html += `
-                <div class="scraper-panel" style="border-left: 4px solid var(--primary);">
+                <div class="scraper-panel" style="border-left: 4px solid var(--primary); margin-bottom: 2rem;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                        <h3 style="margin: 0; font-size: 20px; color: var(--primary);">${sol.title}</h3>
-                        <div style="text-align: right;">
-                            <span style="background: var(--primary); color: #fff; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 14px;">Fit Score: ${sol.rpm_fit_score}%</span>
-                            <div style="font-size: 11px; margin-top: 4px; color: ${difficultyColor};">Dificultad: ${sol.difficulty}</div>
+                        <div>
+                            <h3 style="margin: 0; font-size: 22px; color: var(--primary);">${sol.title}</h3>
+                            <div style="margin-top: 5px; font-size: 12px; color: var(--secondary);">
+                                <strong>Modelo:</strong> ${richData.business_model || 'N/A'} | 
+                                <strong>Cliente:</strong> ${richData.target_customer || 'N/A'}
+                            </div>
+                        </div>
+                        <div style="text-align: right; display: flex; gap: 10px;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 20px; font-weight: bold; color: var(--primary);">${sol.rpm_fit_score || richData.rpm_fit_score}%</div>
+                                <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">RPM Fit</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 20px; font-weight: bold; color: var(--warning);">${richData.market_opportunity_score || 0}%</div>
+                                <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Oportunidad</div>
+                            </div>
                         </div>
                     </div>
                     
-                    <p style="font-size: 14px; margin-bottom: 1rem; line-height: 1.5;">${sol.description}</p>
+                    <p style="font-size: 15px; margin-bottom: 1.5rem; line-height: 1.6;">${sol.description || richData.summary}</p>
                     
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 1.5rem;">
                         <div>
-                            <strong style="color: var(--secondary); font-size: 13px;">Adaptación LATAM:</strong>
-                            <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px; line-height: 1.5;">${sol.latam_adaptation}</p>
+                            <strong style="color: var(--secondary); font-size: 13px;">Adaptación LATAM & Por qué ahora:</strong>
+                            <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px; line-height: 1.5;">${sol.latam_adaptation || richData.latam_pain_point}<br><br><em>${richData.why_now || ''}</em></p>
                         </div>
                         <div>
-                            <strong style="color: var(--warning); font-size: 13px;">Justificación de Match (Tu Perfil):</strong>
-                            <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px; line-height: 1.5;">${sol.justification}</p>
+                            <strong style="color: var(--info); font-size: 13px;">Reasoning del Motor (Cruce RPM):</strong>
+                            <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px; line-height: 1.5;">${richData.reasoning || 'Generado via AI'}</p>
                         </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.5rem; text-align: center;">
+                        <div style="border: 1px solid var(--border); padding: 10px; border-radius: 6px;">
+                            <div style="font-size: 11px; color: var(--text-muted);">Inversión Inicial</div>
+                            <div style="font-weight: bold; font-size: 13px; margin-top: 4px;">${richData.estimated_startup_cost || 'N/A'}</div>
+                        </div>
+                        <div style="border: 1px solid var(--border); padding: 10px; border-radius: 6px;">
+                            <div style="font-size: 11px; color: var(--text-muted);">Complejidad</div>
+                            <div style="font-weight: bold; font-size: 13px; margin-top: 4px; color: ${difficultyColor};">${richData.execution_complexity || sol.difficulty}</div>
+                        </div>
+                        <div style="border: 1px solid var(--border); padding: 10px; border-radius: 6px;">
+                            <div style="font-size: 11px; color: var(--text-muted);">Tiempo Validación</div>
+                            <div style="font-weight: bold; font-size: 13px; margin-top: 4px;">${richData.time_to_validate || 'N/A'}</div>
+                        </div>
+                        <div style="border: 1px solid var(--border); padding: 10px; border-radius: 6px;">
+                            <div style="font-size: 11px; color: var(--text-muted);">Validación MVT</div>
+                            <div style="font-weight: bold; font-size: 12px; margin-top: 4px; color: var(--secondary);">${richData.recommended_validation_method || 'Landing Page + Ads'}</div>
+                        </div>
+                    </div>
+
+                    ${videosHtml}
+
+                    <div style="margin-top: 1.5rem; text-align: center;">
+                        <button class="btn-primary" onclick="startMvtValidation('${sol.id}')" style="background: var(--success); color: #fff; padding: 12px 24px;">
+                            🧪 Iniciar Inmersión MVT con esta idea
+                        </button>
                     </div>
                 </div>`;
             });
 
             container.innerHTML = html;
+        }
+
+        function startMvtValidation(solutionId) {
+            alert("Has seleccionado esta solución para la validación MVT (Fase 5). Serás redirigido al panel de inmersión en la próxima iteración.");
+            // Aquí iría la lógica para activar la pestaña MVT y cargar el contexto
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+            document.querySelector('[data-page="mvt"]').classList.remove('locked');
+            document.querySelector('[data-page="mvt"]').classList.add('active');
+            
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-mvt').classList.add('active');
         }
 
         // Load existing profile on wizard page visit

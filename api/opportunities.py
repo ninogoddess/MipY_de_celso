@@ -37,9 +37,7 @@ class handler(BaseHTTPRequestHandler):
             ai_interpretation = rpm_profile.get("ai_interpretation", {})
 
             # 2. Obtener mejores videos clasificados
-            # Traer los de mayor score
-            vid_resp = sb.table("video_classifications").select("*, videos(title, url)").order("latam_relevance_score", desc=True).limit(20).execute()
-            
+            vid_resp = sb.table("video_classifications").select("*, videos(title, url, thumbnail_url)").order("latam_relevance_score", desc=True).limit(30).execute()
             if not vid_resp.data:
                 self._send(400, {"error": "No hay videos clasificados aún. Por favor reclasifica algunos videos primero."})
                 return
@@ -48,55 +46,80 @@ class handler(BaseHTTPRequestHandler):
             videos_context = ""
             for v in vid_resp.data:
                 score = v.get("latam_relevance_score", 0)
-                if score < 10:
+                if score < 5:
                     continue
                 v_title = v.get("videos", {}).get("title", "Desconocido")
                 v_url = v.get("videos", {}).get("url", "")
+                v_thumb = v.get("videos", {}).get("thumbnail_url", "")
                 insights = json.dumps(v.get("key_insights", {}), ensure_ascii=False)
                 videos_context += f"--- VIDEO ID: {v['video_id']} ---\n"
                 videos_context += f"TÍTULO: {v_title}\n"
+                videos_context += f"URL: {v_url}\n"
+                videos_context += f"THUMBNAIL: {v_thumb}\n"
                 videos_context += f"SCORE LATAM: {score}%\n"
                 videos_context += f"INSIGHTS: {insights}\n\n"
 
-            if not videos_context:
-                self._send(400, {"error": "Los videos clasificados actuales tienen un score muy bajo. Reclasifica más videos."})
-                return
+            # 3. Obtener Pain Points
+            pp_resp = sb.table("latam_pain_points").select("*").limit(20).execute()
+            pp_context = ""
+            if pp_resp.data:
+                for pp in pp_resp.data:
+                    pp_context += f"- [{pp['impact_level']}] {pp['category']}: {pp.get('name', '')} - {pp['description']}\n"
 
-            system_prompt = """Eres el 'Opportunity Matching Engine', un avanzado sistema de IA para emprendedores.
-Tu objetivo es analizar el Perfil RPM del usuario (sus metas, recursos, habilidades y perfil de riesgo) y compararlo contra una lista de Videos Clasificados de negocios exitosos.
+            system_prompt = """Eres el 'Opportunity Matching Engine', un avanzado Principal AI Engineer + Product Strategist + Recommendation System Architect.
+Tu objetivo es cruzar el Perfil RPM del usuario (sus metas, recursos, habilidades y riesgos) con una lista de Videos Clasificados de negocios reales y los Pain Points de LATAM.
 
-Debes seleccionar los 3 MEJORES negocios (basados en los videos) que hagan match perfecto con el perfil del usuario.
-Para cada uno, debes generar una 'Business Solution' detallada que explique exactamente cómo el usuario debería implementar este negocio en LATAM.
+DEBES GENERAR EXACTAMENTE 4 PROPUESTAS DE NEGOCIO DISTINTAS Y DINÁMICAS.
+NO uses plantillas rígidas ni repitas la misma idea.
+Si el RPM indica poco dinero, sugiere SaaS/Servicios. Si indica capital, sugiere operaciones o supply chain. Las 4 ideas deben atacar distintos ángulos.
 
-RESPONDE EXCLUSIVAMENTE en JSON válido con la siguiente estructura:
+RESPONDE EXCLUSIVAMENTE en JSON válido con la siguiente estructura (NO AGREGUES TEXTO FUERA DEL JSON):
 {
   "solutions": [
     {
-      "title": "Nombre atractivo para la oportunidad",
-      "description": "Descripción clara del modelo adaptado al usuario",
-      "source_videos": ["VIDEO_ID_DEL_CUAL_TE_INSPIRASTE"],
-      "latam_adaptation": "Cómo se adapta exactamente a las condiciones de LATAM y a las restricciones del usuario",
+      "title": "Nombre corto y atractivo",
+      "summary": "Descripción clara de la solución y por qué hace match con este RPM",
+      "latam_pain_point": "Descripción breve del pain point resuelto",
+      "pain_point_category": "Categoría (ej: Logística, Pagos, SaaS)",
+      "regional_context": "Adaptación específica a LATAM",
+      "why_now": "Por qué es el momento en LATAM",
+      "business_model": "Modelo de monetización",
+      "target_customer": "Cliente objetivo",
+      "difficulty_score": 50,
       "rpm_fit_score": 95,
-      "difficulty": "Low/Medium/High",
-      "justification": "Por qué es el match perfecto para este usuario basándote en sus habilidades y recursos concretos."
+      "market_opportunity_score": 85,
+      "execution_complexity": "Alta/Media/Baja",
+      "required_skills": ["skill 1", "skill 2"],
+      "estimated_startup_cost": "Bajo/Medio/Alto o cifra estimada",
+      "time_to_validate": "Tiempo estimado (ej: 2 semanas)",
+      "recommended_validation_method": "Método exacto MVT (Minimum Viable Test)",
+      "related_videos": [
+        {"id": "VIDEO_ID_EXACTO", "title": "TÍTULO DEL VIDEO", "url": "URL_DEL_VIDEO", "thumbnail": "URL_THUMBNAIL", "relevance": "Por qué inspiró esto"}
+      ],
+      "reasoning": "Por qué la IA conectó este modelo con este RPM específicamente",
+      "main_risks": ["riesgo 1"],
+      "competitive_advantages": ["ventaja 1"],
+      "recommended_first_steps": ["paso 1", "paso 2", "paso 3"]
     }
   ]
 }
 
-REGLAS IMPORTANTES:
-- Selecciona exactamente 3 soluciones.
-- El campo source_videos DEBE contener el ID exacto del video listado en el contexto.
-- El rpm_fit_score debe ser un número entero entre 0 y 100.
-- Todo debe estar en ESPAÑOL.
+REGLAS CRÍTICAS:
+- GENERAR EXACTAMENTE 4 PROPUESTAS DIFERENTES.
+- `related_videos` DEBE usar la información proporcionada en el contexto. El `id` debe ser el VIDEO_ID real.
+- Todos los scores deben ser enteros entre 0 y 100.
 """
 
             user_prompt = f"""PERFIL DEL USUARIO (RPM):
 {json.dumps(ai_interpretation, ensure_ascii=False, indent=2)}
 
-VIDEOS DISPONIBLES (NEGOCIOS DE REFERENCIA):
+PAIN POINTS LATAM DISPONIBLES:
+{pp_context}
+
+VIDEOS DISPONIBLES (NEGOCIOS INSPIRACIÓN):
 {videos_context}
 
-Genera las 3 mejores soluciones de negocio para este usuario."""
+Genera las 4 mejores soluciones de negocio para este usuario en base a su RPM."""
 
             headers = {
                 "Authorization": f"Bearer {OPENROUTER_API_KEY}",
@@ -107,7 +130,8 @@ Genera las 3 mejores soluciones de negocio para este usuario."""
                 "messages": [
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
-                ]
+                ],
+                "response_format": { "type": "json_object" }
             }
 
             response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
@@ -118,36 +142,50 @@ Genera las 3 mejores soluciones de negocio para este usuario."""
             result_data = response.json()
             reply_text = result_data["choices"][0]["message"]["content"]
 
-            reply_text_clean = reply_text.replace("```json", "").replace("```", "").strip()
-            solutions_json = json.loads(reply_text_clean)
-            generated_solutions = solutions_json.get("solutions", [])
+            try:
+                reply_text_clean = reply_text.replace("```json", "").replace("```", "").strip()
+                solutions_json = json.loads(reply_text_clean)
+                generated_solutions = solutions_json.get("solutions", [])
+            except Exception as e:
+                # Fallback if json parsing fails
+                self._send(500, {"error": "El LLM no devolvió un JSON válido. Reintenta.", "details": str(e), "raw": reply_text})
+                return
 
             # Insertar en base de datos
             inserted_solutions = []
+            
+            # Limpiar soluciones anteriores de este perfil para mantener limpieza (opcional)
+            # sb.table("solutions").update({"status": "archived"}).eq("rpm_profile_id", rpm_profile["id"]).execute()
+
             for sol in generated_solutions:
+                # Guardamos el payload COMPLETO como json en 'justification'
+                # Y extraemos campos primarios para la tabla
                 sol_insert = sb.table("solutions").insert({
                     "user_id": user_id,
                     "rpm_profile_id": rpm_profile["id"],
-                    "title": sol.get("title", ""),
-                    "description": sol.get("description", ""),
-                    "latam_adaptation": sol.get("latam_adaptation", ""),
+                    "title": sol.get("title", "Solución sin título"),
+                    "description": sol.get("summary", ""),
+                    "latam_adaptation": sol.get("latam_pain_point", ""),
                     "rpm_fit_score": sol.get("rpm_fit_score", 0),
-                    "difficulty": sol.get("difficulty", "Medium"),
-                    "justification": sol.get("justification", ""),
+                    "difficulty": str(sol.get("difficulty_score", 50)),
+                    "justification": json.dumps(sol, ensure_ascii=False),
                     "status": "generated"
                 }).execute()
                 
                 new_sol_id = sol_insert.data[0]["id"]
-                inserted_solutions.append(sol_insert.data[0])
+                sol["id"] = new_sol_id  # Inyectar id para el frontend
+                inserted_solutions.append(sol)
 
                 # Mapear source videos
-                for vid in sol.get("source_videos", []):
+                for vid in sol.get("related_videos", []):
                     try:
-                        sb.table("solution_source_videos").insert({
-                            "solution_id": new_sol_id,
-                            "video_id": vid,
-                            "relevance_note": "Match automático del motor IA"
-                        }).execute()
+                        vid_id = vid.get("id")
+                        if vid_id:
+                            sb.table("solution_source_videos").insert({
+                                "solution_id": new_sol_id,
+                                "video_id": vid_id,
+                                "relevance_note": vid.get("relevance", "Match IA")
+                            }).execute()
                     except:
                         pass # Ignorar si el video_id no existe en la BD
 
