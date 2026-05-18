@@ -677,7 +677,11 @@ por las q ya no están y por las que se han quedado -->
                 }
 
                 if (page === 'videos' && !videosLoaded) { loadVideos(); videosLoaded = true; }
-                if (page === 'painpoints' && !classificationsLoaded) { loadPainPoints(); classificationsLoaded = true; }
+                if (page === 'painpoints' && !classificationsLoaded) { 
+                    loadPainPoints(); 
+                    loadClassifications();
+                    classificationsLoaded = true; 
+                }
                 if (page === 'scraper' && !scraperRunsLoaded) { loadScraperRuns(); scraperRunsLoaded = true; }
                 if (page === 'wizard' && !wizardLoaded) { loadRpmProfile(); wizardLoaded = true; }
             });
