@@ -12,6 +12,33 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.end_headers()
+    def do_GET(self):
+        """Fetches existing Business Solutions for the active RPM Profile."""
+        try:
+            SUPABASE_URL = os.environ.get("SUPABASE_URL")
+            SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+
+            if not SUPABASE_URL or not SUPABASE_KEY:
+                self._send(500, {"error": "Faltan credenciales"})
+                return
+
+            sb = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+            # 1. Obtener perfil activo
+            rpm_resp = sb.table("rpm_profiles").select("id").eq("is_active", True).execute()
+            if not rpm_resp.data:
+                self._send(200, {"solutions": []})
+                return
+            
+            rpm_id = rpm_resp.data[0]["id"]
+
+            # 2. Obtener soluciones activas
+            sol_resp = sb.table("solutions").select("*").eq("rpm_profile_id", rpm_id).neq("status", "archived").order("created_at", desc=True).limit(4).execute()
+            
+            self._send(200, {"solutions": sol_resp.data})
+
+        except Exception as e:
+            self._send(500, {"error": str(e)})
 
     def do_POST(self):
         """Generates Business Solutions by matching the RPM Profile with the best Classified Videos."""
