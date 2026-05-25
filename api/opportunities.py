@@ -199,7 +199,8 @@ Genera las 4 mejores soluciones de negocio para este usuario en base a su RPM.""
                 
                 new_sol_id = sol_insert.data[0]["id"]
                 sol["id"] = new_sol_id  # Inyectar id para el frontend
-                inserted_solutions.append(sol)
+                sol_insert.data[0]["id"] = new_sol_id
+                inserted_solutions.append(sol_insert.data[0])
 
                 # Mapear source videos
                 for vid in sol.get("related_videos", []):
