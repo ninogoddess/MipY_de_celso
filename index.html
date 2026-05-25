@@ -1495,14 +1495,17 @@ por las q ya no están y por las que se han quedado -->
                 if (!response.ok) throw new Error(data.error);
 
                 // Show success and render profile
-                currentRpmProfile = data.profile;
-                currentRpmProfileId = null; // Will be loaded via loadRpmProfile
-                renderProfileViewer(data.profile);
+                currentRpmProfile = data;
+                currentRpmProfileId = null;
+                renderProfileViewer(data);
                 document.getElementById('rpm-profile-section').style.display = 'block';
                 loadDashboardStats();
-                loadRpmProfile(); // Load to get the ID for editing
 
-                alert('¡Perfil RPM procesado y guardado exitosamente! Desplázate abajo para verlo.');
+                // Reload from DB to get the persisted profile and switch to the viewer tab
+                await loadSavedRpmProfile();
+                switchRpmView('profile');
+
+                alert('¡Perfil RPM procesado y guardado exitosamente!');
             } catch (error) {
                 alert('Error: ' + error.message);
             } finally {
