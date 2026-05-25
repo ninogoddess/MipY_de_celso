@@ -404,6 +404,21 @@ por las q ya no están y por las que se han quedado -->
                 <p>Define tu perfil estratégico paso a paso (R → P → M) y genera tu Plan de Acción Masiva.</p>
             </div>
 
+            <!-- View Toggle -->
+            <div class="rpm-view-toggle">
+                <button class="rpm-toggle-btn active" id="rpm-toggle-form" onclick="switchRpmView('form')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Formulario
+                </button>
+                <button class="rpm-toggle-btn" id="rpm-toggle-profile" onclick="switchRpmView('profile')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Mi Perfil RPM
+                </button>
+            </div>
+
+            <!-- ===== VIEW: FORM (Wizard Steps) ===== -->
+            <div id="rpm-view-form">
+
             <!-- Step Indicator -->
             <div style="display: flex; gap: 4px; margin-bottom: 1.5rem;">
                 <div class="wizard-step-indicator active" id="stepInd1">1 — Resultados (R)</div>
@@ -560,6 +575,115 @@ por las q ya no están y por las que se han quedado -->
                     </div>
                 </div>
             </div>
+
+            </div><!-- end rpm-view-form -->
+
+            <!-- ===== VIEW: SAVED PROFILE FROM DB ===== -->
+            <div id="rpm-view-profile" class="rpm-profile-view" style="display: none;">
+                
+                <!-- No profile state -->
+                <div id="rpm-saved-empty" class="mvt-empty">
+                    <div class="mvt-empty-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                    <h3>Sin perfil guardado</h3>
+                    <p>Completa el formulario del Wizard y procesa tus respuestas con IA para generar tu perfil RPM.</p>
+                    <button class="btn-primary" onclick="switchRpmView('form')" style="width: auto; padding: 0.7rem 1.5rem; margin-top: 0.5rem;">Ir al Formulario →</button>
+                </div>
+
+                <!-- Profile loaded -->
+                <div id="rpm-saved-content" style="display: none;">
+                    
+                    <!-- Profile Header -->
+                    <div class="rpm-card rpm-card-highlight">
+                        <div class="rpm-card-header">
+                            <div class="rpm-card-icon rpm-icon-primary">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="rpm-card-title">Tu Perfil RPM</h3>
+                                <p class="rpm-card-subtitle" id="rpm-saved-date">Generado el —</p>
+                            </div>
+                        </div>
+                        <p class="rpm-saved-summary" id="rpm-saved-summary"></p>
+                    </div>
+
+                    <!-- Core Metrics -->
+                    <div class="rpm-metrics-grid">
+                        <div class="rpm-metric-card">
+                            <span class="rpm-metric-icon">🎯</span>
+                            <span class="rpm-metric-label">Tipo de Meta</span>
+                            <span class="rpm-metric-value" id="rpm-saved-goal-type">—</span>
+                        </div>
+                        <div class="rpm-metric-card">
+                            <span class="rpm-metric-icon">💰</span>
+                            <span class="rpm-metric-label">Meta Financiera</span>
+                            <span class="rpm-metric-value" id="rpm-saved-financial">—</span>
+                        </div>
+                        <div class="rpm-metric-card">
+                            <span class="rpm-metric-icon">⏱</span>
+                            <span class="rpm-metric-label">Tiempo Disponible</span>
+                            <span class="rpm-metric-value" id="rpm-saved-time">—</span>
+                        </div>
+                        <div class="rpm-metric-card">
+                            <span class="rpm-metric-icon">⚡</span>
+                            <span class="rpm-metric-label">Perfil de Riesgo</span>
+                            <span class="rpm-metric-value" id="rpm-saved-risk">—</span>
+                        </div>
+                    </div>
+
+                    <!-- Skills & Preferences -->
+                    <div class="rpm-cards-row">
+                        <div class="rpm-card">
+                            <div class="rpm-card-header">
+                                <div class="rpm-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+                                <h4 class="rpm-card-title">Habilidades</h4>
+                            </div>
+                            <div class="rpm-tags" id="rpm-saved-skills"></div>
+                        </div>
+                        <div class="rpm-card">
+                            <div class="rpm-card-header">
+                                <div class="rpm-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+                                <h4 class="rpm-card-title">Preferencias de Negocio</h4>
+                            </div>
+                            <div class="rpm-tags" id="rpm-saved-preferences"></div>
+                        </div>
+                    </div>
+
+                    <!-- Constraints -->
+                    <div class="rpm-card">
+                        <div class="rpm-card-header">
+                            <div class="rpm-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                            <h4 class="rpm-card-title">Restricciones y Recursos</h4>
+                        </div>
+                        <div class="rpm-tags" id="rpm-saved-constraints"></div>
+                    </div>
+
+                    <!-- Market Match -->
+                    <div class="rpm-card">
+                        <div class="rpm-card-header">
+                            <div class="rpm-card-icon rpm-icon-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+                            <h4 class="rpm-card-title">Cruce con Pain Points LATAM</h4>
+                        </div>
+                        <div id="rpm-saved-market-match" class="rpm-market-list"></div>
+                    </div>
+
+                    <!-- Massive Action Plan -->
+                    <div class="rpm-card rpm-card-highlight">
+                        <div class="rpm-card-header">
+                            <div class="rpm-card-icon rpm-icon-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+                            <h4 class="rpm-card-title">Plan de Acción Masiva</h4>
+                        </div>
+                        <div class="rpm-map-model" id="rpm-saved-model"></div>
+                        <ol class="rpm-map-steps" id="rpm-saved-steps"></ol>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
 
         <!-- ========== SOLUTIONS ========== -->
@@ -1385,10 +1509,125 @@ por las q ya no están y por las que se han quedado -->
                 if (data.profile) {
                     currentRpmProfileId = data.profile.id;
                     currentRpmProfile = data.profile.ai_interpretation || {};
+                    currentRpmRawProfile = data.profile;
                     renderProfileViewer(currentRpmProfile);
                     document.getElementById('rpm-profile-section').style.display = 'block';
+                    renderSavedProfile(data.profile);
                 }
             } catch (e) { /* no profile yet */ }
+        }
+
+        function switchRpmView(view) {
+            const formView = document.getElementById('rpm-view-form');
+            const profileView = document.getElementById('rpm-view-profile');
+            const btnForm = document.getElementById('rpm-toggle-form');
+            const btnProfile = document.getElementById('rpm-toggle-profile');
+
+            if (view === 'form') {
+                formView.style.display = 'block';
+                profileView.style.display = 'none';
+                btnForm.classList.add('active');
+                btnProfile.classList.remove('active');
+            } else {
+                formView.style.display = 'none';
+                profileView.style.display = 'block';
+                btnForm.classList.remove('active');
+                btnProfile.classList.add('active');
+                // Load profile if not loaded yet
+                if (!currentRpmRawProfile) loadRpmProfile();
+            }
+        }
+
+        let currentRpmRawProfile = null;
+
+        function renderSavedProfile(profile) {
+            if (!profile || !profile.ai_interpretation) {
+                document.getElementById('rpm-saved-empty').style.display = 'flex';
+                document.getElementById('rpm-saved-content').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('rpm-saved-empty').style.display = 'none';
+            document.getElementById('rpm-saved-content').style.display = 'block';
+
+            const ai = profile.ai_interpretation;
+
+            // Date
+            const dateStr = profile.created_at ? new Date(profile.created_at).toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
+            document.getElementById('rpm-saved-date').textContent = 'Generado el ' + dateStr;
+
+            // Summary
+            document.getElementById('rpm-saved-summary').textContent = ai.profile_summary || 'Perfil procesado por IA.';
+
+            // Core metrics
+            document.getElementById('rpm-saved-goal-type').textContent = ai.goal_type || '—';
+            document.getElementById('rpm-saved-financial').textContent = ai.financial_goal || '—';
+            document.getElementById('rpm-saved-time').textContent = ai.time_commitment || '—';
+            document.getElementById('rpm-saved-risk').textContent = ai.risk_profile || '—';
+
+            // Skills tags
+            const skillsEl = document.getElementById('rpm-saved-skills');
+            skillsEl.innerHTML = '';
+            if (ai.skills && Array.isArray(ai.skills)) {
+                ai.skills.forEach(s => skillsEl.innerHTML += `<span class="rpm-tag">${s}</span>`);
+            } else {
+                skillsEl.innerHTML = '<span class="rpm-tag rpm-tag-empty">Sin datos</span>';
+            }
+
+            // Business preferences
+            const prefsEl = document.getElementById('rpm-saved-preferences');
+            prefsEl.innerHTML = '';
+            if (ai.business_preferences && Array.isArray(ai.business_preferences)) {
+                ai.business_preferences.forEach(p => prefsEl.innerHTML += `<span class="rpm-tag">${p}</span>`);
+            } else {
+                prefsEl.innerHTML = '<span class="rpm-tag rpm-tag-empty">Sin datos</span>';
+            }
+
+            // Constraints
+            const constEl = document.getElementById('rpm-saved-constraints');
+            constEl.innerHTML = '';
+            if (ai.constraints && Array.isArray(ai.constraints)) {
+                ai.constraints.forEach(c => constEl.innerHTML += `<span class="rpm-tag rpm-tag-warning">${c}</span>`);
+            } else {
+                constEl.innerHTML = '<span class="rpm-tag rpm-tag-empty">Sin datos</span>';
+            }
+
+            // Market match
+            const matchEl = document.getElementById('rpm-saved-market-match');
+            matchEl.innerHTML = '';
+            if (ai.market_match && ai.market_match.length > 0) {
+                ai.market_match.forEach(pp => {
+                    const relClass = pp.relevance === 'High' ? 'rpm-relevance-high' : (pp.relevance === 'Medium' ? 'rpm-relevance-medium' : 'rpm-relevance-low');
+                    matchEl.innerHTML += `
+                    <div class="rpm-match-item">
+                        <div class="rpm-match-header">
+                            <span class="rpm-match-badge ${relClass}">${pp.relevance}</span>
+                            <strong>${pp.pain_point}</strong>
+                        </div>
+                        <p class="rpm-match-reasoning">${pp.reasoning || ''}</p>
+                    </div>`;
+                });
+            } else {
+                matchEl.innerHTML = '<p style="color: var(--text-muted); font-size: 13px;">Sin cruces de mercado disponibles.</p>';
+            }
+
+            // Massive Action Plan
+            const map = ai.massive_action_plan || {};
+            const modelEl = document.getElementById('rpm-saved-model');
+            const stepsEl = document.getElementById('rpm-saved-steps');
+
+            if (map.recommended_model) {
+                modelEl.innerHTML = `<span class="rpm-model-badge">${map.recommended_model}</span>`;
+            } else {
+                modelEl.innerHTML = '';
+            }
+
+            stepsEl.innerHTML = '';
+            if (map.steps && map.steps.length > 0) {
+                map.steps.forEach(step => stepsEl.innerHTML += `<li>${step}</li>`);
+            } else {
+                stepsEl.innerHTML = '<li style="color: var(--text-muted);">Sin pasos definidos aún.</li>';
+            }
         }
 
         function renderProfileViewer(profile) {

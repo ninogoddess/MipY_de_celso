@@ -1083,3 +1083,310 @@ pre {
         flex-direction: column;
     }
 }
+
+
+/* =============================================
+   RPM PROFILE VIEW — Saved Profile Display
+   ============================================= */
+
+/* View Toggle */
+.rpm-view-toggle {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 1.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+
+.rpm-toggle-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0.7rem 1rem;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: all 0.2s;
+}
+
+.rpm-toggle-btn svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.rpm-toggle-btn:hover {
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.rpm-toggle-btn.active {
+    background: rgba(30, 215, 96, 0.1);
+    color: var(--primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Profile View Container */
+.rpm-profile-view {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Cards */
+.rpm-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.rpm-card-highlight {
+    background: linear-gradient(135deg, rgba(30, 215, 96, 0.04) 0%, var(--bg-card) 100%);
+    border-color: rgba(30, 215, 96, 0.15);
+}
+
+.rpm-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+}
+
+.rpm-card-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.rpm-card-icon svg {
+    width: 18px;
+    height: 18px;
+    stroke: var(--text-muted);
+}
+
+.rpm-icon-primary {
+    background: rgba(30, 215, 96, 0.1);
+}
+
+.rpm-icon-primary svg {
+    stroke: var(--primary);
+}
+
+.rpm-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text);
+}
+
+.rpm-card-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 2px 0 0;
+}
+
+.rpm-saved-summary {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 0;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+}
+
+/* Metrics Grid */
+.rpm-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.rpm-metric-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.rpm-metric-icon {
+    font-size: 20px;
+}
+
+.rpm-metric-card .rpm-metric-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+.rpm-metric-card .rpm-metric-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.4;
+}
+
+/* Cards Row */
+.rpm-cards-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Tags */
+.rpm-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.rpm-tag {
+    display: inline-block;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    background: rgba(30, 215, 96, 0.08);
+    color: var(--primary);
+    border: 1px solid rgba(30, 215, 96, 0.15);
+    border-radius: 20px;
+}
+
+.rpm-tag-warning {
+    background: rgba(255, 164, 43, 0.08);
+    color: var(--warning);
+    border-color: rgba(255, 164, 43, 0.15);
+}
+
+.rpm-tag-empty {
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-muted);
+    border-color: var(--border);
+    font-style: italic;
+}
+
+/* Market Match */
+.rpm-market-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.rpm-match-item {
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+}
+
+.rpm-match-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0.5rem;
+}
+
+.rpm-match-header strong {
+    font-size: 13px;
+    color: var(--text);
+}
+
+.rpm-match-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+.rpm-relevance-high {
+    background: rgba(30, 215, 96, 0.15);
+    color: var(--primary);
+}
+
+.rpm-relevance-medium {
+    background: rgba(255, 164, 43, 0.15);
+    color: var(--warning);
+}
+
+.rpm-relevance-low {
+    background: rgba(157, 150, 142, 0.15);
+    color: var(--text-muted);
+}
+
+.rpm-match-reasoning {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+/* Massive Action Plan */
+.rpm-model-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    background: rgba(30, 215, 96, 0.1);
+    color: var(--primary);
+    border: 1px solid rgba(30, 215, 96, 0.2);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+}
+
+.rpm-map-steps {
+    padding-left: 1.25rem;
+    margin: 0;
+    list-style: decimal;
+}
+
+.rpm-map-steps li {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+    padding-left: 0.25rem;
+}
+
+.rpm-map-steps li::marker {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .rpm-cards-row {
+        grid-template-columns: 1fr;
+    }
+    .rpm-metrics-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 500px) {
+    .rpm-metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    .rpm-view-toggle {
+        flex-direction: column;
+    }
+}
