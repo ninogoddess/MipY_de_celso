@@ -1541,15 +1541,58 @@ por las q ya no están y por las que se han quedado -->
                 profileView.style.display = 'block';
                 btnForm.classList.remove('active');
                 btnProfile.classList.add('active');
-                // Load profile if not loaded yet
-                if (!currentRpmRawProfile) loadRpmProfile();
+                // Always load fresh profile from DB when switching to this view
+                loadSavedRpmProfile();
             }
         }
 
         let currentRpmRawProfile = null;
 
+        async function loadSavedRpmProfile() {
+            try {
+                const res = await fetch('/api/rpm_profile');
+                if (!res.ok) {
+                    document.getElementById('rpm-saved-empty').style.display = 'flex';
+                    document.getElementById('rpm-saved-content').style.display = 'none';
+                    return;
+                }
+                const data = await res.json();
+                console.log('RPM Profile from DB:', JSON.stringify(data.profile, null, 2));
+                if (data.profile) {
+                    currentRpmRawProfile = data.profile;
+                    renderSavedProfile(data.profile);
+                } else {
+                    document.getElementById('rpm-saved-empty').style.display = 'flex';
+                    document.getElementById('rpm-saved-content').style.display = 'none';
+                }
+            } catch (e) {
+                console.error('Error loading saved RPM profile:', e);
+                document.getElementById('rpm-saved-empty').style.display = 'flex';
+                document.getElementById('rpm-saved-content').style.display = 'none';
+            }
+        }
+
         function renderSavedProfile(profile) {
-            if (!profile || !profile.ai_interpretation) {
+            if (!profile) {
+                document.getElementById('rpm-saved-empty').style.display = 'flex';
+                document.getElementById('rpm-saved-content').style.display = 'none';
+                return;
+            }
+
+            // ai_interpretation contains the full LLM response
+            const ai = profile.ai_interpretation || {};
+            // Also check top-level DB columns
+            const dbResources = profile.resources; // JSONB - constraints array
+            const dbProcess = profile.process;     // JSONB - massive action plan array
+            const dbMarket = profile.market;       // JSONB - skills array
+
+            // The LLM response structure: { rpm_profile: {...}, massive_action_plan: [...], ai_interpretation: {...} }
+            const rpmProfile = ai.rpm_profile || {};
+            const aiMeta = ai.ai_interpretation || {};
+
+            // Check if there's ANY data to show
+            const hasAnyData = Object.keys(ai).length > 0 || dbResources || dbProcess || dbMarket;
+            if (!hasAnyData) {
                 document.getElementById('rpm-saved-empty').style.display = 'flex';
                 document.getElementById('rpm-saved-content').style.display = 'none';
                 return;
@@ -1558,33 +1601,32 @@ por las q ya no están y por las que se han quedado -->
             document.getElementById('rpm-saved-empty').style.display = 'none';
             document.getElementById('rpm-saved-content').style.display = 'block';
 
-            const raw = profile.ai_interpretation;
-            // The LLM returns: { rpm_profile: {...}, massive_action_plan: [...], ai_interpretation: {...} }
-            // Or it could be a flat structure from older versions
-            const rpmCore = raw.rpm_profile || raw;
-            const aiMeta = raw.ai_interpretation || raw;
-            const mapSteps = raw.massive_action_plan || rpmCore.massive_action_plan || [];
-
             // Date
             const dateStr = profile.created_at ? new Date(profile.created_at).toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
             document.getElementById('rpm-saved-date').textContent = 'Generado el ' + dateStr;
 
-            // Summary - try multiple possible fields
-            const summary = rpmCore.core_purpose || raw.profile_summary || aiMeta.market_fit || 'Perfil procesado por IA.';
-            document.getElementById('rpm-saved-summary').textContent = summary;
+            // Summary - try multiple paths
+            const summary = rpmProfile.core_purpose || ai.profile_summary || ai.core_purpose || aiMeta.market_fit || aiMeta.summary || '';
+            document.getElementById('rpm-saved-summary').textContent = summary || 'Perfil RPM procesado por IA.';
 
-            // Core metrics - check both nested and flat structures
-            document.getElementById('rpm-saved-goal-type').textContent = rpmCore.goal_type || raw.goal_type || '—';
-            document.getElementById('rpm-saved-financial').textContent = rpmCore.financial_goal || raw.financial_goal || '—';
-            document.getElementById('rpm-saved-time').textContent = rpmCore.time_commitment || raw.time_commitment || '—';
-            document.getElementById('rpm-saved-risk').textContent = aiMeta.risk_profile || rpmCore.risk_profile || raw.risk_profile || '—';
+            // Core metrics - search in multiple locations
+            const goalType = rpmProfile.goal_type || ai.goal_type || '';
+            const financialGoal = rpmProfile.financial_goal || ai.financial_goal || '';
+            const timeCommitment = rpmProfile.time_commitment || ai.time_commitment || rpmProfile.time || '';
+            const riskProfile = aiMeta.risk_profile || rpmProfile.risk_profile || ai.risk_profile || '';
 
-            // Skills tags - check nested and flat, also check profile.market (stored separately)
+            document.getElementById('rpm-saved-goal-type').textContent = goalType || '—';
+            document.getElementById('rpm-saved-financial').textContent = financialGoal || '—';
+            document.getElementById('rpm-saved-time').textContent = timeCommitment || '—';
+            document.getElementById('rpm-saved-risk').textContent = riskProfile || '—';
+
+            // Skills - check rpm_profile.skills, ai.skills, or DB column market
             const skillsEl = document.getElementById('rpm-saved-skills');
             skillsEl.innerHTML = '';
-            let skills = rpmCore.skills || raw.skills || profile.market || [];
-            if (typeof skills === 'string') skills = skills.split(',').map(s => s.trim());
-            if (Array.isArray(skills) && skills.length > 0) {
+            let skills = rpmProfile.skills || ai.skills || dbMarket || [];
+            if (typeof skills === 'string') skills = skills.split(',').map(s => s.trim()).filter(Boolean);
+            if (!Array.isArray(skills)) skills = [];
+            if (skills.length > 0) {
                 skills.forEach(s => skillsEl.innerHTML += `<span class="rpm-tag">${s}</span>`);
             } else {
                 skillsEl.innerHTML = '<span class="rpm-tag rpm-tag-empty">Sin datos</span>';
@@ -1593,20 +1635,22 @@ por las q ya no están y por las que se han quedado -->
             // Business preferences
             const prefsEl = document.getElementById('rpm-saved-preferences');
             prefsEl.innerHTML = '';
-            let prefs = rpmCore.business_preferences || raw.business_preferences || [];
-            if (typeof prefs === 'string') prefs = prefs.split(',').map(s => s.trim());
-            if (Array.isArray(prefs) && prefs.length > 0) {
+            let prefs = rpmProfile.business_preferences || ai.business_preferences || rpmProfile.preferences || [];
+            if (typeof prefs === 'string') prefs = prefs.split(',').map(s => s.trim()).filter(Boolean);
+            if (!Array.isArray(prefs)) prefs = [];
+            if (prefs.length > 0) {
                 prefs.forEach(p => prefsEl.innerHTML += `<span class="rpm-tag">${p}</span>`);
             } else {
                 prefsEl.innerHTML = '<span class="rpm-tag rpm-tag-empty">Sin datos</span>';
             }
 
-            // Constraints - check nested and flat, also check profile.resources (stored separately)
+            // Constraints - check rpm_profile.constraints, ai.constraints, or DB column resources
             const constEl = document.getElementById('rpm-saved-constraints');
             constEl.innerHTML = '';
-            let constraints = rpmCore.constraints || raw.constraints || profile.resources || [];
-            if (typeof constraints === 'string') constraints = constraints.split(',').map(s => s.trim());
-            if (Array.isArray(constraints) && constraints.length > 0) {
+            let constraints = rpmProfile.constraints || ai.constraints || dbResources || [];
+            if (typeof constraints === 'string') constraints = constraints.split(',').map(s => s.trim()).filter(Boolean);
+            if (!Array.isArray(constraints)) constraints = [];
+            if (constraints.length > 0) {
                 constraints.forEach(c => constEl.innerHTML += `<span class="rpm-tag rpm-tag-warning">${c}</span>`);
             } else {
                 constEl.innerHTML = '<span class="rpm-tag rpm-tag-empty">Sin datos</span>';
@@ -1615,15 +1659,16 @@ por las q ya no están y por las que se han quedado -->
             // Market match
             const matchEl = document.getElementById('rpm-saved-market-match');
             matchEl.innerHTML = '';
-            const marketMatch = raw.market_match || rpmCore.market_match || aiMeta.market_match || [];
+            const marketMatch = ai.market_match || rpmProfile.market_match || aiMeta.market_match || [];
             if (Array.isArray(marketMatch) && marketMatch.length > 0) {
                 marketMatch.forEach(pp => {
-                    const relClass = pp.relevance === 'High' ? 'rpm-relevance-high' : (pp.relevance === 'Medium' ? 'rpm-relevance-medium' : 'rpm-relevance-low');
+                    const rel = pp.relevance || 'N/A';
+                    const relClass = rel === 'High' ? 'rpm-relevance-high' : (rel === 'Medium' ? 'rpm-relevance-medium' : 'rpm-relevance-low');
                     matchEl.innerHTML += `
                     <div class="rpm-match-item">
                         <div class="rpm-match-header">
-                            <span class="rpm-match-badge ${relClass}">${pp.relevance || 'N/A'}</span>
-                            <strong>${pp.pain_point || pp.name || ''}</strong>
+                            <span class="rpm-match-badge ${relClass}">${rel}</span>
+                            <strong>${pp.pain_point || pp.name || pp.title || ''}</strong>
                         </div>
                         <p class="rpm-match-reasoning">${pp.reasoning || pp.description || ''}</p>
                     </div>`;
@@ -1634,22 +1679,26 @@ por las q ya no están y por las que se han quedado -->
                 matchEl.innerHTML = '<p style="color: var(--text-muted); font-size: 13px;">Sin cruces de mercado disponibles.</p>';
             }
 
-            // Massive Action Plan - handle both array and object formats
+            // Massive Action Plan - check ai.massive_action_plan or DB column process
             const modelEl = document.getElementById('rpm-saved-model');
             const stepsEl = document.getElementById('rpm-saved-steps');
+            let mapData = ai.massive_action_plan || dbProcess || [];
 
-            if (typeof mapSteps === 'object' && !Array.isArray(mapSteps) && mapSteps.recommended_model) {
+            if (typeof mapData === 'object' && !Array.isArray(mapData) && mapData !== null) {
                 // Object format: { recommended_model, steps: [] }
-                modelEl.innerHTML = `<span class="rpm-model-badge">${mapSteps.recommended_model}</span>`;
+                modelEl.innerHTML = mapData.recommended_model ? `<span class="rpm-model-badge">${mapData.recommended_model}</span>` : '';
                 stepsEl.innerHTML = '';
-                if (mapSteps.steps && mapSteps.steps.length > 0) {
-                    mapSteps.steps.forEach(step => stepsEl.innerHTML += `<li>${step}</li>`);
+                const steps = mapData.steps || [];
+                if (steps.length > 0) {
+                    steps.forEach(step => stepsEl.innerHTML += `<li>${step}</li>`);
+                } else {
+                    stepsEl.innerHTML = '<li style="color: var(--text-muted);">Sin pasos definidos.</li>';
                 }
-            } else if (Array.isArray(mapSteps) && mapSteps.length > 0) {
+            } else if (Array.isArray(mapData) && mapData.length > 0) {
                 // Simple array format: ["paso 1", "paso 2", ...]
                 modelEl.innerHTML = '<span class="rpm-model-badge">Plan de Acción</span>';
                 stepsEl.innerHTML = '';
-                mapSteps.forEach(step => stepsEl.innerHTML += `<li>${step}</li>`);
+                mapData.forEach(step => stepsEl.innerHTML += `<li>${step}</li>`);
             } else {
                 modelEl.innerHTML = '';
                 stepsEl.innerHTML = '<li style="color: var(--text-muted);">Sin pasos definidos aún.</li>';
