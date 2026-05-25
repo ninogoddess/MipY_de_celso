@@ -681,6 +681,21 @@ por las q ya no están y por las que se han quedado -->
                         <ol class="rpm-map-steps" id="rpm-saved-steps"></ol>
                     </div>
 
+                    <!-- Raw Answers (User Responses) -->
+                    <div class="rpm-card" id="rpm-saved-raw-answers-card" style="display: none;">
+                        <div class="rpm-card-header">
+                            <div class="rpm-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                            <h4 class="rpm-card-title">Respuestas del Wizard</h4>
+                        </div>
+                        <div id="rpm-saved-raw-answers" class="rpm-raw-answers"></div>
+                    </div>
+
+                    <!-- Debug: Raw JSON -->
+                    <details class="rpm-debug">
+                        <summary>Ver datos crudos (JSON desde Supabase)</summary>
+                        <pre id="rpm-saved-debug-json"></pre>
+                    </details>
+
                 </div>
             </div>
 
@@ -1572,6 +1587,63 @@ por las q ya no están y por las que se han quedado -->
             }
         }
 
+        // Helper: deep search for a value by key in any nested object/array
+        function deepFind(obj, keys, depth = 0) {
+            if (!obj || depth > 5) return null;
+            if (!Array.isArray(keys)) keys = [keys];
+            // Direct match
+            if (typeof obj === 'object' && !Array.isArray(obj)) {
+                for (const k of keys) {
+                    if (obj[k] !== undefined && obj[k] !== null && obj[k] !== '') {
+                        return obj[k];
+                    }
+                }
+                // Recurse into nested objects
+                for (const k in obj) {
+                    if (typeof obj[k] === 'object' && obj[k] !== null) {
+                        const found = deepFind(obj[k], keys, depth + 1);
+                        if (found !== null && found !== undefined && found !== '') return found;
+                    }
+                }
+            }
+            return null;
+        }
+
+        // Helper: normalize array (handle string, array, or object with array property)
+        function toArray(val) {
+            if (!val) return [];
+            if (Array.isArray(val)) return val.filter(v => v !== null && v !== undefined && v !== '');
+            if (typeof val === 'string') return val.split(',').map(s => s.trim()).filter(Boolean);
+            if (typeof val === 'object') {
+                // Maybe it's like { skills: [...] } or { items: [...] }
+                for (const k of ['items', 'list', 'values']) {
+                    if (Array.isArray(val[k])) return val[k];
+                }
+                // Or it's a flat object - return its values
+                return Object.values(val).filter(v => typeof v === 'string');
+            }
+            return [];
+        }
+
+        // Pretty label for raw answer keys
+        function prettyLabel(key) {
+            const map = {
+                results_goals: 'Metas Principales',
+                results_income: 'Ingreso Esperado',
+                results_timeline: 'Línea Temporal',
+                results_business_type: 'Tipo de Negocio',
+                purpose_motivation: 'Motivación',
+                purpose_fear: 'Miedo / Riesgo',
+                purpose_beneficiaries: 'Beneficiarios',
+                market_skills: 'Habilidades',
+                market_time: 'Tiempo Disponible',
+                market_resources: 'Recursos',
+                market_experience: 'Experiencia',
+                market_risk: 'Tolerancia al Riesgo'
+            };
+            return map[key] || key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+
         function renderSavedProfile(profile) {
             if (!profile) {
                 document.getElementById('rpm-saved-empty').style.display = 'flex';
@@ -1579,19 +1651,17 @@ por las q ya no están y por las que se han quedado -->
                 return;
             }
 
-            // ai_interpretation contains the full LLM response
+            // Show debug JSON always (collapsed)
+            document.getElementById('rpm-saved-debug-json').textContent = JSON.stringify(profile, null, 2);
+
             const ai = profile.ai_interpretation || {};
-            // Also check top-level DB columns
-            const dbResources = profile.resources; // JSONB - constraints array
-            const dbProcess = profile.process;     // JSONB - massive action plan array
-            const dbMarket = profile.market;       // JSONB - skills array
+            const raw = profile.raw_answers || {};
+            const dbResources = profile.resources;
+            const dbProcess = profile.process;
+            const dbMarket = profile.market;
 
-            // The LLM response structure: { rpm_profile: {...}, massive_action_plan: [...], ai_interpretation: {...} }
-            const rpmProfile = ai.rpm_profile || {};
-            const aiMeta = ai.ai_interpretation || {};
-
-            // Check if there's ANY data to show
-            const hasAnyData = Object.keys(ai).length > 0 || dbResources || dbProcess || dbMarket;
+            // Check if there's ANY data
+            const hasAnyData = Object.keys(ai).length > 0 || Object.keys(raw).length > 0 || dbResources || dbProcess || dbMarket;
             if (!hasAnyData) {
                 document.getElementById('rpm-saved-empty').style.display = 'flex';
                 document.getElementById('rpm-saved-content').style.display = 'none';
@@ -1605,64 +1675,63 @@ por las q ya no están y por las que se han quedado -->
             const dateStr = profile.created_at ? new Date(profile.created_at).toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
             document.getElementById('rpm-saved-date').textContent = 'Generado el ' + dateStr;
 
-            // Summary - try multiple paths
-            const summary = rpmProfile.core_purpose || ai.profile_summary || ai.core_purpose || aiMeta.market_fit || aiMeta.summary || '';
-            document.getElementById('rpm-saved-summary').textContent = summary || 'Perfil RPM procesado por IA.';
+            // Summary - deep search for descriptive text
+            const summary = deepFind(ai, ['core_purpose', 'profile_summary', 'summary', 'market_fit', 'description'])
+                          || raw.purpose_motivation
+                          || 'Perfil RPM procesado por IA.';
+            document.getElementById('rpm-saved-summary').textContent = summary;
 
-            // Core metrics - search in multiple locations
-            const goalType = rpmProfile.goal_type || ai.goal_type || '';
-            const financialGoal = rpmProfile.financial_goal || ai.financial_goal || '';
-            const timeCommitment = rpmProfile.time_commitment || ai.time_commitment || rpmProfile.time || '';
-            const riskProfile = aiMeta.risk_profile || rpmProfile.risk_profile || ai.risk_profile || '';
+            // Core metrics — deep search across the whole ai_interpretation tree
+            // Use raw_answers as fallback if AI didn't structure them
+            const goalType = deepFind(ai, ['goal_type', 'goalType']) || raw.results_business_type || '—';
+            const financialGoal = deepFind(ai, ['financial_goal', 'financialGoal', 'income_goal']) || raw.results_income || '—';
+            const timeCommitment = deepFind(ai, ['time_commitment', 'timeCommitment', 'time']) || raw.market_time || '—';
+            const riskProfile = deepFind(ai, ['risk_profile', 'riskProfile']) || raw.market_risk || '—';
 
-            document.getElementById('rpm-saved-goal-type').textContent = goalType || '—';
-            document.getElementById('rpm-saved-financial').textContent = financialGoal || '—';
-            document.getElementById('rpm-saved-time').textContent = timeCommitment || '—';
-            document.getElementById('rpm-saved-risk').textContent = riskProfile || '—';
+            document.getElementById('rpm-saved-goal-type').textContent = goalType;
+            document.getElementById('rpm-saved-financial').textContent = financialGoal;
+            document.getElementById('rpm-saved-time').textContent = timeCommitment;
+            document.getElementById('rpm-saved-risk').textContent = riskProfile;
 
-            // Skills - check rpm_profile.skills, ai.skills, or DB column market
+            // Skills
             const skillsEl = document.getElementById('rpm-saved-skills');
             skillsEl.innerHTML = '';
-            let skills = rpmProfile.skills || ai.skills || dbMarket || [];
-            if (typeof skills === 'string') skills = skills.split(',').map(s => s.trim()).filter(Boolean);
-            if (!Array.isArray(skills)) skills = [];
+            let skills = toArray(deepFind(ai, ['skills']) || dbMarket || raw.market_skills);
             if (skills.length > 0) {
                 skills.forEach(s => skillsEl.innerHTML += `<span class="rpm-tag">${s}</span>`);
             } else {
                 skillsEl.innerHTML = '<span class="rpm-tag rpm-tag-empty">Sin datos</span>';
             }
 
-            // Business preferences
+            // Business Preferences
             const prefsEl = document.getElementById('rpm-saved-preferences');
             prefsEl.innerHTML = '';
-            let prefs = rpmProfile.business_preferences || ai.business_preferences || rpmProfile.preferences || [];
-            if (typeof prefs === 'string') prefs = prefs.split(',').map(s => s.trim()).filter(Boolean);
-            if (!Array.isArray(prefs)) prefs = [];
+            let prefs = toArray(deepFind(ai, ['business_preferences', 'preferences', 'business_type']) || raw.results_business_type);
             if (prefs.length > 0) {
                 prefs.forEach(p => prefsEl.innerHTML += `<span class="rpm-tag">${p}</span>`);
             } else {
                 prefsEl.innerHTML = '<span class="rpm-tag rpm-tag-empty">Sin datos</span>';
             }
 
-            // Constraints - check rpm_profile.constraints, ai.constraints, or DB column resources
+            // Constraints
             const constEl = document.getElementById('rpm-saved-constraints');
             constEl.innerHTML = '';
-            let constraints = rpmProfile.constraints || ai.constraints || dbResources || [];
-            if (typeof constraints === 'string') constraints = constraints.split(',').map(s => s.trim()).filter(Boolean);
-            if (!Array.isArray(constraints)) constraints = [];
+            let constraints = toArray(deepFind(ai, ['constraints']) || dbResources || raw.market_resources);
             if (constraints.length > 0) {
                 constraints.forEach(c => constEl.innerHTML += `<span class="rpm-tag rpm-tag-warning">${c}</span>`);
             } else {
                 constEl.innerHTML = '<span class="rpm-tag rpm-tag-empty">Sin datos</span>';
             }
 
-            // Market match
+            // Market Match
             const matchEl = document.getElementById('rpm-saved-market-match');
             matchEl.innerHTML = '';
-            const marketMatch = ai.market_match || rpmProfile.market_match || aiMeta.market_match || [];
+            const marketMatch = deepFind(ai, ['market_match', 'marketMatch']) || [];
+            const marketFit = deepFind(ai, ['market_fit', 'marketFit']);
+
             if (Array.isArray(marketMatch) && marketMatch.length > 0) {
                 marketMatch.forEach(pp => {
-                    const rel = pp.relevance || 'N/A';
+                    const rel = pp.relevance || pp.score || 'N/A';
                     const relClass = rel === 'High' ? 'rpm-relevance-high' : (rel === 'Medium' ? 'rpm-relevance-medium' : 'rpm-relevance-low');
                     matchEl.innerHTML += `
                     <div class="rpm-match-item">
@@ -1673,21 +1742,24 @@ por las q ya no están y por las que se han quedado -->
                         <p class="rpm-match-reasoning">${pp.reasoning || pp.description || ''}</p>
                     </div>`;
                 });
-            } else if (aiMeta.market_fit) {
-                matchEl.innerHTML = `<div class="rpm-match-item"><p class="rpm-match-reasoning">${aiMeta.market_fit}</p></div>`;
+            } else if (marketFit) {
+                matchEl.innerHTML = `<div class="rpm-match-item"><p class="rpm-match-reasoning">${marketFit}</p></div>`;
             } else {
                 matchEl.innerHTML = '<p style="color: var(--text-muted); font-size: 13px;">Sin cruces de mercado disponibles.</p>';
             }
 
-            // Massive Action Plan - check ai.massive_action_plan or DB column process
+            // Massive Action Plan
             const modelEl = document.getElementById('rpm-saved-model');
             const stepsEl = document.getElementById('rpm-saved-steps');
-            let mapData = ai.massive_action_plan || dbProcess || [];
+            let mapData = deepFind(ai, ['massive_action_plan', 'massiveActionPlan', 'action_plan']) || dbProcess;
 
-            if (typeof mapData === 'object' && !Array.isArray(mapData) && mapData !== null) {
-                // Object format: { recommended_model, steps: [] }
-                modelEl.innerHTML = mapData.recommended_model ? `<span class="rpm-model-badge">${mapData.recommended_model}</span>` : '';
-                stepsEl.innerHTML = '';
+            modelEl.innerHTML = '';
+            stepsEl.innerHTML = '';
+
+            if (mapData && typeof mapData === 'object' && !Array.isArray(mapData)) {
+                if (mapData.recommended_model) {
+                    modelEl.innerHTML = `<span class="rpm-model-badge">${mapData.recommended_model}</span>`;
+                }
                 const steps = mapData.steps || [];
                 if (steps.length > 0) {
                     steps.forEach(step => stepsEl.innerHTML += `<li>${step}</li>`);
@@ -1695,13 +1767,32 @@ por las q ya no están y por las que se han quedado -->
                     stepsEl.innerHTML = '<li style="color: var(--text-muted);">Sin pasos definidos.</li>';
                 }
             } else if (Array.isArray(mapData) && mapData.length > 0) {
-                // Simple array format: ["paso 1", "paso 2", ...]
                 modelEl.innerHTML = '<span class="rpm-model-badge">Plan de Acción</span>';
-                stepsEl.innerHTML = '';
-                mapData.forEach(step => stepsEl.innerHTML += `<li>${step}</li>`);
+                mapData.forEach(step => {
+                    const text = typeof step === 'string' ? step : (step.text || step.description || JSON.stringify(step));
+                    stepsEl.innerHTML += `<li>${text}</li>`;
+                });
             } else {
-                modelEl.innerHTML = '';
                 stepsEl.innerHTML = '<li style="color: var(--text-muted);">Sin pasos definidos aún.</li>';
+            }
+
+            // Raw User Answers (always show if available - this guarantees you see SOMETHING)
+            const rawCard = document.getElementById('rpm-saved-raw-answers-card');
+            const rawEl = document.getElementById('rpm-saved-raw-answers');
+            if (raw && Object.keys(raw).length > 0) {
+                rawCard.style.display = 'block';
+                rawEl.innerHTML = '';
+                Object.keys(raw).forEach(key => {
+                    if (raw[key] && String(raw[key]).trim()) {
+                        rawEl.innerHTML += `
+                        <div class="rpm-raw-item">
+                            <div class="rpm-raw-label">${prettyLabel(key)}</div>
+                            <div class="rpm-raw-value">${raw[key]}</div>
+                        </div>`;
+                    }
+                });
+            } else {
+                rawCard.style.display = 'none';
             }
         }
 

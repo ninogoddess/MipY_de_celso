@@ -1390,3 +1390,69 @@ pre {
         flex-direction: column;
     }
 }
+
+
+/* =============================================
+   RPM Raw Answers (Wizard Responses) & Debug
+   ============================================= */
+.rpm-raw-answers {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.rpm-raw-item {
+    background: rgba(0, 0, 0, 0.2);
+    border-left: 3px solid var(--primary);
+    padding: 0.85rem 1rem;
+    border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.rpm-raw-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--primary);
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.rpm-raw-value {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+.rpm-debug {
+    margin-top: 1.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+}
+
+.rpm-debug summary {
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--text-muted);
+    user-select: none;
+    padding: 4px 0;
+}
+
+.rpm-debug summary:hover {
+    color: var(--text);
+}
+
+.rpm-debug pre {
+    margin-top: 0.75rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: var(--radius);
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--primary);
+    line-height: 1.5;
+    max-height: 400px;
+    overflow: auto;
+}
