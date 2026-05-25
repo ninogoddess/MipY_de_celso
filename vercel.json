@@ -13,6 +13,7 @@
     { "source": "/api/rpm_profile", "destination": "/api/data_engine.py" },
     { "source": "/api/wizard_validate", "destination": "/api/wizard_engine.py" },
     { "source": "/api/wizard_chat", "destination": "/api/wizard_engine.py" },
-    { "source": "/api/wizard_process", "destination": "/api/wizard_engine.py" }
+    { "src": "/api/wizard_process", "dest": "/api/wizard_engine.py" },
+    { "src": "/api/mvt", "dest": "/api/mvt.py" }
   ]
 }

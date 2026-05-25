@@ -583,20 +583,84 @@ por las q ya no están y por las que se han quedado -->
             </div>
         </div>
 
-        <!-- ========== MVT ========== -->
+        <!-- ========== FASE 5: MVT VALIDATION ========== -->
         <div id="page-mvt" class="page">
             <div class="page-header">
-                <h2>Validación MVT</h2>
-                <p>Minimum Viable Test — Valida tus soluciones con evidencia real.</p>
+                <h2>🧪 Inmersión y Validación MVT</h2>
+                <p>Registra la evidencia de tus experimentos en el mercado (conversaciones, landing pages) y toma la decisión final (Pivot/Proceed/Kill).</p>
             </div>
-            <div class="placeholder-card">
+            
+            <!-- Active MVT Header -->
+            <div id="mvt-active-container" style="display: none; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h3 id="mvt-sol-title" style="color: var(--primary); margin-top: 0;">Cargando...</h3>
+                <p id="mvt-sol-desc" style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;"></p>
+                <div style="display: flex; gap: 20px;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 6px; border: 1px solid var(--border);">
+                        <span style="font-size: 11px; color: var(--text-muted);">Decisión Actual:</span>
+                        <div id="mvt-decision" style="font-weight: bold; color: var(--warning); font-size: 14px; margin-top: 5px;">Validating</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 6px; border: 1px solid var(--border);">
+                        <span style="font-size: 11px; color: var(--text-muted);">Conversaciones:</span>
+                        <div id="mvt-convs" style="font-weight: bold; color: var(--text); font-size: 14px; margin-top: 5px;">0</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 6px; border: 1px solid var(--border);">
+                        <span style="font-size: 11px; color: var(--text-muted);">Tests Ejecutados:</span>
+                        <div id="mvt-tests" style="font-weight: bold; color: var(--text); font-size: 14px; margin-top: 5px;">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mvt-empty-state" class="placeholder-card">
                 <div class="placeholder-icon">🧪</div>
-                <h3>Módulo de validación real</h3>
-                <p>Registra conversaciones reales, tests ejecutados y métricas para tomar la decisión final: Pivot,
-                    Proceed o Kill.</p>
+                <h3>Sin validación activa</h3>
+                <p>Ve al Motor de Soluciones y haz clic en "Iniciar Inmersión MVT" en una de las ideas generadas para comenzar.</p>
+            </div>
+
+            <!-- MVT Main Workspace -->
+            <div id="mvt-workspace" style="display: none; grid-template-columns: 1fr 300px; gap: 20px;">
+                
+                <!-- Left: Evidence Log -->
+                <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px;">
+                    <h3 style="margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Bitácora de Evidencia</h3>
+                    
+                    <form id="mvt-evidence-form" style="background: rgba(0,0,0,0.1); padding: 15px; border-radius: 8px; border: 1px dashed var(--border); margin-bottom: 20px;">
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <select id="mvt-ev-type" class="form-input" style="flex: 1;">
+                                <option value="conversation">Conversación (WhatsApp/LinkedIn)</option>
+                                <option value="landing_page">Landing Page / Anuncio</option>
+                                <option value="survey">Encuesta de Mercado</option>
+                                <option value="note">Nota / Recordatorio</option>
+                            </select>
+                            <select id="mvt-ev-outcome" class="form-input" style="flex: 1;">
+                                <option value="neutral">Neutral ⚪</option>
+                                <option value="positive">Positivo (Interés real) 🟢</option>
+                                <option value="negative">Negativo (Sin tracción) 🔴</option>
+                            </select>
+                        </div>
+                        <input type="text" id="mvt-ev-source" class="form-input" placeholder="Fuente (Ej: LinkedIn, Nombre del Lead, Campaña Ads)" style="margin-bottom: 10px;">
+                        <textarea id="mvt-ev-content" class="form-input" rows="3" placeholder="Resumen de la interacción o resultados del test..." required style="margin-bottom: 10px;"></textarea>
+                        <input type="url" id="mvt-ev-url" class="form-input" placeholder="URL opcional (link a Google Drive, Foto, Captura, Data)" style="margin-bottom: 10px;">
+                        <button type="submit" class="btn-primary" style="width: 100%;">💾 Registrar Evidencia</button>
+                    </form>
+
+                    <div id="mvt-evidence-list" style="display: flex; flex-direction: column; gap: 15px;">
+                        <!-- Evidence items injected here -->
+                    </div>
+                </div>
+
+                <!-- Right: Decision Panel -->
+                <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; align-self: start;">
+                    <h3 style="margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Decisión Estratégica</h3>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Una vez que hayas recopilado suficiente evidencia en el mercado, toma una decisión final sobre esta oportunidad de negocio.</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <button onclick="updateMvtDecision('Proceed')" class="btn-primary" style="background: var(--success); color: white; border: none; padding: 12px; font-weight: bold;">🟢 PROCEED (Avanzar)</button>
+                        <button onclick="updateMvtDecision('Pivot')" class="btn-primary" style="background: var(--warning); color: #1a1a1a; border: none; padding: 12px; font-weight: bold;">🟡 PIVOT (Iterar)</button>
+                        <button onclick="updateMvtDecision('Kill')" class="btn-primary" style="background: var(--danger); color: white; border: none; padding: 12px; font-weight: bold;">🔴 KILL (Descartar)</button>
+                    </div>
+                </div>
             </div>
         </div>
-
         <!-- ========== SETTINGS ========== -->
         <div id="page-settings" class="page">
             <div class="page-header">
@@ -661,6 +725,8 @@ por las q ya no están y por las que se han quedado -->
         let scraperRunsLoaded = false;
         let wizardLoaded = false;
         let solutionsLoaded = false;
+        let mvtLoaded = false;
+        let currentValidationId = null;
         document.querySelectorAll('.sidebar-item').forEach(item => {
             item.addEventListener('click', () => {
                 const page = item.dataset.page;
@@ -686,6 +752,7 @@ por las q ya no están y por las que se han quedado -->
                 if (page === 'scraper' && !scraperRunsLoaded) { loadScraperRuns(); scraperRunsLoaded = true; }
                 if (page === 'wizard' && !wizardLoaded) { loadRpmProfile(); wizardLoaded = true; }
                 if (page === 'solutions' && !solutionsLoaded) { loadSolutions(); solutionsLoaded = true; }
+                if (page === 'mvt' && !mvtLoaded) { loadMvtValidation(); mvtLoaded = true; }
             });
         });
 
@@ -1597,15 +1664,143 @@ por las q ya no están y por las que se han quedado -->
             container.innerHTML = html;
         }
 
-        function startMvtValidation(solutionId) {
-            alert("Has seleccionado esta solución para la validación MVT (Fase 5). Serás redirigido al panel de inmersión en la próxima iteración.");
-            // Aquí iría la lógica para activar la pestaña MVT y cargar el contexto
-            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-            document.querySelector('[data-page="mvt"]').classList.remove('locked');
-            document.querySelector('[data-page="mvt"]').classList.add('active');
+        // ==================== MVT VALIDATION ENGINE ====================
+
+        async function loadMvtValidation() {
+            try {
+                const res = await fetch('/api/mvt', { method: 'GET' });
+                if (!res.ok) throw new Error('Error al cargar validación');
+                const data = await res.json();
+                
+                if (data.validation) {
+                    renderMvtWorkspace(data.validation, data.evidence || []);
+                } else {
+                    document.getElementById('mvt-active-container').style.display = 'none';
+                    document.getElementById('mvt-workspace').style.display = 'none';
+                    document.getElementById('mvt-empty-state').style.display = 'block';
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function renderMvtWorkspace(validation, evidence) {
+            currentValidationId = validation.id;
             
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('page-mvt').classList.add('active');
+            document.getElementById('mvt-empty-state').style.display = 'none';
+            document.getElementById('mvt-active-container').style.display = 'block';
+            document.getElementById('mvt-workspace').style.display = 'grid';
+            
+            document.getElementById('mvt-sol-title').innerText = validation.solutions.title;
+            document.getElementById('mvt-sol-desc').innerText = validation.solutions.description;
+            
+            document.getElementById('mvt-decision').innerText = validation.decision || 'Validating';
+            document.getElementById('mvt-convs').innerText = validation.total_conversations || 0;
+            document.getElementById('mvt-tests').innerText = validation.total_tests || 0;
+            
+            const list = document.getElementById('mvt-evidence-list');
+            list.innerHTML = '';
+            
+            if (evidence.length === 0) {
+                list.innerHTML = '<div style="color: var(--text-muted); font-size: 13px;">No hay evidencia registrada aún.</div>';
+            } else {
+                evidence.forEach(ev => {
+                    const icon = ev.evidence_type === 'conversation' ? '💬' : (ev.evidence_type === 'landing_page' ? '🌐' : '📝');
+                    const outColor = ev.outcome === 'positive' ? 'var(--success)' : (ev.outcome === 'negative' ? 'var(--danger)' : 'var(--text-muted)');
+                    const urlHtml = ev.evidence_url ? `<a href="${ev.evidence_url}" target="_blank" style="display: block; margin-top: 10px; font-size: 12px; color: var(--primary);">🔗 Ver Recurso / Enlace</a>` : '';
+                    
+                    list.innerHTML += `
+                    <div style="background: rgba(0,0,0,0.1); border: 1px solid var(--border); padding: 15px; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <div>
+                                <span style="font-size: 18px; margin-right: 8px;">${icon}</span>
+                                <strong style="font-size: 13px; text-transform: uppercase; color: var(--secondary);">${ev.evidence_type}</strong>
+                            </div>
+                            <span style="font-size: 12px; font-weight: bold; color: ${outColor};">${ev.outcome}</span>
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Fuente: ${ev.source || 'N/A'}</div>
+                        <p style="margin: 0; font-size: 14px; line-height: 1.5; color: var(--text);">${ev.content}</p>
+                        ${urlHtml}
+                    </div>`;
+                });
+            }
+        }
+
+        document.getElementById('mvt-evidence-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentValidationId) return;
+            
+            const payload = {
+                action: 'add_evidence',
+                validation_id: currentValidationId,
+                evidence_type: document.getElementById('mvt-ev-type').value,
+                outcome: document.getElementById('mvt-ev-outcome').value,
+                source: document.getElementById('mvt-ev-source').value,
+                content: document.getElementById('mvt-ev-content').value,
+                evidence_url: document.getElementById('mvt-ev-url').value
+            };
+            
+            const btn = e.target.querySelector('button');
+            btn.innerText = 'Guardando...';
+            btn.disabled = true;
+            
+            try {
+                const res = await fetch('/api/mvt', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    e.target.reset();
+                    loadMvtValidation(); // recargar
+                }
+            } catch (err) { console.error(err); }
+            finally {
+                btn.innerText = '💾 Registrar Evidencia';
+                btn.disabled = false;
+            }
+        });
+
+        async function updateMvtDecision(decision) {
+            if (!currentValidationId) return;
+            if (!confirm(`¿Estás seguro de marcar esta solución como ${decision}?`)) return;
+            
+            try {
+                await fetch('/api/mvt', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'decide', validation_id: currentValidationId, decision: decision })
+                });
+                loadMvtValidation(); // recargar para ver la nueva decisión
+            } catch (err) { console.error(err); }
+        }
+
+        async function startMvtValidation(solutionId) {
+            try {
+                const res = await fetch('/api/mvt', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'start', solution_id: solutionId })
+                });
+                
+                if (res.ok) {
+                    // Navigate to MVT Tab
+                    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                    const mvtTab = document.querySelector('[data-page="mvt"]');
+                    mvtTab.classList.remove('locked');
+                    mvtTab.classList.add('active');
+                    
+                    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                    document.getElementById('page-mvt').classList.add('active');
+                    
+                    loadMvtValidation();
+                } else {
+                    const data = await res.json();
+                    alert("Error: " + data.error);
+                }
+            } catch(e) {
+                console.error(e);
+            }
         }
 
         // Load existing profile on wizard page visit
