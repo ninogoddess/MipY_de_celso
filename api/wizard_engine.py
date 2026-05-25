@@ -93,14 +93,22 @@ Responde EXCLUSIVAMENTE con un JSON que contenga:
         }
         
         response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
+        
+        if response.status_code != 200:
+            raise Exception(f"Error de LLM (OpenRouter): {response.text}")
+            
         result = response.json()["choices"][0]["message"]["content"]
         
         # Guardar en DB
         profile_data = json.loads(result)
         
-        # Obtener user_id
+        # Obtener o crear user_id
         u_resp = sb.table("user_profiles").select("id").limit(1).execute()
-        user_id = u_resp.data[0]["id"] if u_resp.data else None
+        if u_resp.data:
+            user_id = u_resp.data[0]["id"]
+        else:
+            u_insert = sb.table("user_profiles").insert({"email": "demo@mipylatam.com", "display_name": "Emprendedor Demo"}).execute()
+            user_id = u_insert.data[0]["id"]
         
         # Desactivar perfiles anteriores
         sb.table("rpm_profiles").update({"is_active": False}).eq("user_id", user_id).execute()
