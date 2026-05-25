@@ -586,77 +586,111 @@ por las q ya no están y por las que se han quedado -->
         <!-- ========== FASE 5: MVT VALIDATION ========== -->
         <div id="page-mvt" class="page">
             <div class="page-header">
-                <h2>🧪 Inmersión y Validación MVT</h2>
-                <p>Registra la evidencia de tus experimentos en el mercado (conversaciones, landing pages) y toma la decisión final (Pivot/Proceed/Kill).</p>
+                <h2>Inmersión y Validación MVT</h2>
+                <p>Registra la evidencia de tus experimentos en el mercado y toma la decisión final.</p>
             </div>
             
             <!-- Active MVT Header -->
-            <div id="mvt-active-container" style="display: none; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-                <h3 id="mvt-sol-title" style="color: var(--primary); margin-top: 0;">Cargando...</h3>
-                <p id="mvt-sol-desc" style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;"></p>
-                <div style="display: flex; gap: 20px;">
-                    <div style="background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 6px; border: 1px solid var(--border);">
-                        <span style="font-size: 11px; color: var(--text-muted);">Decisión Actual:</span>
-                        <div id="mvt-decision" style="font-weight: bold; color: var(--warning); font-size: 14px; margin-top: 5px;">Validating</div>
+            <div id="mvt-active-container" class="mvt-header-card">
+                <div class="mvt-header-top">
+                    <div class="mvt-header-info">
+                        <h3 id="mvt-sol-title">Cargando...</h3>
+                        <p id="mvt-sol-desc"></p>
                     </div>
-                    <div style="background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 6px; border: 1px solid var(--border);">
-                        <span style="font-size: 11px; color: var(--text-muted);">Conversaciones:</span>
-                        <div id="mvt-convs" style="font-weight: bold; color: var(--text); font-size: 14px; margin-top: 5px;">0</div>
+                </div>
+                <div class="mvt-metrics-row">
+                    <div class="mvt-metric">
+                        <span class="mvt-metric-label">Decisión</span>
+                        <span class="mvt-metric-value mvt-metric-decision" id="mvt-decision">Validating</span>
                     </div>
-                    <div style="background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 6px; border: 1px solid var(--border);">
-                        <span style="font-size: 11px; color: var(--text-muted);">Tests Ejecutados:</span>
-                        <div id="mvt-tests" style="font-weight: bold; color: var(--text); font-size: 14px; margin-top: 5px;">0</div>
+                    <div class="mvt-metric">
+                        <span class="mvt-metric-label">Conversaciones</span>
+                        <span class="mvt-metric-value" id="mvt-convs">0</span>
+                    </div>
+                    <div class="mvt-metric">
+                        <span class="mvt-metric-label">Tests</span>
+                        <span class="mvt-metric-value" id="mvt-tests">0</span>
                     </div>
                 </div>
             </div>
 
-            <div id="mvt-empty-state" class="placeholder-card">
-                <div class="placeholder-icon">🧪</div>
+            <!-- Empty State -->
+            <div id="mvt-empty-state" class="mvt-empty">
+                <div class="mvt-empty-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 3h6l2 4H7l2-4z"/>
+                        <path d="M7 7v10a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V7"/>
+                        <line x1="12" y1="11" x2="12" y2="15"/>
+                        <line x1="10" y1="13" x2="14" y2="13"/>
+                    </svg>
+                </div>
                 <h3>Sin validación activa</h3>
-                <p>Ve al Motor de Soluciones y haz clic en "Iniciar Inmersión MVT" en una de las ideas generadas para comenzar.</p>
+                <p>Ve al <strong>Motor de Soluciones</strong> y haz clic en "Iniciar Inmersión MVT" en una de las ideas generadas para comenzar.</p>
             </div>
 
             <!-- MVT Main Workspace -->
-            <div id="mvt-workspace" style="display: none; grid-template-columns: 1fr 300px; gap: 20px;">
+            <div id="mvt-workspace" class="mvt-workspace">
                 
                 <!-- Left: Evidence Log -->
-                <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px;">
-                    <h3 style="margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Bitácora de Evidencia</h3>
+                <div class="mvt-evidence-panel">
+                    <div class="mvt-panel-header">
+                        <h3>Bitácora de Evidencia</h3>
+                    </div>
                     
-                    <form id="mvt-evidence-form" style="background: rgba(0,0,0,0.1); padding: 15px; border-radius: 8px; border: 1px dashed var(--border); margin-bottom: 20px;">
-                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                            <select id="mvt-ev-type" class="form-input" style="flex: 1;">
-                                <option value="conversation">Conversación (WhatsApp/LinkedIn)</option>
-                                <option value="landing_page">Landing Page / Anuncio</option>
-                                <option value="survey">Encuesta de Mercado</option>
-                                <option value="note">Nota / Recordatorio</option>
+                    <form id="mvt-evidence-form" class="mvt-form">
+                        <div class="mvt-form-row">
+                            <select id="mvt-ev-type" class="mvt-input">
+                                <option value="conversation">💬 Conversación</option>
+                                <option value="landing_page">🌐 Landing Page</option>
+                                <option value="survey">📊 Encuesta</option>
+                                <option value="note">📝 Nota</option>
                             </select>
-                            <select id="mvt-ev-outcome" class="form-input" style="flex: 1;">
-                                <option value="neutral">Neutral ⚪</option>
-                                <option value="positive">Positivo (Interés real) 🟢</option>
-                                <option value="negative">Negativo (Sin tracción) 🔴</option>
+                            <select id="mvt-ev-outcome" class="mvt-input">
+                                <option value="neutral">⚪ Neutral</option>
+                                <option value="positive">🟢 Positivo</option>
+                                <option value="negative">🔴 Negativo</option>
                             </select>
                         </div>
-                        <input type="text" id="mvt-ev-source" class="form-input" placeholder="Fuente (Ej: LinkedIn, Nombre del Lead, Campaña Ads)" style="margin-bottom: 10px;">
-                        <textarea id="mvt-ev-content" class="form-input" rows="3" placeholder="Resumen de la interacción o resultados del test..." required style="margin-bottom: 10px;"></textarea>
-                        <input type="url" id="mvt-ev-url" class="form-input" placeholder="URL opcional (link a Google Drive, Foto, Captura, Data)" style="margin-bottom: 10px;">
-                        <button type="submit" class="btn-primary" style="width: 100%;">💾 Registrar Evidencia</button>
+                        <input type="text" id="mvt-ev-source" class="mvt-input" placeholder="Fuente (LinkedIn, Lead, Campaña...)">
+                        <textarea id="mvt-ev-content" class="mvt-input mvt-textarea" rows="3" placeholder="Resumen de la interacción o resultados..." required></textarea>
+                        <input type="url" id="mvt-ev-url" class="mvt-input" placeholder="URL opcional (Drive, Captura, Data...)">
+                        <button type="submit" class="btn-primary mvt-submit-btn">Registrar Evidencia</button>
                     </form>
 
-                    <div id="mvt-evidence-list" style="display: flex; flex-direction: column; gap: 15px;">
+                    <div id="mvt-evidence-list" class="mvt-evidence-list">
                         <!-- Evidence items injected here -->
                     </div>
                 </div>
 
                 <!-- Right: Decision Panel -->
-                <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; align-self: start;">
-                    <h3 style="margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Decisión Estratégica</h3>
-                    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Una vez que hayas recopilado suficiente evidencia en el mercado, toma una decisión final sobre esta oportunidad de negocio.</p>
+                <div class="mvt-decision-panel">
+                    <div class="mvt-panel-header">
+                        <h3>Decisión Estratégica</h3>
+                    </div>
+                    <p class="mvt-decision-desc">Recopila evidencia suficiente y toma una decisión final sobre esta oportunidad.</p>
                     
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <button onclick="updateMvtDecision('Proceed')" class="btn-primary" style="background: var(--success); color: white; border: none; padding: 12px; font-weight: bold;">🟢 PROCEED (Avanzar)</button>
-                        <button onclick="updateMvtDecision('Pivot')" class="btn-primary" style="background: var(--warning); color: #1a1a1a; border: none; padding: 12px; font-weight: bold;">🟡 PIVOT (Iterar)</button>
-                        <button onclick="updateMvtDecision('Kill')" class="btn-primary" style="background: var(--danger); color: white; border: none; padding: 12px; font-weight: bold;">🔴 KILL (Descartar)</button>
+                    <div class="mvt-decision-buttons">
+                        <button onclick="updateMvtDecision('Proceed')" class="mvt-btn mvt-btn-proceed">
+                            <span class="mvt-btn-icon">↗</span>
+                            <span class="mvt-btn-text">
+                                <strong>PROCEED</strong>
+                                <small>Avanzar con la idea</small>
+                            </span>
+                        </button>
+                        <button onclick="updateMvtDecision('Pivot')" class="mvt-btn mvt-btn-pivot">
+                            <span class="mvt-btn-icon">↻</span>
+                            <span class="mvt-btn-text">
+                                <strong>PIVOT</strong>
+                                <small>Iterar el enfoque</small>
+                            </span>
+                        </button>
+                        <button onclick="updateMvtDecision('Kill')" class="mvt-btn mvt-btn-kill">
+                            <span class="mvt-btn-icon">✕</span>
+                            <span class="mvt-btn-text">
+                                <strong>KILL</strong>
+                                <small>Descartar idea</small>
+                            </span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1688,13 +1722,19 @@ por las q ya no están y por las que se han quedado -->
             currentValidationId = validation.id;
             
             document.getElementById('mvt-empty-state').style.display = 'none';
-            document.getElementById('mvt-active-container').style.display = 'block';
+            document.getElementById('mvt-active-container').style.display = 'flex';
             document.getElementById('mvt-workspace').style.display = 'grid';
             
             document.getElementById('mvt-sol-title').innerText = validation.solutions.title;
             document.getElementById('mvt-sol-desc').innerText = validation.solutions.description;
             
-            document.getElementById('mvt-decision').innerText = validation.decision || 'Validating';
+            const decisionEl = document.getElementById('mvt-decision');
+            decisionEl.innerText = validation.decision || 'Validating';
+            decisionEl.className = 'mvt-metric-value mvt-metric-decision';
+            if (validation.decision === 'Proceed') decisionEl.classList.add('decision-proceed');
+            else if (validation.decision === 'Kill') decisionEl.classList.add('decision-kill');
+            else if (validation.decision === 'Pivot') decisionEl.classList.add('decision-pivot');
+            
             document.getElementById('mvt-convs').innerText = validation.total_conversations || 0;
             document.getElementById('mvt-tests').innerText = validation.total_tests || 0;
             
@@ -1702,24 +1742,25 @@ por las q ya no están y por las que se han quedado -->
             list.innerHTML = '';
             
             if (evidence.length === 0) {
-                list.innerHTML = '<div style="color: var(--text-muted); font-size: 13px;">No hay evidencia registrada aún.</div>';
+                list.innerHTML = '<div class="mvt-evidence-empty">No hay evidencia registrada aún. Comienza agregando tus primeras interacciones.</div>';
             } else {
                 evidence.forEach(ev => {
-                    const icon = ev.evidence_type === 'conversation' ? '💬' : (ev.evidence_type === 'landing_page' ? '🌐' : '📝');
-                    const outColor = ev.outcome === 'positive' ? 'var(--success)' : (ev.outcome === 'negative' ? 'var(--danger)' : 'var(--text-muted)');
-                    const urlHtml = ev.evidence_url ? `<a href="${ev.evidence_url}" target="_blank" style="display: block; margin-top: 10px; font-size: 12px; color: var(--primary);">🔗 Ver Recurso / Enlace</a>` : '';
+                    const icon = ev.evidence_type === 'conversation' ? '💬' : (ev.evidence_type === 'landing_page' ? '🌐' : (ev.evidence_type === 'survey' ? '📊' : '📝'));
+                    const outClass = ev.outcome === 'positive' ? 'outcome-positive' : (ev.outcome === 'negative' ? 'outcome-negative' : 'outcome-neutral');
+                    const outLabel = ev.outcome === 'positive' ? 'Positivo' : (ev.outcome === 'negative' ? 'Negativo' : 'Neutral');
+                    const urlHtml = ev.evidence_url ? `<a href="${ev.evidence_url}" target="_blank" class="mvt-evidence-link">Ver recurso →</a>` : '';
                     
                     list.innerHTML += `
-                    <div style="background: rgba(0,0,0,0.1); border: 1px solid var(--border); padding: 15px; border-radius: 8px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <div>
-                                <span style="font-size: 18px; margin-right: 8px;">${icon}</span>
-                                <strong style="font-size: 13px; text-transform: uppercase; color: var(--secondary);">${ev.evidence_type}</strong>
+                    <div class="mvt-evidence-item">
+                        <div class="mvt-evidence-header">
+                            <div class="mvt-evidence-type">
+                                <span class="mvt-evidence-icon">${icon}</span>
+                                <span>${ev.evidence_type}</span>
                             </div>
-                            <span style="font-size: 12px; font-weight: bold; color: ${outColor};">${ev.outcome}</span>
+                            <span class="mvt-evidence-outcome ${outClass}">${outLabel}</span>
                         </div>
-                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Fuente: ${ev.source || 'N/A'}</div>
-                        <p style="margin: 0; font-size: 14px; line-height: 1.5; color: var(--text);">${ev.content}</p>
+                        <div class="mvt-evidence-source">${ev.source || 'Sin fuente'}</div>
+                        <p class="mvt-evidence-content">${ev.content}</p>
                         ${urlHtml}
                     </div>`;
                 });
