@@ -173,6 +173,18 @@ Genera las 4 mejores soluciones de negocio para este usuario en base a su RPM.""
             for sol in generated_solutions:
                 # Guardamos el payload COMPLETO como json en 'justification'
                 # Y extraemos campos primarios para la tabla
+                diff_score = sol.get("difficulty_score", 50)
+                try:
+                    diff_score = int(diff_score)
+                except:
+                    diff_score = 50
+                    
+                diff_str = "Medium"
+                if diff_score < 40:
+                    diff_str = "Low"
+                elif diff_score > 70:
+                    diff_str = "High"
+
                 sol_insert = sb.table("solutions").insert({
                     "user_id": user_id,
                     "rpm_profile_id": rpm_profile["id"],
@@ -180,7 +192,7 @@ Genera las 4 mejores soluciones de negocio para este usuario en base a su RPM.""
                     "description": sol.get("summary", ""),
                     "latam_adaptation": sol.get("latam_pain_point", ""),
                     "rpm_fit_score": sol.get("rpm_fit_score", 0),
-                    "difficulty": str(sol.get("difficulty_score", 50)),
+                    "difficulty": diff_str,
                     "justification": json.dumps(sol, ensure_ascii=False),
                     "status": "generated"
                 }).execute()
