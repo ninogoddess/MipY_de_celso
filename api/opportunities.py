@@ -125,18 +125,31 @@ Genera las 4 mejores soluciones de negocio para este usuario en base a su RPM.""
                 "Authorization": f"Bearer {OPENROUTER_API_KEY}",
                 "Content-Type": "application/json"
             }
-            payload = {
-                "model": "openrouter/free",
-                "messages": [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                "response_format": { "type": "json_object" }
-            }
-
-            response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
-            if response.status_code != 200:
-                self._send(500, {"error": f"Error de OpenRouter: {response.text}"})
+            
+            models_to_try = [
+                "google/gemini-2.5-pro-exp:free",
+                "meta-llama/llama-3.3-70b-instruct:free",
+                "deepseek/deepseek-r1:free",
+                "deepseek/deepseek-chat:free",
+                "openrouter/auto"
+            ]
+            
+            response = None
+            for model_name in models_to_try:
+                payload = {
+                    "model": model_name,
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt}
+                    ],
+                    "response_format": { "type": "json_object" }
+                }
+                response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
+                if response.status_code == 200:
+                    break
+                    
+            if not response or response.status_code != 200:
+                self._send(500, {"error": f"Error de OpenRouter tras intentar varios modelos. Último error: {response.text}"})
                 return
 
             result_data = response.json()
