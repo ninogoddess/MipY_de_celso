@@ -2023,13 +2023,24 @@ por las q ya no están y por las que se han quedado -->
                         <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;">`;
                     
                     richData.related_videos.forEach(v => {
-                        const ytId = v.id || v.url?.split('v=')[1]?.split('&')[0];
-                        const thumbUrl = v.thumbnail && v.thumbnail.includes('http') ? v.thumbnail : `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`;
+                        // Extraer ID real de YouTube desde v.id o desde la URL (soporta watch?v= y youtu.be/)
+                        let ytId = v.id || '';
+                        if (!ytId && v.url) {
+                            if (v.url.includes('v=')) {
+                                ytId = v.url.split('v=')[1].split('&')[0];
+                            } else if (v.url.includes('youtu.be/')) {
+                                ytId = v.url.split('youtu.be/')[1].split('?')[0];
+                            }
+                        }
+                        // Construir SIEMPRE el thumbnail desde el ID (mismo patrón que la pestaña Videos),
+                        // ignorando lo que devuelva el LLM porque puede estar alucinado/roto.
+                        const thumbUrl = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '';
+                        const fallbackThumb = ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : '';
                         const videoUrl = v.url && v.url.includes('http') ? v.url : `https://www.youtube.com/watch?v=${ytId}`;
                         
                         videosHtml += `
                         <a href="${videoUrl}" target="_blank" style="flex: 0 0 200px; text-decoration: none; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.2);">
-                            <img src="${thumbUrl}" onerror="this.src='https://i.ytimg.com/vi/${ytId}/default.jpg'" style="width: 100%; height: 110px; object-fit: cover; display: block;">
+                            <img src="${thumbUrl}" loading="lazy" onerror="if(this.src!=='${fallbackThumb}'){this.src='${fallbackThumb}';}" style="width: 100%; height: 110px; object-fit: cover; display: block;">
                             <div style="padding: 8px;">
                                 <div style="font-size: 11px; color: var(--text); font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${v.title}</div>
                                 <div style="font-size: 10px; color: var(--info); margin-top: 4px; line-height: 1.3;">${v.relevance}</div>
