@@ -2023,20 +2023,33 @@ por las q ya no están y por las que se han quedado -->
                         <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;">`;
                     
                     richData.related_videos.forEach(v => {
-                        // Extraer ID real de YouTube desde v.id o desde la URL (soporta watch?v= y youtu.be/)
+                        // Extraer ID real de YouTube desde v.id, la URL, o el título.
+                        // El LLM a veces devuelve id vacío/inválido, pero los títulos guardados
+                        // en BD tienen el formato "Video XXXXXXXXXXX" cuando no había título original.
                         let ytId = v.id || '';
+                        // Validar que el id parezca un video_id real de YouTube (11 chars, [A-Za-z0-9_-])
+                        const isValidYtId = (s) => typeof s === 'string' && /^[A-Za-z0-9_-]{11}$/.test(s);
+                        if (!isValidYtId(ytId)) ytId = '';
+
                         if (!ytId && v.url) {
                             if (v.url.includes('v=')) {
                                 ytId = v.url.split('v=')[1].split('&')[0];
                             } else if (v.url.includes('youtu.be/')) {
                                 ytId = v.url.split('youtu.be/')[1].split('?')[0];
                             }
+                            if (!isValidYtId(ytId)) ytId = '';
                         }
+                        // Fallback: extraer del título (patrón "Video XXXXXXXXXXX" o cualquier token de 11 chars válidos)
+                        if (!ytId && v.title) {
+                            const m = v.title.match(/[A-Za-z0-9_-]{11}/);
+                            if (m && isValidYtId(m[0])) ytId = m[0];
+                        }
+
                         // Construir SIEMPRE el thumbnail desde el ID (mismo patrón que la pestaña Videos),
                         // ignorando lo que devuelva el LLM porque puede estar alucinado/roto.
                         const thumbUrl = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '';
                         const fallbackThumb = ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : '';
-                        const videoUrl = v.url && v.url.includes('http') ? v.url : `https://www.youtube.com/watch?v=${ytId}`;
+                        const videoUrl = ytId ? `https://www.youtube.com/watch?v=${ytId}` : (v.url || '#');
                         
                         videosHtml += `
                         <a href="${videoUrl}" target="_blank" style="flex: 0 0 200px; text-decoration: none; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.2);">
