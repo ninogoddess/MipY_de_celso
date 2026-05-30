@@ -105,7 +105,7 @@ por las q ya no están y por las que se han quedado -->
         <div class="sidebar-section">
             <div class="sidebar-section-title">Sistema</div>
         </div>
-        <div class="sidebar-item locked" data-page="settings">
+        <div class="sidebar-item" data-page="settings">
             <span class="icon"><svg viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="3" />
                     <path
@@ -906,12 +906,60 @@ por las q ya no están y por las que se han quedado -->
         <div id="page-settings" class="page">
             <div class="page-header">
                 <h2>Ajustes</h2>
-                <p>Configuración de claves API y preferencias del sistema.</p>
+                <p>Configuración del scraping automático y preferencias del sistema.</p>
             </div>
-            <div class="placeholder-card">
-                <div class="placeholder-icon">⚙️</div>
-                <h3>Próximamente</h3>
-                <p>Configura tus claves de Apify, LLM, frecuencia de scraping y otros parámetros.</p>
+
+            <!-- Schedule Configuration -->
+            <div class="scraper-panel" style="max-width: 700px;">
+                <h3 style="margin: 0 0 1rem 0; font-size: 18px; color: var(--primary);">⏰ Scraping Automático (CRON)</h3>
+                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 1.5rem;">
+                    El sistema revisa automáticamente el canal de Starter Story en busca de videos nuevos. 
+                    Los videos que ya existen en la base de datos se saltan (scraping incremental).
+                </p>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label style="display: block; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 600;">Frecuencia configurada</label>
+                        <div style="padding: 12px 16px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid var(--border);">
+                            <span style="font-size: 16px; font-weight: bold; color: var(--primary);">Semanal</span>
+                            <span style="font-size: 12px; color: var(--text-muted); display: block; margin-top: 4px;">Cada lunes a las 08:00 UTC</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 600;">Estado</label>
+                        <div style="padding: 12px 16px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid var(--success);">
+                            <span style="font-size: 16px; font-weight: bold; color: var(--success);">✓ Activo</span>
+                            <span style="font-size: 12px; color: var(--text-muted); display: block; margin-top: 4px;">Configurado en Vercel Cron Jobs</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.2); border-radius: 8px; padding: 1rem; border: 1px solid var(--border); margin-bottom: 1.5rem;">
+                    <h4 style="margin: 0 0 8px 0; font-size: 13px; color: var(--text);">¿Cómo funciona?</h4>
+                    <ol style="margin: 0; padding-left: 20px; font-size: 12px; color: var(--text-muted); line-height: 1.8;">
+                        <li>Cada lunes, Vercel ejecuta automáticamente <code style="background: rgba(255,255,255,0.1); padding: 1px 4px; border-radius: 3px;">/api/scrape_cron</code></li>
+                        <li>El endpoint consulta el RSS del canal Starter Story para detectar videos nuevos</li>
+                        <li>Compara contra la BD y solo procesa los que no existen (incremental)</li>
+                        <li>Extrae transcripciones vía Apify y las persiste en Supabase</li>
+                        <li>Registra la ejecución en <code style="background: rgba(255,255,255,0.1); padding: 1px 4px; border-radius: 3px;">scraper_runs</code> con estadísticas</li>
+                    </ol>
+                </div>
+
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <button class="btn-primary" id="cronManualBtn" onclick="triggerCronManually()" style="flex: 0 0 auto;">
+                        <span id="cronBtnText">Ejecutar CRON manualmente</span>
+                        <div id="cronLoader" class="loader"></div>
+                    </button>
+                    <span style="font-size: 12px; color: var(--text-muted);">Dispara una ejecución inmediata sin esperar al schedule.</span>
+                </div>
+                <div id="cron-manual-result" style="margin-top: 1rem;"></div>
+            </div>
+
+            <!-- Technical Info -->
+            <div class="scraper-panel" style="max-width: 700px; margin-top: 1.5rem; opacity: 0.8;">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 14px; color: var(--text-muted);">Configuración técnica (vercel.json)</h3>
+                <pre style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; font-size: 12px; color: var(--info); overflow-x: auto; margin: 0;">"crons": [{ "path": "/api/scrape_cron", "schedule": "0 8 * * 1" }]
+// Expresión CRON: minuto 0, hora 8, cualquier día del mes, cualquier mes, lunes (1)</pre>
             </div>
         </div>
 
@@ -1050,6 +1098,44 @@ por las q ya no están y por las que se han quedado -->
                 container.innerHTML = html;
             } catch (e) {
                 container.innerHTML = `<p style="color: var(--danger); font-size: 13px;">Error: ${e.message}</p>`;
+            }
+        }
+
+        // ==================== CRON MANUAL TRIGGER ====================
+        async function triggerCronManually() {
+            const btn = document.getElementById('cronManualBtn');
+            const loader = document.getElementById('cronLoader');
+            const btnText = document.getElementById('cronBtnText');
+            const resultDiv = document.getElementById('cron-manual-result');
+
+            btn.disabled = true;
+            loader.style.display = 'block';
+            btnText.textContent = 'Ejecutando CRON...';
+            resultDiv.innerHTML = '';
+
+            try {
+                const res = await fetch('/api/scrape_cron');
+                const data = await res.json();
+
+                if (!res.ok) throw new Error(data.error);
+
+                const color = data.new_videos > 0 ? 'var(--success)' : 'var(--info)';
+                resultDiv.innerHTML = `
+                    <div style="padding: 12px; background: rgba(0,0,0,0.3); border-radius: 8px; border-left: 3px solid ${color};">
+                        <strong style="color: ${color};">${data.message}</strong>
+                        ${data.total_found_in_feed ? `<div style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Videos nuevos detectados en feed: ${data.total_found_in_feed} | Procesados esta ejecución: ${data.processed_this_run || 0}</div>` : ''}
+                        ${data.checked ? `<div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Videos ya existentes en BD: ${data.checked}</div>` : ''}
+                        ${data.errors && data.errors.length ? `<div style="font-size: 11px; color: var(--warning); margin-top: 6px;">Errores: ${data.errors.join(', ')}</div>` : ''}
+                    </div>
+                `;
+                // Refresh dashboard stats
+                loadStats();
+            } catch (err) {
+                resultDiv.innerHTML = `<div style="padding: 12px; background: rgba(0,0,0,0.3); border-radius: 8px; border-left: 3px solid var(--danger); color: var(--danger);">Error: ${err.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                loader.style.display = 'none';
+                btnText.textContent = 'Ejecutar CRON manualmente';
             }
         }
 

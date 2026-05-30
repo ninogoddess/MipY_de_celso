@@ -5,6 +5,12 @@
       "maxDuration": 60
     }
   },
+  "crons": [
+    {
+      "path": "/api/scrape_cron",
+      "schedule": "0 8 * * 1"
+    }
+  ],
   "rewrites": [
     { "source": "/api/stats", "destination": "/api/data_engine.py" },
     { "source": "/api/videos", "destination": "/api/data_engine.py" },
@@ -14,6 +20,7 @@
     { "source": "/api/wizard_validate", "destination": "/api/wizard_engine.py" },
     { "source": "/api/wizard_chat", "destination": "/api/wizard_engine.py" },
     { "source": "/api/wizard_process", "destination": "/api/wizard_engine.py" },
-    { "source": "/api/mvt", "destination": "/api/mvt.py" }
+    { "source": "/api/mvt", "destination": "/api/mvt.py" },
+    { "source": "/api/scrape_cron", "destination": "/api/scrape_cron.py" }
   ]
 }
